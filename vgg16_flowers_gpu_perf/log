@@ -1,0 +1,1812 @@
++ case "$1" in
++ start_fluid_process
++ pserver_label=paddle-job-pserver=vgg16-gpu
++ trainer_label=paddle-job=vgg16-gpu
++ task_index=
++ stdbuf -oL python /root/k8s_tools.py wait_pods_running paddle-job-pserver=vgg16-gpu 4
+label selector: paddle-job-pserver=vgg16-gpu, desired: 4
+current cnt: 1 sleep for 5 seconds...
++ '[' PSERVER == TRAINER ']'
+++ python /root/k8s_tools.py fetch_ips paddle-job-pserver=vgg16-gpu 30256
++ export PADDLE_INIT_PSERVERS=192.168.16.23,192.168.16.26,192.168.16.28,192.168.16.34
++ PADDLE_INIT_PSERVERS=192.168.16.23,192.168.16.26,192.168.16.28,192.168.16.34
++ '[' PSERVER == TRAINER ']'
+++ python /root/k8s_tools.py fetch_id paddle-job-pserver=vgg16-gpu
++ task_index=1
++ export PADDLE_INIT_TRAINER_ID=1
++ PADDLE_INIT_TRAINER_ID=1
++ stdbuf -oL sh -c 'unset http_proxy && unset https_proxy && python /workspace/vgg16_fluid.py --local 0 --data_set flowers --batch_size 20 --device CPU'
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I0316 10:53:20.691927    95 init.cc:41] Init commandline: /workspace/vgg16_fluid.py --tryfromenv=use_pinned_memory,check_nan_inf,benchmark,warpctc_dir,fraction_of_gpu_memory_to_use 
+I0316 10:53:25.425499    95 dynamic_loader.cc:71] Try to find library: libcublas.so from default system path.
+I0316 10:53:26.587582    95 dynamic_loader.cc:71] Try to find library: libcudnn.so from default system path.
+-----------  Configuration Arguments -----------
+batch_size: 20
+data_format: NCHW
+data_set: flowers
+device: CPU
+device_id: 0
+learning_rate: 0.001
+local: False
+num_passes: 50
+------------------------------------------------
+I0316 10:53:27.815757    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:27.816526    95 op_desc.cc:357] CompileTime infer shape on conv2d
+I0316 10:53:27.816812    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.816974    95 op_desc.cc:357] CompileTime infer shape on elementwise_add
+I0316 10:53:27.817220    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.817441    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.817703    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.817948    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.818210    95 op_desc.cc:357] CompileTime infer shape on batch_norm
+I0316 10:53:27.818352    95 op_desc.cc:357] CompileTime infer shape on relu
+I0316 10:53:27.818524    95 op_desc.cc:357] CompileTime infer shape on dropout
+I0316 10:53:27.818792    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:27.818955    95 op_desc.cc:357] CompileTime infer shape on conv2d
+I0316 10:53:27.819175    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.819308    95 op_desc.cc:357] CompileTime infer shape on elementwise_add
+I0316 10:53:27.819533    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.819753    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.820000    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.820236    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.820457    95 op_desc.cc:357] CompileTime infer shape on batch_norm
+I0316 10:53:27.820575    95 op_desc.cc:357] CompileTime infer shape on relu
+I0316 10:53:27.820806    95 op_desc.cc:357] CompileTime infer shape on pool2d
+I0316 10:53:27.821084    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:27.821244    95 op_desc.cc:357] CompileTime infer shape on conv2d
+I0316 10:53:27.821455    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.821589    95 op_desc.cc:357] CompileTime infer shape on elementwise_add
+I0316 10:53:27.821821    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.822031    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.822274    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.822506    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.822742    95 op_desc.cc:357] CompileTime infer shape on batch_norm
+I0316 10:53:27.822865    95 op_desc.cc:357] CompileTime infer shape on relu
+I0316 10:53:27.823009    95 op_desc.cc:357] CompileTime infer shape on dropout
+I0316 10:53:27.823253    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:27.823412    95 op_desc.cc:357] CompileTime infer shape on conv2d
+I0316 10:53:27.823631    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.823767    95 op_desc.cc:357] CompileTime infer shape on elementwise_add
+I0316 10:53:27.823992    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.824203    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.824440    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.824681    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.824990    95 op_desc.cc:357] CompileTime infer shape on batch_norm
+I0316 10:53:27.825121    95 op_desc.cc:357] CompileTime infer shape on relu
+I0316 10:53:27.825290    95 op_desc.cc:357] CompileTime infer shape on pool2d
+I0316 10:53:27.825551    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:27.825844    95 op_desc.cc:357] CompileTime infer shape on conv2d
+I0316 10:53:27.826064    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.826198    95 op_desc.cc:357] CompileTime infer shape on elementwise_add
+I0316 10:53:27.826419    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.826666    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.826912    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.827152    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.827381    95 op_desc.cc:357] CompileTime infer shape on batch_norm
+I0316 10:53:27.827502    95 op_desc.cc:357] CompileTime infer shape on relu
+I0316 10:53:27.827672    95 op_desc.cc:357] CompileTime infer shape on dropout
+I0316 10:53:27.827922    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:27.828083    95 op_desc.cc:357] CompileTime infer shape on conv2d
+I0316 10:53:27.828295    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.828424    95 op_desc.cc:357] CompileTime infer shape on elementwise_add
+I0316 10:53:27.828655    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.828869    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.829099    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.829332    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.829553    95 op_desc.cc:357] CompileTime infer shape on batch_norm
+I0316 10:53:27.829679    95 op_desc.cc:357] CompileTime infer shape on relu
+I0316 10:53:27.829824    95 op_desc.cc:357] CompileTime infer shape on dropout
+I0316 10:53:27.830073    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:27.830236    95 op_desc.cc:357] CompileTime infer shape on conv2d
+I0316 10:53:27.830441    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.830575    95 op_desc.cc:357] CompileTime infer shape on elementwise_add
+I0316 10:53:27.830809    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.831019    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.831255    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.831485    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.831719    95 op_desc.cc:357] CompileTime infer shape on batch_norm
+I0316 10:53:27.831841    95 op_desc.cc:357] CompileTime infer shape on relu
+I0316 10:53:27.832012    95 op_desc.cc:357] CompileTime infer shape on pool2d
+I0316 10:53:27.832271    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:27.832430    95 op_desc.cc:357] CompileTime infer shape on conv2d
+I0316 10:53:27.832646    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.832778    95 op_desc.cc:357] CompileTime infer shape on elementwise_add
+I0316 10:53:27.833003    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.833211    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.833449    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.833693    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.833917    95 op_desc.cc:357] CompileTime infer shape on batch_norm
+I0316 10:53:27.834040    95 op_desc.cc:357] CompileTime infer shape on relu
+I0316 10:53:27.834183    95 op_desc.cc:357] CompileTime infer shape on dropout
+I0316 10:53:27.834431    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:27.834590    95 op_desc.cc:357] CompileTime infer shape on conv2d
+I0316 10:53:27.834807    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.834939    95 op_desc.cc:357] CompileTime infer shape on elementwise_add
+I0316 10:53:27.835167    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.835378    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.835626    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.835860    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.836081    95 op_desc.cc:357] CompileTime infer shape on batch_norm
+I0316 10:53:27.836205    95 op_desc.cc:357] CompileTime infer shape on relu
+I0316 10:53:27.836352    95 op_desc.cc:357] CompileTime infer shape on dropout
+I0316 10:53:27.836591    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:27.836758    95 op_desc.cc:357] CompileTime infer shape on conv2d
+I0316 10:53:27.836977    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.837107    95 op_desc.cc:357] CompileTime infer shape on elementwise_add
+I0316 10:53:27.837330    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.837541    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.837790    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.838024    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.838246    95 op_desc.cc:357] CompileTime infer shape on batch_norm
+I0316 10:53:27.838364    95 op_desc.cc:357] CompileTime infer shape on relu
+I0316 10:53:27.838533    95 op_desc.cc:357] CompileTime infer shape on pool2d
+I0316 10:53:27.838800    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:27.838961    95 op_desc.cc:357] CompileTime infer shape on conv2d
+I0316 10:53:27.839175    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.839306    95 op_desc.cc:357] CompileTime infer shape on elementwise_add
+I0316 10:53:27.839527    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.839749    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.839982    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.840214    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.840436    95 op_desc.cc:357] CompileTime infer shape on batch_norm
+I0316 10:53:27.840556    95 op_desc.cc:357] CompileTime infer shape on relu
+I0316 10:53:27.840709    95 op_desc.cc:357] CompileTime infer shape on dropout
+I0316 10:53:27.840955    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:27.841115    95 op_desc.cc:357] CompileTime infer shape on conv2d
+I0316 10:53:27.841327    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.841464    95 op_desc.cc:357] CompileTime infer shape on elementwise_add
+I0316 10:53:27.841692    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.841909    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.842147    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.842381    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.842625    95 op_desc.cc:357] CompileTime infer shape on batch_norm
+I0316 10:53:27.842746    95 op_desc.cc:357] CompileTime infer shape on relu
+I0316 10:53:27.842983    95 op_desc.cc:357] CompileTime infer shape on dropout
+I0316 10:53:27.843235    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:27.843396    95 op_desc.cc:357] CompileTime infer shape on conv2d
+I0316 10:53:27.843611    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.843755    95 op_desc.cc:357] CompileTime infer shape on elementwise_add
+I0316 10:53:27.843978    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.844189    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.844425    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.844661    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.844893    95 op_desc.cc:357] CompileTime infer shape on batch_norm
+I0316 10:53:27.845015    95 op_desc.cc:357] CompileTime infer shape on relu
+I0316 10:53:27.845182    95 op_desc.cc:357] CompileTime infer shape on pool2d
+I0316 10:53:27.845335    95 op_desc.cc:357] CompileTime infer shape on dropout
+I0316 10:53:27.845711    95 op_desc.cc:357] CompileTime infer shape on uniform_random
+I0316 10:53:27.845881    95 op_desc.cc:357] CompileTime infer shape on mul
+I0316 10:53:27.845902    95 mul_op.cc:36] mul operator x.shape=-1, 512, 7, 7 y.shape=25088, 512 x_num_col_dims=1 y_num_col_dims=1
+I0316 10:53:27.846119    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.846254    95 op_desc.cc:357] CompileTime infer shape on elementwise_add
+I0316 10:53:27.846477    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.851790    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.852252    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.852788    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.853265    95 op_desc.cc:357] CompileTime infer shape on batch_norm
+I0316 10:53:27.853471    95 op_desc.cc:357] CompileTime infer shape on relu
+I0316 10:53:27.853729    95 op_desc.cc:357] CompileTime infer shape on dropout
+I0316 10:53:27.854162    95 op_desc.cc:357] CompileTime infer shape on uniform_random
+I0316 10:53:27.854389    95 op_desc.cc:357] CompileTime infer shape on mul
+I0316 10:53:27.854415    95 mul_op.cc:36] mul operator x.shape=-1, 512 y.shape=512, 512 x_num_col_dims=1 y_num_col_dims=1
+I0316 10:53:27.854756    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.854996    95 op_desc.cc:357] CompileTime infer shape on elementwise_add
+I0316 10:53:27.855401    95 op_desc.cc:357] CompileTime infer shape on uniform_random
+I0316 10:53:27.855633    95 op_desc.cc:357] CompileTime infer shape on mul
+I0316 10:53:27.855659    95 mul_op.cc:36] mul operator x.shape=-1, 512 y.shape=512, 102 x_num_col_dims=1 y_num_col_dims=1
+I0316 10:53:27.855998    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.856206    95 op_desc.cc:357] CompileTime infer shape on elementwise_add
+I0316 10:53:27.856364    95 op_desc.cc:357] CompileTime infer shape on softmax
+I0316 10:53:27.856587    95 op_desc.cc:357] CompileTime infer shape on cross_entropy
+I0316 10:53:27.856946    95 op_desc.cc:357] CompileTime infer shape on mean
+I0316 10:53:27.857211    95 op_desc.cc:357] CompileTime infer shape on top_k
+I0316 10:53:27.857461    95 op_desc.cc:357] CompileTime infer shape on accuracy
+I0316 10:53:27.881186    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.881286    95 op_desc.cc:357] CompileTime infer shape on mean_grad
+I0316 10:53:27.881355    95 op_desc.cc:357] CompileTime infer shape on cross_entropy_grad
+I0316 10:53:27.881427    95 op_desc.cc:357] CompileTime infer shape on softmax_grad
+I0316 10:53:27.881494    95 op_desc.cc:357] CompileTime infer shape on elementwise_add_grad
+I0316 10:53:27.881579    95 op_desc.cc:357] CompileTime infer shape on mul_grad
+I0316 10:53:27.881681    95 op_desc.cc:357] CompileTime infer shape on elementwise_add_grad
+I0316 10:53:27.881767    95 op_desc.cc:357] CompileTime infer shape on mul_grad
+I0316 10:53:27.881844    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.881903    95 op_desc.cc:357] CompileTime infer shape on dropout_grad
+I0316 10:53:27.881964    95 op_desc.cc:357] CompileTime infer shape on relu_grad
+I0316 10:53:27.882016    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.882071    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.882123    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.882176    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.882249    95 op_desc.cc:357] CompileTime infer shape on batch_norm_grad
+I0316 10:53:27.882359    95 op_desc.cc:357] CompileTime infer shape on elementwise_add_grad
+I0316 10:53:27.882442    95 op_desc.cc:357] CompileTime infer shape on mul_grad
+I0316 10:53:27.882520    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.882573    95 op_desc.cc:357] CompileTime infer shape on dropout_grad
+I0316 10:53:27.882640    95 op_desc.cc:357] CompileTime infer shape on pool2d_grad
+I0316 10:53:27.882695    95 op_desc.cc:357] CompileTime infer shape on relu_grad
+I0316 10:53:27.882746    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.882799    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.882850    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.882901    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.882972    95 op_desc.cc:357] CompileTime infer shape on batch_norm_grad
+I0316 10:53:27.883074    95 op_desc.cc:357] CompileTime infer shape on elementwise_add_grad
+I0316 10:53:27.883157    95 op_desc.cc:357] CompileTime infer shape on conv2d_grad
+I0316 10:53:27.883229    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.883281    95 op_desc.cc:357] CompileTime infer shape on dropout_grad
+I0316 10:53:27.883338    95 op_desc.cc:357] CompileTime infer shape on relu_grad
+I0316 10:53:27.883388    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.883440    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.883492    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.883544    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.883620    95 op_desc.cc:357] CompileTime infer shape on batch_norm_grad
+I0316 10:53:27.883728    95 op_desc.cc:357] CompileTime infer shape on elementwise_add_grad
+I0316 10:53:27.883811    95 op_desc.cc:357] CompileTime infer shape on conv2d_grad
+I0316 10:53:27.883880    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.883934    95 op_desc.cc:357] CompileTime infer shape on dropout_grad
+I0316 10:53:27.883991    95 op_desc.cc:357] CompileTime infer shape on relu_grad
+I0316 10:53:27.884044    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.884097    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.884150    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.884201    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.884269    95 op_desc.cc:357] CompileTime infer shape on batch_norm_grad
+I0316 10:53:27.884371    95 op_desc.cc:357] CompileTime infer shape on elementwise_add_grad
+I0316 10:53:27.884452    95 op_desc.cc:357] CompileTime infer shape on conv2d_grad
+I0316 10:53:27.884523    95 op_desc.cc:357] CompileTime infer shape on pool2d_grad
+I0316 10:53:27.884575    95 op_desc.cc:357] CompileTime infer shape on relu_grad
+I0316 10:53:27.884634    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.884691    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.884744    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.884798    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.884867    95 op_desc.cc:357] CompileTime infer shape on batch_norm_grad
+I0316 10:53:27.884969    95 op_desc.cc:357] CompileTime infer shape on elementwise_add_grad
+I0316 10:53:27.885056    95 op_desc.cc:357] CompileTime infer shape on conv2d_grad
+I0316 10:53:27.885126    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.885181    95 op_desc.cc:357] CompileTime infer shape on dropout_grad
+I0316 10:53:27.885239    95 op_desc.cc:357] CompileTime infer shape on relu_grad
+I0316 10:53:27.885308    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.885365    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.885416    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.885468    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.885537    95 op_desc.cc:357] CompileTime infer shape on batch_norm_grad
+I0316 10:53:27.885648    95 op_desc.cc:357] CompileTime infer shape on elementwise_add_grad
+I0316 10:53:27.885735    95 op_desc.cc:357] CompileTime infer shape on conv2d_grad
+I0316 10:53:27.885803    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.885857    95 op_desc.cc:357] CompileTime infer shape on dropout_grad
+I0316 10:53:27.885915    95 op_desc.cc:357] CompileTime infer shape on relu_grad
+I0316 10:53:27.885964    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.886018    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.886070    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.886121    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.886190    95 op_desc.cc:357] CompileTime infer shape on batch_norm_grad
+I0316 10:53:27.886292    95 op_desc.cc:357] CompileTime infer shape on elementwise_add_grad
+I0316 10:53:27.886374    95 op_desc.cc:357] CompileTime infer shape on conv2d_grad
+I0316 10:53:27.886443    95 op_desc.cc:357] CompileTime infer shape on pool2d_grad
+I0316 10:53:27.886495    95 op_desc.cc:357] CompileTime infer shape on relu_grad
+I0316 10:53:27.886545    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.886606    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.886662    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.886714    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.886783    95 op_desc.cc:357] CompileTime infer shape on batch_norm_grad
+I0316 10:53:27.886885    95 op_desc.cc:357] CompileTime infer shape on elementwise_add_grad
+I0316 10:53:27.886967    95 op_desc.cc:357] CompileTime infer shape on conv2d_grad
+I0316 10:53:27.887037    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.887104    95 op_desc.cc:357] CompileTime infer shape on dropout_grad
+I0316 10:53:27.887161    95 op_desc.cc:357] CompileTime infer shape on relu_grad
+I0316 10:53:27.887207    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.887257    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.887306    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.887356    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.887421    95 op_desc.cc:357] CompileTime infer shape on batch_norm_grad
+I0316 10:53:27.887517    95 op_desc.cc:357] CompileTime infer shape on elementwise_add_grad
+I0316 10:53:27.887601    95 op_desc.cc:357] CompileTime infer shape on conv2d_grad
+I0316 10:53:27.887670    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.887722    95 op_desc.cc:357] CompileTime infer shape on dropout_grad
+I0316 10:53:27.887778    95 op_desc.cc:357] CompileTime infer shape on relu_grad
+I0316 10:53:27.887825    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.887874    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.887923    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.887974    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.888039    95 op_desc.cc:357] CompileTime infer shape on batch_norm_grad
+I0316 10:53:27.888135    95 op_desc.cc:357] CompileTime infer shape on elementwise_add_grad
+I0316 10:53:27.888212    95 op_desc.cc:357] CompileTime infer shape on conv2d_grad
+I0316 10:53:27.888278    95 op_desc.cc:357] CompileTime infer shape on pool2d_grad
+I0316 10:53:27.888329    95 op_desc.cc:357] CompileTime infer shape on relu_grad
+I0316 10:53:27.888376    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.888427    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.888476    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.888525    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.888592    95 op_desc.cc:357] CompileTime infer shape on batch_norm_grad
+I0316 10:53:27.888701    95 op_desc.cc:357] CompileTime infer shape on elementwise_add_grad
+I0316 10:53:27.888780    95 op_desc.cc:357] CompileTime infer shape on conv2d_grad
+I0316 10:53:27.888846    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.888897    95 op_desc.cc:357] CompileTime infer shape on dropout_grad
+I0316 10:53:27.888952    95 op_desc.cc:357] CompileTime infer shape on relu_grad
+I0316 10:53:27.888999    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.889050    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.889099    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.889148    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.889214    95 op_desc.cc:357] CompileTime infer shape on batch_norm_grad
+I0316 10:53:27.889312    95 op_desc.cc:357] CompileTime infer shape on elementwise_add_grad
+I0316 10:53:27.889389    95 op_desc.cc:357] CompileTime infer shape on conv2d_grad
+I0316 10:53:27.889456    95 op_desc.cc:357] CompileTime infer shape on pool2d_grad
+I0316 10:53:27.889505    95 op_desc.cc:357] CompileTime infer shape on relu_grad
+I0316 10:53:27.889552    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.889608    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.889659    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.889709    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.889773    95 op_desc.cc:357] CompileTime infer shape on batch_norm_grad
+I0316 10:53:27.889869    95 op_desc.cc:357] CompileTime infer shape on elementwise_add_grad
+I0316 10:53:27.889947    95 op_desc.cc:357] CompileTime infer shape on conv2d_grad
+I0316 10:53:27.890012    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.890064    95 op_desc.cc:357] CompileTime infer shape on dropout_grad
+I0316 10:53:27.890120    95 op_desc.cc:357] CompileTime infer shape on relu_grad
+I0316 10:53:27.890173    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.890224    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.890274    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.890350    95 op_desc.cc:357] CompileTime infer shape on fill_zeros_like
+I0316 10:53:27.890419    95 op_desc.cc:357] CompileTime infer shape on batch_norm_grad
+I0316 10:53:27.890516    95 op_desc.cc:357] CompileTime infer shape on elementwise_add_grad
+I0316 10:53:27.890588    95 op_desc.cc:357] CompileTime infer shape on conv2d_grad
+I0316 10:53:27.895612    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.895808    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.895987    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.896155    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.896319    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.896476    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.896646    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.896808    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.896976    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.897141    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.897290    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.897439    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.897586    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.897744    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.897897    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.898042    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.898191    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.898339    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.898488    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.898643    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.898795    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.898946    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.899096    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.899245    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.899395    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.899555    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.899716    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.899870    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.900025    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.900176    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.900323    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.900471    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.900632    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.900785    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.901029    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.901255    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.901422    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.901577    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.901741    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.901901    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.902050    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.902200    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.902355    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.902505    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.902664    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.902818    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.902987    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.903142    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.903298    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.903451    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.903611    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.903767    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.903921    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.904078    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.904227    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.904382    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.904534    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.904696    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.904850    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.905000    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.905154    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.905308    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.905459    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.905617    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.905771    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.905920    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.906067    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.906219    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.906378    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.906536    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.906702    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.906862    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.907014    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.907168    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.907333    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.907485    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.907640    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.907797    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.907951    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.908104    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.908255    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.908408    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.908560    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.908718    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.908874    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.909021    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.909176    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.909327    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.909487    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.909647    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.909798    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.909952    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.910207    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.910365    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.910516    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.910679    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.910832    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.910984    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.911137    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.911293    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.911442    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.911588    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.911757    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.911916    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.912075    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.912228    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.912379    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.912529    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.912686    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.912844    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.913007    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.913156    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.913308    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.913455    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.913611    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.913760    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.913916    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.914064    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.914214    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.914369    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.914520    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.914677    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.914827    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.914979    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.915127    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.915275    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.915423    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.915575    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.915736    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.915887    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.916046    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.916196    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.916349    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.916507    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.916679    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.916832    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.916977    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.917135    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.917280    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.917423    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.917569    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.917724    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.917870    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.918015    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.918164    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.918313    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.918459    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.918614    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.918762    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.918905    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.919049    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.919193    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.919340    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.919482    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.919641    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.919790    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.919935    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.920079    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.920225    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.920369    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.920542    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.920706    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.920853    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.921005    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.921149    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.921296    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.921442    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.921583    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.921749    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.921897    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.922046    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.922188    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.922340    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.922492    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.922649    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.922799    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.922942    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.923081    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.923274    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:27.923492    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.923704    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.925396    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.925635    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.925840    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.926030    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.926213    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.926404    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.926589    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.926784    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.926966    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.927155    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.927325    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.927494    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.927681    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.927855    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.928025    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.928196    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.928369    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.928539    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.928715    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.928889    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.929059    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.929227    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.929399    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.929567    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.929749    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.929922    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.930094    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.930261    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.930433    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.930609    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.930780    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.930948    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.931114    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.931293    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.931463    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.931640    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.931813    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.931982    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.932145    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.932310    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.932482    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.932660    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.932837    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.933007    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.933178    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.933353    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.933522    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.933701    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.933956    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.934136    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.934301    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.934468    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.934643    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.934825    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.934999    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.935173    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.935348    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.935519    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:27.935624    95 op_desc.cc:357] CompileTime infer shape on scale
+I0316 10:53:27.935696    95 op_desc.cc:357] CompileTime infer shape on scale
+pserver endpoints:  192.168.16.23:30256,192.168.16.26:30256,192.168.16.28:30256,192.168.16.34:30256
+trainers total:  4
+I0316 10:53:28.067811    95 op_desc.cc:357] CompileTime infer shape on split
+I0316 10:53:28.067970    95 op_desc.cc:357] CompileTime infer shape on split
+I0316 10:53:28.068080    95 op_desc.cc:357] CompileTime infer shape on split
+I0316 10:53:28.068186    95 op_desc.cc:357] CompileTime infer shape on split
+I0316 10:53:28.068289    95 op_desc.cc:357] CompileTime infer shape on split
+I0316 10:53:28.068389    95 op_desc.cc:357] CompileTime infer shape on split
+I0316 10:53:28.068490    95 op_desc.cc:357] CompileTime infer shape on split
+I0316 10:53:28.068591    95 op_desc.cc:357] CompileTime infer shape on split
+I0316 10:53:28.068699    95 op_desc.cc:357] CompileTime infer shape on split
+I0316 10:53:28.068804    95 op_desc.cc:357] CompileTime infer shape on split
+I0316 10:53:28.068915    95 op_desc.cc:357] CompileTime infer shape on split
+I0316 10:53:28.069013    95 op_desc.cc:357] CompileTime infer shape on split
+I0316 10:53:28.069121    95 op_desc.cc:357] CompileTime infer shape on split
+I0316 10:53:28.069223    95 op_desc.cc:357] CompileTime infer shape on split
+I0316 10:53:28.069321    95 op_desc.cc:357] CompileTime infer shape on split
+I0316 10:53:28.090425    95 op_desc.cc:357] CompileTime infer shape on concat
+I0316 10:53:28.090531    95 op_desc.cc:357] CompileTime infer shape on concat
+I0316 10:53:28.090620    95 op_desc.cc:357] CompileTime infer shape on concat
+I0316 10:53:28.090698    95 op_desc.cc:357] CompileTime infer shape on concat
+I0316 10:53:28.090766    95 op_desc.cc:357] CompileTime infer shape on concat
+I0316 10:53:28.090842    95 op_desc.cc:357] CompileTime infer shape on concat
+I0316 10:53:28.090912    95 op_desc.cc:357] CompileTime infer shape on concat
+I0316 10:53:28.090978    95 op_desc.cc:357] CompileTime infer shape on concat
+I0316 10:53:28.091048    95 op_desc.cc:357] CompileTime infer shape on concat
+I0316 10:53:28.091114    95 op_desc.cc:357] CompileTime infer shape on concat
+I0316 10:53:28.091179    95 op_desc.cc:357] CompileTime infer shape on concat
+I0316 10:53:28.091246    95 op_desc.cc:357] CompileTime infer shape on concat
+I0316 10:53:28.091313    95 op_desc.cc:357] CompileTime infer shape on concat
+I0316 10:53:28.091382    95 op_desc.cc:357] CompileTime infer shape on concat
+I0316 10:53:28.091447    95 op_desc.cc:357] CompileTime infer shape on concat
+##### global ops  [inputs {
+  parameter: "X"
+  arguments: "beta1_pow_acc_0"
+}
+outputs {
+  parameter: "Out"
+  arguments: "beta1_pow_acc_0"
+}
+type: "scale"
+attrs {
+  name: "scale"
+  type: FLOAT
+  f: 0.899999976158
+}
+, inputs {
+  parameter: "X"
+  arguments: "beta2_pow_acc_0"
+}
+outputs {
+  parameter: "Out"
+  arguments: "beta2_pow_acc_0"
+}
+type: "scale"
+attrs {
+  name: "scale"
+  type: FLOAT
+  f: 0.999000012875
+}
+]
+I0316 10:53:28.140693    95 op_desc.cc:357] CompileTime infer shape on sum
+I0316 10:53:28.140837    95 op_desc.cc:357] CompileTime infer shape on scale
+I0316 10:53:28.141225    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:28.141485    95 op_desc.cc:357] CompileTime infer shape on sum
+I0316 10:53:28.141577    95 op_desc.cc:357] CompileTime infer shape on scale
+I0316 10:53:28.141906    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:28.142146    95 op_desc.cc:357] CompileTime infer shape on sum
+I0316 10:53:28.142238    95 op_desc.cc:357] CompileTime infer shape on scale
+I0316 10:53:28.142560    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:28.142834    95 op_desc.cc:357] CompileTime infer shape on sum
+I0316 10:53:28.142925    95 op_desc.cc:357] CompileTime infer shape on scale
+I0316 10:53:28.143267    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:28.143544    95 op_desc.cc:357] CompileTime infer shape on sum
+I0316 10:53:28.143640    95 op_desc.cc:357] CompileTime infer shape on scale
+I0316 10:53:28.143987    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:28.144255    95 op_desc.cc:357] CompileTime infer shape on sum
+I0316 10:53:28.144345    95 op_desc.cc:357] CompileTime infer shape on scale
+I0316 10:53:28.144697    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:28.144978    95 op_desc.cc:357] CompileTime infer shape on sum
+I0316 10:53:28.145063    95 op_desc.cc:357] CompileTime infer shape on scale
+I0316 10:53:28.145414    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:28.145740    95 op_desc.cc:357] CompileTime infer shape on sum
+I0316 10:53:28.145833    95 op_desc.cc:357] CompileTime infer shape on scale
+I0316 10:53:28.146215    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:28.146525    95 op_desc.cc:357] CompileTime infer shape on sum
+I0316 10:53:28.150766    95 op_desc.cc:357] CompileTime infer shape on scale
+I0316 10:53:28.151362    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:28.151816    95 op_desc.cc:357] CompileTime infer shape on sum
+I0316 10:53:28.151938    95 op_desc.cc:357] CompileTime infer shape on scale
+I0316 10:53:28.152463    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:28.152911    95 op_desc.cc:357] CompileTime infer shape on sum
+I0316 10:53:28.153031    95 op_desc.cc:357] CompileTime infer shape on scale
+I0316 10:53:28.153553    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:28.154006    95 op_desc.cc:357] CompileTime infer shape on sum
+I0316 10:53:28.154124    95 op_desc.cc:357] CompileTime infer shape on scale
+I0316 10:53:28.154676    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:28.155146    95 op_desc.cc:357] CompileTime infer shape on sum
+I0316 10:53:28.155257    95 op_desc.cc:357] CompileTime infer shape on scale
+I0316 10:53:28.155787    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:28.156371    95 op_desc.cc:357] CompileTime infer shape on sum
+I0316 10:53:28.156489    95 op_desc.cc:357] CompileTime infer shape on scale
+I0316 10:53:28.157044    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:28.157487    95 op_desc.cc:357] CompileTime infer shape on sum
+I0316 10:53:28.157614    95 op_desc.cc:357] CompileTime infer shape on scale
+I0316 10:53:28.158146    95 op_desc.cc:357] CompileTime infer shape on adam
+I0316 10:53:28.158363    95 op_desc.cc:357] CompileTime infer shape on scale
+I0316 10:53:28.158509    95 op_desc.cc:357] CompileTime infer shape on scale
+######## pserver prog #############
+######## pserver prog #############
+I0316 10:53:28.316465    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.317378    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.317567    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.318065    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.318243    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.318576    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.318774    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.319108    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.319288    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.320241    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.320422    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.320605    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.320782    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.321110    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.321282    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.321619    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.321792    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.324579    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.324769    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.325564    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.325750    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.326393    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.326567    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.327945    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.328119    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.330489    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.330668    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.330837    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.331003    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.331171    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.331336    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.333140    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.333314    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.333570    95 op_desc.cc:357] CompileTime infer shape on uniform_random
+I0316 10:53:28.333808    95 op_desc.cc:357] CompileTime infer shape on uniform_random
+I0316 10:53:28.334133    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.334409    95 op_desc.cc:357] CompileTime infer shape on uniform_random
+I0316 10:53:28.334960    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:28.335144    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.335384    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.335657    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:28.335906    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.336266    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:28.336750    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.336891    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:28.337069    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.337303    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.337532    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.337702    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:28.337865    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.338300    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:28.338682    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.338845    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.338955    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:28.339260    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.339552    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:28.340066    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:28.340371    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.340610    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.340776    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:28.340940    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.341097    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.341464    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:28.341634    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+I0316 10:53:28.342049    95 op_desc.cc:357] CompileTime infer shape on gaussian_random
+I0316 10:53:28.342495    95 op_desc.cc:357] CompileTime infer shape on fill_constant
+starting server side startup
+I0316 10:53:28.352064    95 scope.cc:51] Create variable conv2d_5.w_0@GRAD.block1.trainer_2
+I0316 10:53:28.352097    95 executor.cc:293] Create Variable conv2d_5.w_0@GRAD.block1.trainer_2 locally, which pointer is 0x200e2a50
+I0316 10:53:28.352105    95 scope.cc:51] Create variable batch_norm_11.w_2@GRAD.trainer_2
+I0316 10:53:28.352110    95 executor.cc:293] Create Variable batch_norm_11.w_2@GRAD.trainer_2 locally, which pointer is 0x200e4b40
+I0316 10:53:28.352123    95 scope.cc:51] Create variable moment1_42
+I0316 10:53:28.352128    95 executor.cc:288] Create Variable moment1_42 global, which pointer is 0x200e8710
+I0316 10:53:28.352136    95 scope.cc:51] Create variable fc_2.w_0@GRAD.block3.trainer_2
+I0316 10:53:28.352141    95 executor.cc:293] Create Variable fc_2.w_0@GRAD.block3.trainer_2 locally, which pointer is 0x200e9140
+I0316 10:53:28.352149    95 scope.cc:51] Create variable moment1_67
+I0316 10:53:28.352154    95 executor.cc:288] Create Variable moment1_67 global, which pointer is 0x200e9250
+I0316 10:53:28.352160    95 scope.cc:51] Create variable batch_norm_2.w_1@GRAD.trainer_0
+I0316 10:53:28.352165    95 executor.cc:293] Create Variable batch_norm_2.w_1@GRAD.trainer_0 locally, which pointer is 0x200dc720
+I0316 10:53:28.352174    95 scope.cc:51] Create variable conv2d_7.w_0@GRAD.block2.trainer_1
+I0316 10:53:28.352177    95 executor.cc:293] Create Variable conv2d_7.w_0@GRAD.block2.trainer_1 locally, which pointer is 0x200dc830
+I0316 10:53:28.352185    95 scope.cc:51] Create variable batch_norm_7.w_2@GRAD
+I0316 10:53:28.352190    95 executor.cc:288] Create Variable batch_norm_7.w_2@GRAD global, which pointer is 0x200dc940
+I0316 10:53:28.352198    95 scope.cc:51] Create variable batch_norm_5.b_0@GRAD.trainer_0
+I0316 10:53:28.352203    95 executor.cc:293] Create Variable batch_norm_5.b_0@GRAD.trainer_0 locally, which pointer is 0x200dca50
+I0316 10:53:28.352211    95 scope.cc:51] Create variable moment2_12
+I0316 10:53:28.352216    95 executor.cc:288] Create Variable moment2_12 global, which pointer is 0x200dcac0
+I0316 10:53:28.352223    95 scope.cc:51] Create variable conv2d_0.b_0
+I0316 10:53:28.352228    95 executor.cc:288] Create Variable conv2d_0.b_0 global, which pointer is 0x200e9cc0
+I0316 10:53:28.352236    95 scope.cc:51] Create variable conv2d_6.b_0@GRAD.trainer_2
+I0316 10:53:28.352241    95 executor.cc:293] Create Variable conv2d_6.b_0@GRAD.trainer_2 locally, which pointer is 0x200e9dd0
+I0316 10:53:28.352247    95 scope.cc:51] Create variable conv2d_6.b_0@GRAD.trainer_3
+I0316 10:53:28.352252    95 executor.cc:293] Create Variable conv2d_6.b_0@GRAD.trainer_3 locally, which pointer is 0x200e9ee0
+I0316 10:53:28.352262    95 scope.cc:51] Create variable moment2_80
+I0316 10:53:28.352267    95 executor.cc:288] Create Variable moment2_80 global, which pointer is 0x200e9ff0
+I0316 10:53:28.352274    95 scope.cc:51] Create variable conv2d_8.w_0@GRAD.block0
+I0316 10:53:28.352279    95 executor.cc:288] Create Variable conv2d_8.w_0@GRAD.block0 global, which pointer is 0x200ea100
+I0316 10:53:28.352288    95 scope.cc:51] Create variable batch_norm_5.b_0@GRAD
+I0316 10:53:28.352291    95 executor.cc:288] Create Variable batch_norm_5.b_0@GRAD global, which pointer is 0x200ea210
+I0316 10:53:28.352299    95 scope.cc:51] Create variable batch_norm_2.w_1
+I0316 10:53:28.352304    95 executor.cc:288] Create Variable batch_norm_2.w_1 global, which pointer is 0x200ea320
+I0316 10:53:28.352311    95 scope.cc:51] Create variable conv2d_8.b_0@GRAD.trainer_0
+I0316 10:53:28.352316    95 executor.cc:293] Create Variable conv2d_8.b_0@GRAD.trainer_0 locally, which pointer is 0x200ea430
+I0316 10:53:28.352324    95 scope.cc:51] Create variable conv2d_8.b_0@GRAD.trainer_1
+I0316 10:53:28.352327    95 executor.cc:293] Create Variable conv2d_8.b_0@GRAD.trainer_1 locally, which pointer is 0x200ea540
+I0316 10:53:28.352337    95 scope.cc:51] Create variable conv2d_0.b_0@GRAD.trainer_3
+I0316 10:53:28.352342    95 executor.cc:293] Create Variable conv2d_0.b_0@GRAD.trainer_3 locally, which pointer is 0x200ea650
+I0316 10:53:28.352349    95 scope.cc:51] Create variable fc_1.w_0@GRAD.block0.trainer_2
+I0316 10:53:28.352355    95 executor.cc:293] Create Variable fc_1.w_0@GRAD.block0.trainer_2 locally, which pointer is 0x200dc2b0
+I0316 10:53:28.352365    95 scope.cc:51] Create variable batch_norm_3.b_0@GRAD.trainer_0
+I0316 10:53:28.352371    95 executor.cc:293] Create Variable batch_norm_3.b_0@GRAD.trainer_0 locally, which pointer is 0x200ea8d0
+I0316 10:53:28.352376    95 scope.cc:51] Create variable fetch
+I0316 10:53:28.352385    95 executor.cc:288] Create Variable fetch global, which pointer is 0x200ea9e0
+I0316 10:53:28.352392    95 scope.cc:51] Create variable batch_norm_1.w_2@GRAD.trainer_3
+I0316 10:53:28.352397    95 executor.cc:293] Create Variable batch_norm_1.w_2@GRAD.trainer_3 locally, which pointer is 0x200eaa70
+I0316 10:53:28.352404    95 scope.cc:51] Create variable batch_norm_5.b_0@GRAD.trainer_1
+I0316 10:53:28.352408    95 executor.cc:293] Create Variable batch_norm_5.b_0@GRAD.trainer_1 locally, which pointer is 0x200eab80
+I0316 10:53:28.352417    95 scope.cc:51] Create variable conv2d_7.w_0@GRAD.block2.trainer_0
+I0316 10:53:28.352421    95 executor.cc:293] Create Variable conv2d_7.w_0@GRAD.block2.trainer_0 locally, which pointer is 0x200eac90
+I0316 10:53:28.352429    95 scope.cc:51] Create variable batch_norm_11.b_0@GRAD.trainer_0
+I0316 10:53:28.352433    95 executor.cc:293] Create Variable batch_norm_11.b_0@GRAD.trainer_0 locally, which pointer is 0x200eada0
+I0316 10:53:28.352442    95 scope.cc:51] Create variable batch_norm_5.b_0@GRAD.trainer_3
+I0316 10:53:28.352445    95 executor.cc:293] Create Variable batch_norm_5.b_0@GRAD.trainer_3 locally, which pointer is 0x200eaeb0
+I0316 10:53:28.352457    95 scope.cc:51] Create variable batch_norm_13.b_0@GRAD.trainer_0
+I0316 10:53:28.352461    95 executor.cc:293] Create Variable batch_norm_13.b_0@GRAD.trainer_0 locally, which pointer is 0x200eafc0
+I0316 10:53:28.352469    95 scope.cc:51] Create variable batch_norm_11.b_0@GRAD.trainer_2
+I0316 10:53:28.352473    95 executor.cc:293] Create Variable batch_norm_11.b_0@GRAD.trainer_2 locally, which pointer is 0x200eb0d0
+I0316 10:53:28.352480    95 scope.cc:51] Create variable batch_norm_5.b_0@GRAD.trainer_2
+I0316 10:53:28.352485    95 executor.cc:293] Create Variable batch_norm_5.b_0@GRAD.trainer_2 locally, which pointer is 0x200eb1e0
+I0316 10:53:28.352494    95 scope.cc:51] Create variable batch_norm_13.b_0@GRAD.trainer_2
+I0316 10:53:28.352497    95 executor.cc:293] Create Variable batch_norm_13.b_0@GRAD.trainer_2 locally, which pointer is 0x200eb2f0
+I0316 10:53:28.352506    95 scope.cc:51] Create variable conv2d_12.w_0.block0
+I0316 10:53:28.352511    95 executor.cc:288] Create Variable conv2d_12.w_0.block0 global, which pointer is 0x200eb400
+I0316 10:53:28.352519    95 scope.cc:51] Create variable batch_norm_6.w_0
+I0316 10:53:28.352524    95 executor.cc:288] Create Variable batch_norm_6.w_0 global, which pointer is 0x34042c0
+I0316 10:53:28.352530    95 scope.cc:51] Create variable fc_2.w_0@GRAD.block3
+I0316 10:53:28.352535    95 executor.cc:288] Create Variable fc_2.w_0@GRAD.block3 global, which pointer is 0x200eb680
+I0316 10:53:28.352543    95 scope.cc:51] Create variable batch_norm_13.b_0@GRAD
+I0316 10:53:28.352547    95 executor.cc:288] Create Variable batch_norm_13.b_0@GRAD global, which pointer is 0x200eb790
+I0316 10:53:28.352558    95 scope.cc:51] Create variable batch_norm_10.w_1@GRAD.trainer_0
+I0316 10:53:28.352566    95 executor.cc:293] Create Variable batch_norm_10.w_1@GRAD.trainer_0 locally, which pointer is 0x200eb8a0
+I0316 10:53:28.352571    95 scope.cc:51] Create variable conv2d_4.w_0@GRAD.block3
+I0316 10:53:28.352578    95 executor.cc:288] Create Variable conv2d_4.w_0@GRAD.block3 global, which pointer is 0x200eba70
+I0316 10:53:28.352583    95 scope.cc:51] Create variable conv2d_11.w_0@GRAD.block2
+I0316 10:53:28.352591    95 executor.cc:288] Create Variable conv2d_11.w_0@GRAD.block2 global, which pointer is 0x200ebb80
+I0316 10:53:28.352612    95 scope.cc:51] Create variable batch_norm_10.w_1@GRAD.trainer_1
+I0316 10:53:28.352622    95 executor.cc:293] Create Variable batch_norm_10.w_1@GRAD.trainer_1 locally, which pointer is 0x200ebc90
+I0316 10:53:28.352627    95 scope.cc:51] Create variable conv2d_3.b_0@GRAD
+I0316 10:53:28.352632    95 executor.cc:288] Create Variable conv2d_3.b_0@GRAD global, which pointer is 0x200ebda0
+I0316 10:53:28.352641    95 scope.cc:51] Create variable batch_norm_11.w_2@GRAD.trainer_3
+I0316 10:53:28.352648    95 executor.cc:293] Create Variable batch_norm_11.w_2@GRAD.trainer_3 locally, which pointer is 0x200ebeb0
+I0316 10:53:28.352654    95 scope.cc:51] Create variable moment2_47
+I0316 10:53:28.352659    95 executor.cc:288] Create Variable moment2_47 global, which pointer is 0x200ebfc0
+I0316 10:53:28.352664    95 scope.cc:51] Create variable conv2d_9.w_0@GRAD.block0
+I0316 10:53:28.352669    95 executor.cc:288] Create Variable conv2d_9.w_0@GRAD.block0 global, which pointer is 0x200ec0d0
+I0316 10:53:28.352676    95 scope.cc:51] Create variable batch_norm_2.w_2@GRAD.trainer_3
+I0316 10:53:28.352681    95 executor.cc:293] Create Variable batch_norm_2.w_2@GRAD.trainer_3 locally, which pointer is 0x200ec1e0
+I0316 10:53:28.352685    95 scope.cc:51] Create variable batch_norm_7.w_2@GRAD.trainer_2
+I0316 10:53:28.352692    95 executor.cc:293] Create Variable batch_norm_7.w_2@GRAD.trainer_2 locally, which pointer is 0x200ec2f0
+I0316 10:53:28.352697    95 scope.cc:51] Create variable conv2d_7.w_0@GRAD.block2
+I0316 10:53:28.352701    95 executor.cc:288] Create Variable conv2d_7.w_0@GRAD.block2 global, which pointer is 0x200ec400
+I0316 10:53:28.352708    95 scope.cc:51] Create variable batch_norm_2.w_2@GRAD.trainer_1
+I0316 10:53:28.352712    95 executor.cc:293] Create Variable batch_norm_2.w_2@GRAD.trainer_1 locally, which pointer is 0x200ec510
+I0316 10:53:28.352717    95 scope.cc:51] Create variable conv2d_1.w_0@GRAD.block3.trainer_3
+I0316 10:53:28.352723    95 executor.cc:293] Create Variable conv2d_1.w_0@GRAD.block3.trainer_3 locally, which pointer is 0x200ec620
+I0316 10:53:28.352728    95 scope.cc:51] Create variable conv2d_9.w_0.block0
+I0316 10:53:28.352733    95 executor.cc:288] Create Variable conv2d_9.w_0.block0 global, which pointer is 0x200ec730
+I0316 10:53:28.352741    95 scope.cc:51] Create variable conv2d_3.w_0@GRAD.block2
+I0316 10:53:28.352747    95 executor.cc:288] Create Variable conv2d_3.w_0@GRAD.block2 global, which pointer is 0x200ec840
+I0316 10:53:28.352756    95 scope.cc:51] Create variable beta1_pow_acc_0
+I0316 10:53:28.352761    95 executor.cc:288] Create Variable beta1_pow_acc_0 global, which pointer is 0x200ec950
+I0316 10:53:28.352767    95 scope.cc:51] Create variable conv2d_3.w_0@GRAD.block2.trainer_1
+I0316 10:53:28.352771    95 executor.cc:293] Create Variable conv2d_3.w_0@GRAD.block2.trainer_1 locally, which pointer is 0x200ecb20
+I0316 10:53:28.352777    95 scope.cc:51] Create variable moment1_76
+I0316 10:53:28.352782    95 executor.cc:288] Create Variable moment1_76 global, which pointer is 0x200ecc30
+I0316 10:53:28.352787    95 scope.cc:51] Create variable conv2d_4.w_0@GRAD.block3.trainer_1
+I0316 10:53:28.352792    95 executor.cc:293] Create Variable conv2d_4.w_0@GRAD.block3.trainer_1 locally, which pointer is 0x200ecd40
+I0316 10:53:28.352799    95 scope.cc:51] Create variable batch_norm_3.b_0@GRAD.trainer_2
+I0316 10:53:28.352803    95 executor.cc:293] Create Variable batch_norm_3.b_0@GRAD.trainer_2 locally, which pointer is 0x200ece50
+I0316 10:53:28.352808    95 scope.cc:51] Create variable conv2d_9.b_0@GRAD.trainer_3
+I0316 10:53:28.352818    95 executor.cc:293] Create Variable conv2d_9.b_0@GRAD.trainer_3 locally, which pointer is 0x200ecf60
+I0316 10:53:28.352823    95 scope.cc:51] Create variable conv2d_12.w_0@GRAD.block0.trainer_3
+I0316 10:53:28.352829    95 executor.cc:293] Create Variable conv2d_12.w_0@GRAD.block0.trainer_3 locally, which pointer is 0x200ed070
+I0316 10:53:28.352834    95 scope.cc:51] Create variable moment2_29
+I0316 10:53:28.352838    95 executor.cc:288] Create Variable moment2_29 global, which pointer is 0x200ed180
+I0316 10:53:28.352845    95 scope.cc:51] Create variable conv2d_6.b_0@GRAD.trainer_1
+I0316 10:53:28.352849    95 executor.cc:293] Create Variable conv2d_6.b_0@GRAD.trainer_1 locally, which pointer is 0x200ed290
+I0316 10:53:28.352854    95 scope.cc:51] Create variable fc_1.w_0@GRAD.block0.trainer_0
+I0316 10:53:28.352861    95 executor.cc:293] Create Variable fc_1.w_0@GRAD.block0.trainer_0 locally, which pointer is 0x200ed3a0
+I0316 10:53:28.352866    95 scope.cc:51] Create variable batch_norm_8.b_0@GRAD.trainer_3
+I0316 10:53:28.352870    95 executor.cc:293] Create Variable batch_norm_8.b_0@GRAD.trainer_3 locally, which pointer is 0x200ed4b0
+I0316 10:53:28.352875    95 scope.cc:51] Create variable batch_norm_8.b_0@GRAD.trainer_1
+I0316 10:53:28.352883    95 executor.cc:293] Create Variable batch_norm_8.b_0@GRAD.trainer_1 locally, which pointer is 0x200ed5c0
+I0316 10:53:28.352893    95 scope.cc:51] Create variable moment2_11
+I0316 10:53:28.352898    95 executor.cc:288] Create Variable moment2_11 global, which pointer is 0x200ed6d0
+I0316 10:53:28.352903    95 scope.cc:51] Create variable batch_norm_2.w_2@GRAD
+I0316 10:53:28.352912    95 executor.cc:288] Create Variable batch_norm_2.w_2@GRAD global, which pointer is 0x200ed7e0
+I0316 10:53:28.352919    95 scope.cc:51] Create variable moment2_83
+I0316 10:53:28.352924    95 executor.cc:288] Create Variable moment2_83 global, which pointer is 0x200ed8f0
+I0316 10:53:28.352929    95 scope.cc:51] Create variable batch_norm_8.w_2@GRAD.trainer_1
+I0316 10:53:28.352933    95 executor.cc:293] Create Variable batch_norm_8.w_2@GRAD.trainer_1 locally, which pointer is 0x200eda00
+I0316 10:53:28.352941    95 scope.cc:51] Create variable fc_0.w_0@GRAD.block2
+I0316 10:53:28.352944    95 executor.cc:288] Create Variable fc_0.w_0@GRAD.block2 global, which pointer is 0x200edb10
+I0316 10:53:28.352951    95 scope.cc:51] Create variable fc_0.w_0@GRAD.block2.trainer_0
+I0316 10:53:28.352957    95 executor.cc:293] Create Variable fc_0.w_0@GRAD.block2.trainer_0 locally, which pointer is 0x200edc20
+I0316 10:53:28.352962    95 scope.cc:51] Create variable moment1_11
+I0316 10:53:28.352969    95 executor.cc:288] Create Variable moment1_11 global, which pointer is 0x200edd30
+I0316 10:53:28.352974    95 scope.cc:51] Create variable moment1_69
+I0316 10:53:28.352978    95 executor.cc:288] Create Variable moment1_69 global, which pointer is 0x200ede40
+I0316 10:53:28.352984    95 scope.cc:51] Create variable conv2d_0.b_0@GRAD.trainer_1
+I0316 10:53:28.352993    95 executor.cc:293] Create Variable conv2d_0.b_0@GRAD.trainer_1 locally, which pointer is 0x200edf50
+I0316 10:53:28.353000    95 scope.cc:51] Create variable batch_norm_6.w_0@GRAD.trainer_1
+I0316 10:53:28.353004    95 executor.cc:293] Create Variable batch_norm_6.w_0@GRAD.trainer_1 locally, which pointer is 0x200ee060
+I0316 10:53:28.353009    95 scope.cc:51] Create variable batch_norm_11.w_2@GRAD.trainer_0
+I0316 10:53:28.353016    95 executor.cc:293] Create Variable batch_norm_11.w_2@GRAD.trainer_0 locally, which pointer is 0x200ee170
+I0316 10:53:28.353020    95 scope.cc:51] Create variable conv2d_2.w_0@GRAD.block1.trainer_2
+I0316 10:53:28.353025    95 executor.cc:293] Create Variable conv2d_2.w_0@GRAD.block1.trainer_2 locally, which pointer is 0x200ee280
+I0316 10:53:28.353030    95 scope.cc:51] Create variable batch_norm_8.b_0@GRAD.trainer_0
+I0316 10:53:28.353036    95 executor.cc:293] Create Variable batch_norm_8.b_0@GRAD.trainer_0 locally, which pointer is 0x200ee390
+I0316 10:53:28.353041    95 scope.cc:51] Create variable conv2d_2.w_0@GRAD.block1
+I0316 10:53:28.353046    95 executor.cc:288] Create Variable conv2d_2.w_0@GRAD.block1 global, which pointer is 0x200ee4a0
+I0316 10:53:28.353054    95 scope.cc:51] Create variable batch_norm_7.w_2@GRAD.trainer_3
+I0316 10:53:28.353057    95 executor.cc:293] Create Variable batch_norm_7.w_2@GRAD.trainer_3 locally, which pointer is 0x200ee5b0
+I0316 10:53:28.353068    95 scope.cc:51] Create variable fc_0.w_0@GRAD.block2.trainer_3
+I0316 10:53:28.353075    95 executor.cc:293] Create Variable fc_0.w_0@GRAD.block2.trainer_3 locally, which pointer is 0x200ee6c0
+I0316 10:53:28.353080    95 scope.cc:51] Create variable conv2d_11.w_0.block2
+I0316 10:53:28.353085    95 executor.cc:288] Create Variable conv2d_11.w_0.block2 global, which pointer is 0x200eb9b0
+I0316 10:53:28.353092    95 scope.cc:51] Create variable moment1_65
+I0316 10:53:28.353097    95 executor.cc:288] Create Variable moment1_65 global, which pointer is 0x200eba20
+I0316 10:53:28.353103    95 scope.cc:51] Create variable conv2d_5.w_0@GRAD.block1.trainer_1
+I0316 10:53:28.353108    95 executor.cc:293] Create Variable conv2d_5.w_0@GRAD.block1.trainer_1 locally, which pointer is 0x200eeb80
+I0316 10:53:28.353116    95 scope.cc:51] Create variable conv2d_3.b_0@GRAD.trainer_1
+I0316 10:53:28.353119    95 executor.cc:293] Create Variable conv2d_3.b_0@GRAD.trainer_1 locally, which pointer is 0x200eec90
+I0316 10:53:28.353124    95 scope.cc:51] Create variable conv2d_9.w_0@GRAD.block0.trainer_2
+I0316 10:53:28.353130    95 executor.cc:293] Create Variable conv2d_9.w_0@GRAD.block0.trainer_2 locally, which pointer is 0x200eeda0
+I0316 10:53:28.353135    95 scope.cc:51] Create variable batch_norm_1.w_2@GRAD.trainer_0
+I0316 10:53:28.353139    95 executor.cc:293] Create Variable batch_norm_1.w_2@GRAD.trainer_0 locally, which pointer is 0x200eeeb0
+I0316 10:53:28.353149    95 scope.cc:51] Create variable feed
+I0316 10:53:28.353154    95 executor.cc:288] Create Variable feed global, which pointer is 0x200eefc0
+I0316 10:53:28.353162    95 scope.cc:51] Create variable conv2d_3.w_0@GRAD.block2.trainer_3
+I0316 10:53:28.353165    95 executor.cc:293] Create Variable conv2d_3.w_0@GRAD.block2.trainer_3 locally, which pointer is 0x200ef050
+I0316 10:53:28.353173    95 scope.cc:51] Create variable conv2d_8.b_0@GRAD.trainer_3
+I0316 10:53:28.353178    95 executor.cc:293] Create Variable conv2d_8.b_0@GRAD.trainer_3 locally, which pointer is 0x200ef160
+I0316 10:53:28.353181    95 scope.cc:51] Create variable batch_norm_8.b_0@GRAD
+I0316 10:53:28.353188    95 executor.cc:288] Create Variable batch_norm_8.b_0@GRAD global, which pointer is 0x200ef270
+I0316 10:53:28.353193    95 scope.cc:51] Create variable batch_norm_1.w_2@GRAD.trainer_1
+I0316 10:53:28.353199    95 executor.cc:293] Create Variable batch_norm_1.w_2@GRAD.trainer_1 locally, which pointer is 0x200ef380
+I0316 10:53:28.353204    95 scope.cc:51] Create variable conv2d_5.w_0@GRAD.block1.trainer_0
+I0316 10:53:28.353209    95 executor.cc:293] Create Variable conv2d_5.w_0@GRAD.block1.trainer_0 locally, which pointer is 0x200ef490
+I0316 10:53:28.353215    95 scope.cc:51] Create variable fc_1.w_0@GRAD.block0.trainer_1
+I0316 10:53:28.353219    95 executor.cc:293] Create Variable fc_1.w_0@GRAD.block0.trainer_1 locally, which pointer is 0x200ef5a0
+I0316 10:53:28.353226    95 scope.cc:51] Create variable moment2_65
+I0316 10:53:28.353230    95 executor.cc:288] Create Variable moment2_65 global, which pointer is 0x200ef6b0
+I0316 10:53:28.353235    95 scope.cc:51] Create variable conv2d_2.w_0@GRAD.block1.trainer_1
+I0316 10:53:28.353241    95 executor.cc:293] Create Variable conv2d_2.w_0@GRAD.block1.trainer_1 locally, which pointer is 0x200ef7c0
+I0316 10:53:28.353250    95 scope.cc:51] Create variable conv2d_1.w_0@GRAD.block3.trainer_1
+I0316 10:53:28.353255    95 executor.cc:293] Create Variable conv2d_1.w_0@GRAD.block3.trainer_1 locally, which pointer is 0x200ef8d0
+I0316 10:53:28.353260    95 scope.cc:51] Create variable batch_norm_1.w_2@GRAD.trainer_2
+I0316 10:53:28.353266    95 executor.cc:293] Create Variable batch_norm_1.w_2@GRAD.trainer_2 locally, which pointer is 0x200ef9e0
+I0316 10:53:28.353271    95 scope.cc:51] Create variable fc_0.w_0@GRAD.block2.trainer_2
+I0316 10:53:28.353278    95 executor.cc:293] Create Variable fc_0.w_0@GRAD.block2.trainer_2 locally, which pointer is 0x200efaf0
+I0316 10:53:28.353284    95 scope.cc:51] Create variable batch_norm_11.w_2@GRAD
+I0316 10:53:28.353288    95 executor.cc:288] Create Variable batch_norm_11.w_2@GRAD global, which pointer is 0x200efc00
+I0316 10:53:28.353296    95 scope.cc:51] Create variable conv2d_3.w_0@GRAD.block2.trainer_2
+I0316 10:53:28.353299    95 executor.cc:293] Create Variable conv2d_3.w_0@GRAD.block2.trainer_2 locally, which pointer is 0x200efd10
+I0316 10:53:28.353304    95 scope.cc:51] Create variable conv2d_9.w_0@GRAD.block0.trainer_3
+I0316 10:53:28.353310    95 executor.cc:293] Create Variable conv2d_9.w_0@GRAD.block0.trainer_3 locally, which pointer is 0x200efe20
+I0316 10:53:28.353315    95 scope.cc:51] Create variable conv2d_7.w_0@GRAD.block2.trainer_3
+I0316 10:53:28.353322    95 executor.cc:293] Create Variable conv2d_7.w_0@GRAD.block2.trainer_3 locally, which pointer is 0x200eff30
+I0316 10:53:28.353329    95 scope.cc:51] Create variable moment2_76
+I0316 10:53:28.353334    95 executor.cc:288] Create Variable moment2_76 global, which pointer is 0x200f0040
+I0316 10:53:28.353341    95 scope.cc:51] Create variable conv2d_10.w_0@GRAD.block3.trainer_0
+I0316 10:53:28.353345    95 executor.cc:293] Create Variable conv2d_10.w_0@GRAD.block3.trainer_0 locally, which pointer is 0x200f0150
+I0316 10:53:28.353351    95 scope.cc:51] Create variable conv2d_7.w_0.block2
+I0316 10:53:28.353355    95 executor.cc:288] Create Variable conv2d_7.w_0.block2 global, which pointer is 0x200f0260
+I0316 10:53:28.353363    95 scope.cc:51] Create variable conv2d_11.w_0@GRAD.block2.trainer_1
+I0316 10:53:28.353366    95 executor.cc:293] Create Variable conv2d_11.w_0@GRAD.block2.trainer_1 locally, which pointer is 0x200f0370
+I0316 10:53:28.353371    95 scope.cc:51] Create variable conv2d_4.w_0@GRAD.block3.trainer_3
+I0316 10:53:28.353375    95 executor.cc:293] Create Variable conv2d_4.w_0@GRAD.block3.trainer_3 locally, which pointer is 0x200f0480
+I0316 10:53:28.353382    95 scope.cc:51] Create variable conv2d_4.w_0.block3
+I0316 10:53:28.353387    95 executor.cc:288] Create Variable conv2d_4.w_0.block3 global, which pointer is 0x200f0590
+I0316 10:53:28.353392    95 scope.cc:51] Create variable fc_1.w_0@GRAD.block0.trainer_3
+I0316 10:53:28.353399    95 executor.cc:293] Create Variable fc_1.w_0@GRAD.block0.trainer_3 locally, which pointer is 0x200f06a0
+I0316 10:53:28.353404    95 scope.cc:51] Create variable fc_0.w_0.block2
+I0316 10:53:28.353408    95 executor.cc:288] Create Variable fc_0.w_0.block2 global, which pointer is 0x200f07b0
+I0316 10:53:28.353418    95 scope.cc:51] Create variable conv2d_4.w_0@GRAD.block3.trainer_0
+I0316 10:53:28.353425    95 executor.cc:293] Create Variable conv2d_4.w_0@GRAD.block3.trainer_0 locally, which pointer is 0x200f08c0
+I0316 10:53:28.353430    95 scope.cc:51] Create variable batch_norm_11.b_0@GRAD.trainer_1
+I0316 10:53:28.353437    95 executor.cc:293] Create Variable batch_norm_11.b_0@GRAD.trainer_1 locally, which pointer is 0x200f09d0
+I0316 10:53:28.353441    95 scope.cc:51] Create variable moment1_47
+I0316 10:53:28.353446    95 executor.cc:288] Create Variable moment1_47 global, which pointer is 0x200f0ae0
+I0316 10:53:28.353452    95 scope.cc:51] Create variable moment1_78
+I0316 10:53:28.353457    95 executor.cc:288] Create Variable moment1_78 global, which pointer is 0x200f0bf0
+I0316 10:53:28.353462    95 scope.cc:51] Create variable batch_norm_6.w_0@GRAD.trainer_3
+I0316 10:53:28.353467    95 executor.cc:293] Create Variable batch_norm_6.w_0@GRAD.trainer_3 locally, which pointer is 0x200f0d00
+I0316 10:53:28.353474    95 scope.cc:51] Create variable conv2d_8.b_0@GRAD
+I0316 10:53:28.353478    95 executor.cc:288] Create Variable conv2d_8.b_0@GRAD global, which pointer is 0x200f0e10
+I0316 10:53:28.353483    95 scope.cc:51] Create variable batch_norm_11.b_0@GRAD.trainer_3
+I0316 10:53:28.353489    95 executor.cc:293] Create Variable batch_norm_11.b_0@GRAD.trainer_3 locally, which pointer is 0x200f0f20
+I0316 10:53:28.353494    95 scope.cc:51] Create variable fc_2.w_0.block3
+I0316 10:53:28.353502    95 executor.cc:288] Create Variable fc_2.w_0.block3 global, which pointer is 0x200f1030
+I0316 10:53:28.353507    95 scope.cc:51] Create variable batch_norm_13.b_0@GRAD.trainer_3
+I0316 10:53:28.353512    95 executor.cc:293] Create Variable batch_norm_13.b_0@GRAD.trainer_3 locally, which pointer is 0x200f1140
+I0316 10:53:28.353520    95 scope.cc:51] Create variable moment2_13
+I0316 10:53:28.353525    95 executor.cc:288] Create Variable moment2_13 global, which pointer is 0x200f1250
+I0316 10:53:28.353533    95 scope.cc:51] Create variable moment1_12
+I0316 10:53:28.353536    95 executor.cc:288] Create Variable moment1_12 global, which pointer is 0x200eca60
+I0316 10:53:28.353541    95 scope.cc:51] Create variable conv2d_9.b_0@GRAD
+I0316 10:53:28.353546    95 executor.cc:288] Create Variable conv2d_9.b_0@GRAD global, which pointer is 0x200ecad0
+I0316 10:53:28.353552    95 scope.cc:51] Create variable conv2d_8.w_0@GRAD.block0.trainer_0
+I0316 10:53:28.353557    95 executor.cc:293] Create Variable conv2d_8.w_0@GRAD.block0.trainer_0 locally, which pointer is 0x200f1710
+I0316 10:53:28.353562    95 scope.cc:51] Create variable batch_norm_8.w_2@GRAD.trainer_3
+I0316 10:53:28.353572    95 executor.cc:293] Create Variable batch_norm_8.w_2@GRAD.trainer_3 locally, which pointer is 0x200f1820
+I0316 10:53:28.353577    95 scope.cc:51] Create variable conv2d_6.w_0@GRAD.block2.trainer_0
+I0316 10:53:28.353583    95 executor.cc:293] Create Variable conv2d_6.w_0@GRAD.block2.trainer_0 locally, which pointer is 0x200f1930
+I0316 10:53:28.353588    95 scope.cc:51] Create variable conv2d_7.w_0@GRAD.block2.trainer_2
+I0316 10:53:28.353593    95 executor.cc:293] Create Variable conv2d_7.w_0@GRAD.block2.trainer_2 locally, which pointer is 0x200f1a40
+I0316 10:53:28.353605    95 scope.cc:51] Create variable batch_norm_2.w_1@GRAD.trainer_1
+I0316 10:53:28.353610    95 executor.cc:293] Create Variable batch_norm_2.w_1@GRAD.trainer_1 locally, which pointer is 0x200f1b50
+I0316 10:53:28.353615    95 scope.cc:51] Create variable conv2d_3.w_0@GRAD.block2.trainer_0
+I0316 10:53:28.353619    95 executor.cc:293] Create Variable conv2d_3.w_0@GRAD.block2.trainer_0 locally, which pointer is 0x200f1c60
+I0316 10:53:28.353627    95 scope.cc:51] Create variable batch_norm_13.b_0@GRAD.trainer_1
+I0316 10:53:28.353631    95 executor.cc:293] Create Variable batch_norm_13.b_0@GRAD.trainer_1 locally, which pointer is 0x200f1d70
+I0316 10:53:28.353636    95 scope.cc:51] Create variable batch_norm_7.w_2@GRAD.trainer_1
+I0316 10:53:28.353643    95 executor.cc:293] Create Variable batch_norm_7.w_2@GRAD.trainer_1 locally, which pointer is 0x200f1e80
+I0316 10:53:28.353648    95 scope.cc:51] Create variable conv2d_5.w_0.block1
+I0316 10:53:28.353653    95 executor.cc:288] Create Variable conv2d_5.w_0.block1 global, which pointer is 0x200f1f90
+I0316 10:53:28.353659    95 scope.cc:51] Create variable batch_norm_3.b_0@GRAD.trainer_3
+I0316 10:53:28.353665    95 executor.cc:293] Create Variable batch_norm_3.b_0@GRAD.trainer_3 locally, which pointer is 0x200f20a0
+I0316 10:53:28.353670    95 scope.cc:51] Create variable conv2d_11.w_0@GRAD.block2.trainer_2
+I0316 10:53:28.353675    95 executor.cc:293] Create Variable conv2d_11.w_0@GRAD.block2.trainer_2 locally, which pointer is 0x200f21b0
+I0316 10:53:28.353679    95 scope.cc:51] Create variable conv2d_10.w_0@GRAD.block3
+I0316 10:53:28.353687    95 executor.cc:288] Create Variable conv2d_10.w_0@GRAD.block3 global, which pointer is 0x200f22c0
+I0316 10:53:28.353690    95 scope.cc:51] Create variable batch_norm_10.w_1@GRAD.trainer_2
+I0316 10:53:28.353695    95 executor.cc:293] Create Variable batch_norm_10.w_1@GRAD.trainer_2 locally, which pointer is 0x200f23d0
+I0316 10:53:28.353700    95 scope.cc:51] Create variable conv2d_1.w_0.block3
+I0316 10:53:28.353706    95 executor.cc:288] Create Variable conv2d_1.w_0.block3 global, which pointer is 0x200f24e0
+I0316 10:53:28.353711    95 scope.cc:51] Create variable conv2d_0.b_0@GRAD
+I0316 10:53:28.353715    95 executor.cc:288] Create Variable conv2d_0.b_0@GRAD global, which pointer is 0x200f25f0
+I0316 10:53:28.353723    95 scope.cc:51] Create variable batch_norm_11.b_0@GRAD
+I0316 10:53:28.353726    95 executor.cc:288] Create Variable batch_norm_11.b_0@GRAD global, which pointer is 0x200f2700
+I0316 10:53:28.353732    95 scope.cc:51] Create variable conv2d_11.w_0@GRAD.block2.trainer_0
+I0316 10:53:28.353741    95 executor.cc:293] Create Variable conv2d_11.w_0@GRAD.block2.trainer_0 locally, which pointer is 0x200f2810
+I0316 10:53:28.353746    95 scope.cc:51] Create variable conv2d_12.w_0@GRAD.block0.trainer_1
+I0316 10:53:28.353752    95 executor.cc:293] Create Variable conv2d_12.w_0@GRAD.block0.trainer_1 locally, which pointer is 0x200f2920
+I0316 10:53:28.353757    95 scope.cc:51] Create variable fc_2.w_0@GRAD.block3.trainer_3
+I0316 10:53:28.353762    95 executor.cc:293] Create Variable fc_2.w_0@GRAD.block3.trainer_3 locally, which pointer is 0x200f2a30
+I0316 10:53:28.353770    95 scope.cc:51] Create variable conv2d_3.b_0@GRAD.trainer_0
+I0316 10:53:28.353773    95 executor.cc:293] Create Variable conv2d_3.b_0@GRAD.trainer_0 locally, which pointer is 0x200f2b40
+I0316 10:53:28.353778    95 scope.cc:51] Create variable batch_norm_5.b_0
+I0316 10:53:28.353785    95 executor.cc:288] Create Variable batch_norm_5.b_0 global, which pointer is 0x200f2c50
+I0316 10:53:28.353790    95 scope.cc:51] Create variable moment2_67
+I0316 10:53:28.353797    95 executor.cc:288] Create Variable moment2_67 global, which pointer is 0x200f2d60
+I0316 10:53:28.353802    95 scope.cc:51] Create variable batch_norm_2.w_1@GRAD
+I0316 10:53:28.353806    95 executor.cc:288] Create Variable batch_norm_2.w_1@GRAD global, which pointer is 0x200f2e70
+I0316 10:53:28.353813    95 scope.cc:51] Create variable batch_norm_8.w_2
+I0316 10:53:28.353817    95 executor.cc:288] Create Variable batch_norm_8.w_2 global, which pointer is 0x200f2f80
+I0316 10:53:28.353823    95 scope.cc:51] Create variable conv2d_6.b_0@GRAD
+I0316 10:53:28.353829    95 executor.cc:288] Create Variable conv2d_6.b_0@GRAD global, which pointer is 0x200f3090
+I0316 10:53:28.353834    95 scope.cc:51] Create variable conv2d_3.b_0@GRAD.trainer_2
+I0316 10:53:28.353838    95 executor.cc:293] Create Variable conv2d_3.b_0@GRAD.trainer_2 locally, which pointer is 0x200f31a0
+I0316 10:53:28.353844    95 scope.cc:51] Create variable batch_norm_13.b_0
+I0316 10:53:28.353850    95 executor.cc:288] Create Variable batch_norm_13.b_0 global, which pointer is 0x200f32b0
+I0316 10:53:28.353855    95 scope.cc:51] Create variable conv2d_6.w_0@GRAD.block2.trainer_2
+I0316 10:53:28.353860    95 executor.cc:293] Create Variable conv2d_6.w_0@GRAD.block2.trainer_2 locally, which pointer is 0x200f33c0
+I0316 10:53:28.353865    95 scope.cc:51] Create variable batch_norm_8.w_2@GRAD.trainer_0
+I0316 10:53:28.353871    95 executor.cc:293] Create Variable batch_norm_8.w_2@GRAD.trainer_0 locally, which pointer is 0x200f34d0
+I0316 10:53:28.353876    95 scope.cc:51] Create variable fc_1.w_0.block0
+I0316 10:53:28.353880    95 executor.cc:288] Create Variable fc_1.w_0.block0 global, which pointer is 0x200f35e0
+I0316 10:53:28.353888    95 scope.cc:51] Create variable conv2d_1.w_0@GRAD.block3.trainer_2
+I0316 10:53:28.353893    95 executor.cc:293] Create Variable conv2d_1.w_0@GRAD.block3.trainer_2 locally, which pointer is 0x200f36f0
+I0316 10:53:28.353896    95 scope.cc:51] Create variable conv2d_12.w_0@GRAD.block0
+I0316 10:53:28.353905    95 executor.cc:288] Create Variable conv2d_12.w_0@GRAD.block0 global, which pointer is 0x200f3800
+I0316 10:53:28.353910    95 scope.cc:51] Create variable batch_norm_2.w_2
+I0316 10:53:28.353917    95 executor.cc:288] Create Variable batch_norm_2.w_2 global, which pointer is 0x200f3910
+I0316 10:53:28.353922    95 scope.cc:51] Create variable conv2d_1.w_0@GRAD.block3.trainer_0
+I0316 10:53:28.353927    95 executor.cc:293] Create Variable conv2d_1.w_0@GRAD.block3.trainer_0 locally, which pointer is 0x200f3a20
+I0316 10:53:28.353932    95 scope.cc:51] Create variable batch_norm_8.b_0
+I0316 10:53:28.353938    95 executor.cc:288] Create Variable batch_norm_8.b_0 global, which pointer is 0x200f3b30
+I0316 10:53:28.353943    95 scope.cc:51] Create variable moment1_83
+I0316 10:53:28.353948    95 executor.cc:288] Create Variable moment1_83 global, which pointer is 0x200f3c40
+I0316 10:53:28.353953    95 scope.cc:51] Create variable batch_norm_8.w_2@GRAD
+I0316 10:53:28.353960    95 executor.cc:288] Create Variable batch_norm_8.w_2@GRAD global, which pointer is 0x200f3d50
+I0316 10:53:28.353965    95 scope.cc:51] Create variable fc_2.w_0@GRAD.block3.trainer_1
+I0316 10:53:28.353968    95 executor.cc:293] Create Variable fc_2.w_0@GRAD.block3.trainer_1 locally, which pointer is 0x200f3e60
+I0316 10:53:28.353973    95 scope.cc:51] Create variable batch_norm_1.w_2@GRAD
+I0316 10:53:28.353979    95 executor.cc:288] Create Variable batch_norm_1.w_2@GRAD global, which pointer is 0x200f3f70
+I0316 10:53:28.353984    95 scope.cc:51] Create variable conv2d_9.w_0@GRAD.block0.trainer_0
+I0316 10:53:28.353991    95 executor.cc:293] Create Variable conv2d_9.w_0@GRAD.block0.trainer_0 locally, which pointer is 0x200f4080
+I0316 10:53:28.353996    95 scope.cc:51] Create variable beta2_pow_acc_0
+I0316 10:53:28.354002    95 executor.cc:288] Create Variable beta2_pow_acc_0 global, which pointer is 0x200f4190
+I0316 10:53:28.354007    95 scope.cc:51] Create variable conv2d_9.b_0@GRAD.trainer_0
+I0316 10:53:28.354013    95 executor.cc:293] Create Variable conv2d_9.b_0@GRAD.trainer_0 locally, which pointer is 0x200f42a0
+I0316 10:53:28.354018    95 scope.cc:51] Create variable batch_norm_8.w_2@GRAD.trainer_2
+I0316 10:53:28.354022    95 executor.cc:293] Create Variable batch_norm_8.w_2@GRAD.trainer_2 locally, which pointer is 0x200f43b0
+I0316 10:53:28.354029    95 scope.cc:51] Create variable conv2d_8.b_0
+I0316 10:53:28.354033    95 executor.cc:288] Create Variable conv2d_8.b_0 global, which pointer is 0x200f44c0
+I0316 10:53:28.354045    95 scope.cc:51] Create variable batch_norm_7.w_2@GRAD.trainer_0
+I0316 10:53:28.354053    95 executor.cc:293] Create Variable batch_norm_7.w_2@GRAD.trainer_0 locally, which pointer is 0x200f45d0
+I0316 10:53:28.354058    95 scope.cc:51] Create variable conv2d_8.w_0@GRAD.block0.trainer_2
+I0316 10:53:28.354064    95 executor.cc:293] Create Variable conv2d_8.w_0@GRAD.block0.trainer_2 locally, which pointer is 0x200ee7d0
+I0316 10:53:28.354069    95 scope.cc:51] Create variable conv2d_11.w_0@GRAD.block2.trainer_3
+I0316 10:53:28.354076    95 executor.cc:293] Create Variable conv2d_11.w_0@GRAD.block2.trainer_3 locally, which pointer is 0x200ee8e0
+I0316 10:53:28.354081    95 scope.cc:51] Create variable conv2d_9.b_0@GRAD.trainer_2
+I0316 10:53:28.354089    95 executor.cc:293] Create Variable conv2d_9.b_0@GRAD.trainer_2 locally, which pointer is 0x200ee9f0
+I0316 10:53:28.354092    95 scope.cc:51] Create variable conv2d_6.w_0@GRAD.block2.trainer_3
+I0316 10:53:28.354097    95 executor.cc:293] Create Variable conv2d_6.w_0@GRAD.block2.trainer_3 locally, which pointer is 0x200f4d50
+I0316 10:53:28.354104    95 scope.cc:51] Create variable conv2d_10.w_0@GRAD.block3.trainer_2
+I0316 10:53:28.354109    95 executor.cc:293] Create Variable conv2d_10.w_0@GRAD.block3.trainer_2 locally, which pointer is 0x200f4e60
+I0316 10:53:28.354115    95 scope.cc:51] Create variable conv2d_0.b_0@GRAD.trainer_0
+I0316 10:53:28.354120    95 executor.cc:293] Create Variable conv2d_0.b_0@GRAD.trainer_0 locally, which pointer is 0x200f4f70
+I0316 10:53:28.354125    95 scope.cc:51] Create variable batch_norm_10.w_1@GRAD.trainer_3
+I0316 10:53:28.354131    95 executor.cc:293] Create Variable batch_norm_10.w_1@GRAD.trainer_3 locally, which pointer is 0x200f5080
+I0316 10:53:28.354136    95 scope.cc:51] Create variable batch_norm_2.w_2@GRAD.trainer_0
+I0316 10:53:28.354141    95 executor.cc:293] Create Variable batch_norm_2.w_2@GRAD.trainer_0 locally, which pointer is 0x200f5190
+I0316 10:53:28.354147    95 scope.cc:51] Create variable batch_norm_6.w_0@GRAD.trainer_2
+I0316 10:53:28.354151    95 executor.cc:293] Create Variable batch_norm_6.w_0@GRAD.trainer_2 locally, which pointer is 0x200f52a0
+I0316 10:53:28.354157    95 scope.cc:51] Create variable conv2d_10.w_0@GRAD.block3.trainer_3
+I0316 10:53:28.354163    95 executor.cc:293] Create Variable conv2d_10.w_0@GRAD.block3.trainer_3 locally, which pointer is 0x200f53b0
+I0316 10:53:28.354168    95 scope.cc:51] Create variable moment1_13
+I0316 10:53:28.354173    95 executor.cc:288] Create Variable moment1_13 global, which pointer is 0x200f54c0
+I0316 10:53:28.354180    95 scope.cc:51] Create variable batch_norm_11.b_0
+I0316 10:53:28.354184    95 executor.cc:288] Create Variable batch_norm_11.b_0 global, which pointer is 0x200f55d0
+I0316 10:53:28.354189    95 scope.cc:51] Create variable conv2d_3.b_0
+I0316 10:53:28.354194    95 executor.cc:288] Create Variable conv2d_3.b_0 global, which pointer is 0x200f56e0
+I0316 10:53:28.354202    95 scope.cc:51] Create variable moment2_78
+I0316 10:53:28.354208    95 executor.cc:288] Create Variable moment2_78 global, which pointer is 0x200f57f0
+I0316 10:53:28.354215    95 scope.cc:51] Create variable conv2d_12.w_0@GRAD.block0.trainer_0
+I0316 10:53:28.354219    95 executor.cc:293] Create Variable conv2d_12.w_0@GRAD.block0.trainer_0 locally, which pointer is 0x200f5900
+I0316 10:53:28.354226    95 scope.cc:51] Create variable conv2d_1.w_0@GRAD.block3
+I0316 10:53:28.354230    95 executor.cc:288] Create Variable conv2d_1.w_0@GRAD.block3 global, which pointer is 0x200f5a10
+I0316 10:53:28.354235    95 scope.cc:51] Create variable conv2d_3.b_0@GRAD.trainer_3
+I0316 10:53:28.354241    95 executor.cc:293] Create Variable conv2d_3.b_0@GRAD.trainer_3 locally, which pointer is 0x200f5b20
+I0316 10:53:28.354246    95 scope.cc:51] Create variable conv2d_2.w_0@GRAD.block1.trainer_0
+I0316 10:53:28.354252    95 executor.cc:293] Create Variable conv2d_2.w_0@GRAD.block1.trainer_0 locally, which pointer is 0x200f5c30
+I0316 10:53:28.354257    95 scope.cc:51] Create variable conv2d_8.b_0@GRAD.trainer_2
+I0316 10:53:28.354262    95 executor.cc:293] Create Variable conv2d_8.b_0@GRAD.trainer_2 locally, which pointer is 0x200f5d40
+I0316 10:53:28.354267    95 scope.cc:51] Create variable moment2_69
+I0316 10:53:28.354274    95 executor.cc:288] Create Variable moment2_69 global, which pointer is 0x200f5e50
+I0316 10:53:28.354279    95 scope.cc:51] Create variable batch_norm_3.b_0@GRAD.trainer_1
+I0316 10:53:28.354285    95 executor.cc:293] Create Variable batch_norm_3.b_0@GRAD.trainer_1 locally, which pointer is 0x200f5f60
+I0316 10:53:28.354290    95 scope.cc:51] Create variable conv2d_6.w_0@GRAD.block2
+I0316 10:53:28.354295    95 executor.cc:288] Create Variable conv2d_6.w_0@GRAD.block2 global, which pointer is 0x200f6070
+I0316 10:53:28.354302    95 scope.cc:51] Create variable conv2d_3.w_0.block2
+I0316 10:53:28.354306    95 executor.cc:288] Create Variable conv2d_3.w_0.block2 global, which pointer is 0x200f6180
+I0316 10:53:28.354313    95 scope.cc:51] Create variable conv2d_9.b_0
+I0316 10:53:28.354317    95 executor.cc:288] Create Variable conv2d_9.b_0 global, which pointer is 0x200f6290
+I0316 10:53:28.354322    95 scope.cc:51] Create variable batch_norm_2.w_1@GRAD.trainer_3
+I0316 10:53:28.354327    95 executor.cc:293] Create Variable batch_norm_2.w_1@GRAD.trainer_3 locally, which pointer is 0x200f63a0
+I0316 10:53:28.354334    95 scope.cc:51] Create variable conv2d_6.w_0@GRAD.block2.trainer_1
+I0316 10:53:28.354338    95 executor.cc:293] Create Variable conv2d_6.w_0@GRAD.block2.trainer_1 locally, which pointer is 0x200f64b0
+I0316 10:53:28.354343    95 scope.cc:51] Create variable conv2d_0.b_0@GRAD.trainer_2
+I0316 10:53:28.354347    95 executor.cc:293] Create Variable conv2d_0.b_0@GRAD.trainer_2 locally, which pointer is 0x200f65c0
+I0316 10:53:28.354354    95 scope.cc:51] Create variable conv2d_5.w_0@GRAD.block1.trainer_3
+I0316 10:53:28.354358    95 executor.cc:293] Create Variable conv2d_5.w_0@GRAD.block1.trainer_3 locally, which pointer is 0x200f66d0
+I0316 10:53:28.354367    95 scope.cc:51] Create variable fc_0.w_0@GRAD.block2.trainer_1
+I0316 10:53:28.354373    95 executor.cc:293] Create Variable fc_0.w_0@GRAD.block2.trainer_1 locally, which pointer is 0x200f67e0
+I0316 10:53:28.354380    95 scope.cc:51] Create variable batch_norm_7.w_2
+I0316 10:53:28.354385    95 executor.cc:288] Create Variable batch_norm_7.w_2 global, which pointer is 0x200f68f0
+I0316 10:53:28.354391    95 scope.cc:51] Create variable batch_norm_3.b_0@GRAD
+I0316 10:53:28.354396    95 executor.cc:288] Create Variable batch_norm_3.b_0@GRAD global, which pointer is 0x200f6a00
+I0316 10:53:28.354401    95 scope.cc:51] Create variable conv2d_4.w_0@GRAD.block3.trainer_2
+I0316 10:53:28.354408    95 executor.cc:293] Create Variable conv2d_4.w_0@GRAD.block3.trainer_2 locally, which pointer is 0x200f6b10
+I0316 10:53:28.354413    95 scope.cc:51] Create variable batch_norm_6.w_0@GRAD.trainer_0
+I0316 10:53:28.354416    95 executor.cc:293] Create Variable batch_norm_6.w_0@GRAD.trainer_0 locally, which pointer is 0x200f6c20
+I0316 10:53:28.354421    95 scope.cc:51] Create variable conv2d_6.w_0.block2
+I0316 10:53:28.354429    95 executor.cc:288] Create Variable conv2d_6.w_0.block2 global, which pointer is 0x200f6d30
+I0316 10:53:28.354432    95 scope.cc:51] Create variable conv2d_6.b_0
+I0316 10:53:28.354437    95 executor.cc:288] Create Variable conv2d_6.b_0 global, which pointer is 0x200f6e40
+I0316 10:53:28.354444    95 scope.cc:51] Create variable fc_1.w_0@GRAD.block0
+I0316 10:53:28.354449    95 executor.cc:288] Create Variable fc_1.w_0@GRAD.block0 global, which pointer is 0x200f6f50
+I0316 10:53:28.354454    95 scope.cc:51] Create variable learning_rate_0
+I0316 10:53:28.354459    95 executor.cc:288] Create Variable learning_rate_0 global, which pointer is 0x200f7060
+I0316 10:53:28.354465    95 scope.cc:51] Create variable batch_norm_11.w_2
+I0316 10:53:28.354470    95 executor.cc:288] Create Variable batch_norm_11.w_2 global, which pointer is 0x200f7170
+I0316 10:53:28.354475    95 scope.cc:51] Create variable conv2d_2.w_0.block1
+I0316 10:53:28.354478    95 executor.cc:288] Create Variable conv2d_2.w_0.block1 global, which pointer is 0x200f7280
+I0316 10:53:28.354485    95 scope.cc:51] Create variable conv2d_5.w_0@GRAD.block1
+I0316 10:53:28.354490    95 executor.cc:288] Create Variable conv2d_5.w_0@GRAD.block1 global, which pointer is 0x200f7390
+I0316 10:53:28.354496    95 scope.cc:51] Create variable conv2d_9.b_0@GRAD.trainer_1
+I0316 10:53:28.354501    95 executor.cc:293] Create Variable conv2d_9.b_0@GRAD.trainer_1 locally, which pointer is 0x200f74a0
+I0316 10:53:28.354506    95 scope.cc:51] Create variable fc_2.w_0@GRAD.block3.trainer_0
+I0316 10:53:28.354511    95 executor.cc:293] Create Variable fc_2.w_0@GRAD.block3.trainer_0 locally, which pointer is 0x200f75b0
+I0316 10:53:28.354517    95 scope.cc:51] Create variable moment1_29
+I0316 10:53:28.354521    95 executor.cc:288] Create Variable moment1_29 global, which pointer is 0x200f76c0
+I0316 10:53:28.354529    95 scope.cc:51] Create variable batch_norm_10.w_1
+I0316 10:53:28.354537    95 executor.cc:288] Create Variable batch_norm_10.w_1 global, which pointer is 0x200f77d0
+I0316 10:53:28.354543    95 scope.cc:51] Create variable moment2_42
+I0316 10:53:28.354547    95 executor.cc:288] Create Variable moment2_42 global, which pointer is 0x200f78e0
+I0316 10:53:28.354552    95 scope.cc:51] Create variable batch_norm_10.w_1@GRAD
+I0316 10:53:28.354558    95 executor.cc:288] Create Variable batch_norm_10.w_1@GRAD global, which pointer is 0x200f79f0
+I0316 10:53:28.354563    95 scope.cc:51] Create variable conv2d_8.w_0@GRAD.block0.trainer_1
+I0316 10:53:28.354568    95 executor.cc:293] Create Variable conv2d_8.w_0@GRAD.block0.trainer_1 locally, which pointer is 0x200f7b00
+I0316 10:53:28.354575    95 scope.cc:51] Create variable batch_norm_2.w_2@GRAD.trainer_2
+I0316 10:53:28.354579    95 executor.cc:293] Create Variable batch_norm_2.w_2@GRAD.trainer_2 locally, which pointer is 0x200f7c10
+I0316 10:53:28.354584    95 scope.cc:51] Create variable conv2d_9.w_0@GRAD.block0.trainer_1
+I0316 10:53:28.354590    95 executor.cc:293] Create Variable conv2d_9.w_0@GRAD.block0.trainer_1 locally, which pointer is 0x200f7d20
+I0316 10:53:28.354601    95 scope.cc:51] Create variable moment1_38
+I0316 10:53:28.354606    95 executor.cc:288] Create Variable moment1_38 global, which pointer is 0x200f7e30
+I0316 10:53:28.354611    95 scope.cc:51] Create variable conv2d_8.w_0@GRAD.block0.trainer_3
+I0316 10:53:28.354619    95 executor.cc:293] Create Variable conv2d_8.w_0@GRAD.block0.trainer_3 locally, which pointer is 0x200f7f40
+I0316 10:53:28.354624    95 scope.cc:51] Create variable batch_norm_3.b_0
+I0316 10:53:28.354629    95 executor.cc:288] Create Variable batch_norm_3.b_0 global, which pointer is 0x200f8050
+I0316 10:53:28.354635    95 scope.cc:51] Create variable moment2_38
+I0316 10:53:28.354640    95 executor.cc:288] Create Variable moment2_38 global, which pointer is 0x200f8160
+I0316 10:53:28.354645    95 scope.cc:51] Create variable batch_norm_6.w_0@GRAD
+I0316 10:53:28.354651    95 executor.cc:288] Create Variable batch_norm_6.w_0@GRAD global, which pointer is 0x200f8270
+I0316 10:53:28.354656    95 scope.cc:51] Create variable conv2d_6.b_0@GRAD.trainer_0
+I0316 10:53:28.354660    95 executor.cc:293] Create Variable conv2d_6.b_0@GRAD.trainer_0 locally, which pointer is 0x200f8380
+I0316 10:53:28.354667    95 scope.cc:51] Create variable conv2d_2.w_0@GRAD.block1.trainer_3
+I0316 10:53:28.354671    95 executor.cc:293] Create Variable conv2d_2.w_0@GRAD.block1.trainer_3 locally, which pointer is 0x200f8490
+I0316 10:53:28.354677    95 scope.cc:51] Create variable moment1_70
+I0316 10:53:28.354683    95 executor.cc:288] Create Variable moment1_70 global, which pointer is 0x200f85a0
+I0316 10:53:28.354696    95 scope.cc:51] Create variable batch_norm_1.w_2
+I0316 10:53:28.354702    95 executor.cc:288] Create Variable batch_norm_1.w_2 global, which pointer is 0x200f86b0
+I0316 10:53:28.354707    95 scope.cc:51] Create variable moment2_70
+I0316 10:53:28.354713    95 executor.cc:288] Create Variable moment2_70 global, which pointer is 0x200f1360
+I0316 10:53:28.354718    95 scope.cc:51] Create variable batch_norm_8.b_0@GRAD.trainer_2
+I0316 10:53:28.354723    95 executor.cc:293] Create Variable batch_norm_8.b_0@GRAD.trainer_2 locally, which pointer is 0x200f1470
+I0316 10:53:28.354729    95 scope.cc:51] Create variable batch_norm_11.w_2@GRAD.trainer_1
+I0316 10:53:28.354735    95 executor.cc:293] Create Variable batch_norm_11.w_2@GRAD.trainer_1 locally, which pointer is 0x200f1580
+I0316 10:53:28.354740    95 scope.cc:51] Create variable conv2d_8.w_0.block0
+I0316 10:53:28.354748    95 executor.cc:288] Create Variable conv2d_8.w_0.block0 global, which pointer is 0x200f8e30
+I0316 10:53:28.354751    95 scope.cc:51] Create variable moment1_80
+I0316 10:53:28.354756    95 executor.cc:288] Create Variable moment1_80 global, which pointer is 0x200f8f40
+I0316 10:53:28.354763    95 scope.cc:51] Create variable conv2d_10.w_0@GRAD.block3.trainer_1
+I0316 10:53:28.354768    95 executor.cc:293] Create Variable conv2d_10.w_0@GRAD.block3.trainer_1 locally, which pointer is 0x200f9050
+I0316 10:53:28.354773    95 scope.cc:51] Create variable conv2d_12.w_0@GRAD.block0.trainer_2
+I0316 10:53:28.354779    95 executor.cc:293] Create Variable conv2d_12.w_0@GRAD.block0.trainer_2 locally, which pointer is 0x200f9160
+I0316 10:53:28.354784    95 scope.cc:51] Create variable batch_norm_2.w_1@GRAD.trainer_2
+I0316 10:53:28.354789    95 executor.cc:293] Create Variable batch_norm_2.w_1@GRAD.trainer_2 locally, which pointer is 0x200f9270
+I0316 10:53:28.354795    95 scope.cc:51] Create variable conv2d_10.w_0.block3
+I0316 10:53:28.354799    95 executor.cc:288] Create Variable conv2d_10.w_0.block3 global, which pointer is 0x200f9380
+I0316 10:53:28.354987    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[learning_rate_0[1]({})]}.
+I0316 10:53:28.356194    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment2_83[128, 512, 3, 3]({})]}.
+I0316 10:53:28.356979    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment1_83[128, 512, 3, 3]({})]}.
+I0316 10:53:28.357507    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment2_80[32, 128, 3, 3]({})]}.
+I0316 10:53:28.357537    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment1_80[32, 128, 3, 3]({})]}.
+I0316 10:53:28.357559    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment2_78[128, 102]({})]}.
+I0316 10:53:28.357583    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment1_78[128, 102]({})]}.
+I0316 10:53:28.358342    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment2_76[128, 512, 3, 3]({})]}.
+I0316 10:53:28.359097    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment1_76[128, 512, 3, 3]({})]}.
+I0316 10:53:28.359122    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment2_70[32, 64, 3, 3]({})]}.
+I0316 10:53:28.359145    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment1_70[32, 64, 3, 3]({})]}.
+I0316 10:53:28.359218    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment2_69[64, 256, 3, 3]({})]}.
+I0316 10:53:28.359796    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment1_69[64, 256, 3, 3]({})]}.
+I0316 10:53:28.359930    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment2_67[128, 256, 3, 3]({})]}.
+I0316 10:53:28.360564    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment1_67[128, 256, 3, 3]({})]}.
+I0316 10:53:28.360618    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment2_65[64, 128, 3, 3]({})]}.
+I0316 10:53:28.360664    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment1_65[64, 128, 3, 3]({})]}.
+I0316 10:53:28.360707    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment2_47[128, 512]({})]}.
+I0316 10:53:28.360750    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment1_47[128, 512]({})]}.
+I0316 10:53:28.361498    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment2_42[128, 512, 3, 3]({})]}.
+I0316 10:53:28.362258    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment1_42[128, 512, 3, 3]({})]}.
+I0316 10:53:28.362283    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment2_38[16, 64, 3, 3]({})]}.
+I0316 10:53:28.362303    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment1_38[16, 64, 3, 3]({})]}.
+I0316 10:53:28.363555    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment2_29[128, 512, 3, 3]({})]}.
+I0316 10:53:28.364305    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment1_29[128, 512, 3, 3]({})]}.
+I0316 10:53:28.368599    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment2_13[6272, 512]({})]}.
+I0316 10:53:28.372836    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment1_13[6272, 512]({})]}.
+I0316 10:53:28.372913    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment2_12[64, 256, 3, 3]({})]}.
+I0316 10:53:28.373491    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment1_12[64, 256, 3, 3]({})]}.
+I0316 10:53:28.374238    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment2_11[128, 512, 3, 3]({})]}.
+I0316 10:53:28.374989    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[moment1_11[128, 512, 3, 3]({})]}.
+I0316 10:53:28.375010    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[beta2_pow_acc_0[1]({})]}.
+I0316 10:53:28.375026    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[beta1_pow_acc_0[1]({})]}.
+I0316 10:53:28.375056    95 operator.cc:524] expected_kernel_key:data_type[float32]:data_layout[ANY_LAYOUT]:place[CPUPlace]:library_type[PLAIN]
+I0316 10:53:28.375228    95 executor.cc:310] CPUPlace Op(uniform_random), inputs:{}, outputs:{Out[fc_2.w_0.block3[128, 102]({})]}.
+I0316 10:53:28.375241    95 operator.cc:524] expected_kernel_key:data_type[float32]:data_layout[ANY_LAYOUT]:place[CPUPlace]:library_type[PLAIN]
+I0316 10:53:28.375983    95 executor.cc:310] CPUPlace Op(uniform_random), inputs:{}, outputs:{Out[fc_1.w_0.block0[128, 512]({})]}.
+I0316 10:53:28.376003    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[batch_norm_13.b_0[512]({})]}.
+I0316 10:53:28.376016    95 operator.cc:524] expected_kernel_key:data_type[float32]:data_layout[ANY_LAYOUT]:place[CPUPlace]:library_type[PLAIN]
+I0316 10:53:28.410099    95 executor.cc:310] CPUPlace Op(uniform_random), inputs:{}, outputs:{Out[fc_0.w_0.block2[6272, 512]({})]}.
+I0316 10:53:28.410152    95 operator.cc:524] expected_kernel_key:data_type[float32]:data_layout[ANY_LAYOUT]:place[CPUPlace]:library_type[PLAIN]
+I0316 10:53:28.435436    95 executor.cc:310] CPUPlace Op(gaussian_random), inputs:{}, outputs:{Out[conv2d_12.w_0.block0[128, 512, 3, 3]({})]}.
+I0316 10:53:28.435498    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[batch_norm_11.w_2[512]({})]}.
+I0316 10:53:28.435513    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[batch_norm_11.b_0[512]({})]}.
+I0316 10:53:28.435528    95 operator.cc:524] expected_kernel_key:data_type[float32]:data_layout[ANY_LAYOUT]:place[CPUPlace]:library_type[PLAIN]
+I0316 10:53:28.463690    95 executor.cc:310] CPUPlace Op(gaussian_random), inputs:{}, outputs:{Out[conv2d_11.w_0.block2[128, 512, 3, 3]({})]}.
+I0316 10:53:28.463726    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[batch_norm_10.w_1[512]({})]}.
+I0316 10:53:28.463739    95 operator.cc:524] expected_kernel_key:data_type[float32]:data_layout[ANY_LAYOUT]:place[CPUPlace]:library_type[PLAIN]
+I0316 10:53:28.484870    95 executor.cc:310] CPUPlace Op(gaussian_random), inputs:{}, outputs:{Out[conv2d_10.w_0.block3[128, 512, 3, 3]({})]}.
+I0316 10:53:28.484930    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[conv2d_9.b_0[512]({})]}.
+I0316 10:53:28.484944    95 operator.cc:524] expected_kernel_key:data_type[float32]:data_layout[ANY_LAYOUT]:place[CPUPlace]:library_type[PLAIN]
+I0316 10:53:28.508271    95 executor.cc:310] CPUPlace Op(gaussian_random), inputs:{}, outputs:{Out[conv2d_9.w_0.block0[128, 512, 3, 3]({})]}.
+I0316 10:53:28.508329    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[batch_norm_8.w_2[512]({})]}.
+I0316 10:53:28.508342    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[batch_norm_8.b_0[512]({})]}.
+I0316 10:53:28.508350    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[conv2d_8.b_0[512]({})]}.
+I0316 10:53:28.508360    95 operator.cc:524] expected_kernel_key:data_type[float32]:data_layout[ANY_LAYOUT]:place[CPUPlace]:library_type[PLAIN]
+I0316 10:53:28.529306    95 executor.cc:310] CPUPlace Op(gaussian_random), inputs:{}, outputs:{Out[conv2d_8.w_0.block0[128, 512, 3, 3]({})]}.
+I0316 10:53:28.529325    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[batch_norm_7.w_2[512]({})]}.
+I0316 10:53:28.529335    95 operator.cc:524] expected_kernel_key:data_type[float32]:data_layout[ANY_LAYOUT]:place[CPUPlace]:library_type[PLAIN]
+I0316 10:53:28.541327    95 executor.cc:310] CPUPlace Op(gaussian_random), inputs:{}, outputs:{Out[conv2d_7.w_0.block2[128, 256, 3, 3]({})]}.
+I0316 10:53:28.541389    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[batch_norm_6.w_0[256]({})]}.
+I0316 10:53:28.541404    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[conv2d_6.b_0[256]({})]}.
+I0316 10:53:28.541421    95 operator.cc:524] expected_kernel_key:data_type[float32]:data_layout[ANY_LAYOUT]:place[CPUPlace]:library_type[PLAIN]
+I0316 10:53:28.546752    95 executor.cc:310] CPUPlace Op(gaussian_random), inputs:{}, outputs:{Out[conv2d_6.w_0.block2[64, 256, 3, 3]({})]}.
+I0316 10:53:28.546771    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[batch_norm_5.b_0[256]({})]}.
+I0316 10:53:28.546782    95 operator.cc:524] expected_kernel_key:data_type[float32]:data_layout[ANY_LAYOUT]:place[CPUPlace]:library_type[PLAIN]
+I0316 10:53:28.551880    95 executor.cc:310] CPUPlace Op(gaussian_random), inputs:{}, outputs:{Out[conv2d_5.w_0.block1[64, 256, 3, 3]({})]}.
+I0316 10:53:28.551893    95 operator.cc:524] expected_kernel_key:data_type[float32]:data_layout[ANY_LAYOUT]:place[CPUPlace]:library_type[PLAIN]
+I0316 10:53:28.554451    95 executor.cc:310] CPUPlace Op(gaussian_random), inputs:{}, outputs:{Out[conv2d_4.w_0.block3[64, 128, 3, 3]({})]}.
+I0316 10:53:28.554467    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[batch_norm_3.b_0[128]({})]}.
+I0316 10:53:28.554479    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[conv2d_3.b_0[128]({})]}.
+I0316 10:53:28.554487    95 operator.cc:524] expected_kernel_key:data_type[float32]:data_layout[ANY_LAYOUT]:place[CPUPlace]:library_type[PLAIN]
+I0316 10:53:28.555820    95 executor.cc:310] CPUPlace Op(gaussian_random), inputs:{}, outputs:{Out[conv2d_3.w_0.block2[32, 128, 3, 3]({})]}.
+I0316 10:53:28.555838    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[batch_norm_2.w_2[128]({})]}.
+I0316 10:53:28.555851    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[batch_norm_2.w_1[128]({})]}.
+I0316 10:53:28.555858    95 operator.cc:524] expected_kernel_key:data_type[float32]:data_layout[ANY_LAYOUT]:place[CPUPlace]:library_type[PLAIN]
+I0316 10:53:28.556504    95 executor.cc:310] CPUPlace Op(gaussian_random), inputs:{}, outputs:{Out[conv2d_2.w_0.block1[32, 64, 3, 3]({})]}.
+I0316 10:53:28.556517    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[batch_norm_1.w_2[64]({})]}.
+I0316 10:53:28.556527    95 operator.cc:524] expected_kernel_key:data_type[float32]:data_layout[ANY_LAYOUT]:place[CPUPlace]:library_type[PLAIN]
+I0316 10:53:28.556859    95 executor.cc:310] CPUPlace Op(gaussian_random), inputs:{}, outputs:{Out[conv2d_1.w_0.block3[16, 64, 3, 3]({})]}.
+I0316 10:53:28.556872    95 executor.cc:310] CPUPlace Op(fill_constant), inputs:{}, outputs:{Out[conv2d_0.b_0[64]({})]}.
+starting parameter server...
+I0316 10:53:28.558127   124 scope.cc:36] Destroy variable batch_norm_2.w_1@GRAD.trainer_2
+I0316 10:53:28.558143   124 scope.cc:36] Destroy variable conv2d_12.w_0@GRAD.block0.trainer_2
+I0316 10:53:28.558148   124 scope.cc:36] Destroy variable conv2d_10.w_0@GRAD.block3.trainer_1
+I0316 10:53:28.558154   124 scope.cc:36] Destroy variable batch_norm_11.w_2@GRAD.trainer_1
+I0316 10:53:28.558157   124 scope.cc:36] Destroy variable conv2d_2.w_0@GRAD.block1.trainer_3
+I0316 10:53:28.558161   124 scope.cc:36] Destroy variable conv2d_6.b_0@GRAD.trainer_0
+I0316 10:53:28.558163   124 scope.cc:36] Destroy variable conv2d_8.w_0@GRAD.block0.trainer_3
+I0316 10:53:28.558167   124 scope.cc:36] Destroy variable conv2d_9.w_0@GRAD.block0.trainer_1
+I0316 10:53:28.558172   124 scope.cc:36] Destroy variable conv2d_9.b_0@GRAD.trainer_1
+I0316 10:53:28.558176   124 scope.cc:36] Destroy variable batch_norm_6.w_0@GRAD.trainer_0
+I0316 10:53:28.558182   124 scope.cc:36] Destroy variable conv2d_4.w_0@GRAD.block3.trainer_2
+I0316 10:53:28.558184   124 scope.cc:36] Destroy variable fc_0.w_0@GRAD.block2.trainer_1
+I0316 10:53:28.558190   124 scope.cc:36] Destroy variable conv2d_0.b_0@GRAD.trainer_2
+I0316 10:53:28.558192   124 scope.cc:36] Destroy variable conv2d_5.w_0@GRAD.block1.trainer_3
+I0316 10:53:28.558197   124 scope.cc:36] Destroy variable conv2d_6.w_0@GRAD.block2.trainer_1
+I0316 10:53:28.558202   124 scope.cc:36] Destroy variable batch_norm_2.w_1@GRAD.trainer_3
+I0316 10:53:28.558207   124 scope.cc:36] Destroy variable batch_norm_3.b_0@GRAD.trainer_1
+I0316 10:53:28.558213   124 scope.cc:36] Destroy variable conv2d_12.w_0@GRAD.block0.trainer_0
+I0316 10:53:28.558218   124 scope.cc:36] Destroy variable conv2d_10.w_0@GRAD.block3.trainer_3
+I0316 10:53:28.558243   124 scope.cc:36] Destroy variable batch_norm_6.w_0@GRAD.trainer_2
+I0316 10:53:28.558250   124 scope.cc:36] Destroy variable batch_norm_10.w_1@GRAD.trainer_3
+I0316 10:53:28.558253   124 scope.cc:36] Destroy variable batch_norm_8.b_0@GRAD.trainer_2
+I0316 10:53:28.558255   124 scope.cc:36] Destroy variable conv2d_0.b_0@GRAD.trainer_0
+I0316 10:53:28.558259   124 scope.cc:36] Destroy variable conv2d_10.w_0@GRAD.block3.trainer_2
+I0316 10:53:28.558261   124 scope.cc:36] Destroy variable conv2d_6.w_0@GRAD.block2.trainer_3
+I0316 10:53:28.558264   124 scope.cc:36] Destroy variable conv2d_9.b_0@GRAD.trainer_2
+I0316 10:53:28.558267   124 scope.cc:36] Destroy variable conv2d_11.w_0@GRAD.block2.trainer_3
+I0316 10:53:28.558270   124 scope.cc:36] Destroy variable conv2d_8.w_0@GRAD.block0.trainer_2
+I0316 10:53:28.558274   124 scope.cc:36] Destroy variable batch_norm_7.w_2@GRAD.trainer_0
+I0316 10:53:28.558277   124 scope.cc:36] Destroy variable conv2d_7.w_0@GRAD.block2.trainer_1
+I0316 10:53:28.558279   124 scope.cc:36] Destroy variable batch_norm_8.b_0@GRAD.trainer_1
+I0316 10:53:28.558284   124 scope.cc:36] Destroy variable conv2d_6.b_0@GRAD.trainer_3
+I0316 10:53:28.558286   124 scope.cc:36] Destroy variable batch_norm_13.b_0@GRAD.trainer_0
+I0316 10:53:28.558290   124 scope.cc:36] Destroy variable conv2d_11.w_0@GRAD.block2.trainer_1
+I0316 10:53:28.558292   124 scope.cc:36] Destroy variable conv2d_3.w_0@GRAD.block2.trainer_1
+I0316 10:53:28.558295   124 scope.cc:36] Destroy variable batch_norm_8.b_0@GRAD.trainer_0
+I0316 10:53:28.558298   124 scope.cc:36] Destroy variable conv2d_1.w_0@GRAD.block3.trainer_3
+I0316 10:53:28.558302   124 scope.cc:36] Destroy variable conv2d_1.w_0@GRAD.block3.trainer_2
+I0316 10:53:28.558305   124 scope.cc:36] Destroy variable batch_norm_7.w_2@GRAD.trainer_2
+I0316 10:53:28.558308   124 scope.cc:36] Destroy variable batch_norm_10.w_1@GRAD.trainer_1
+I0316 10:53:28.558311   124 scope.cc:36] Destroy variable batch_norm_8.w_2@GRAD.trainer_1
+I0316 10:53:28.558315   124 scope.cc:36] Destroy variable conv2d_4.w_0@GRAD.block3.trainer_0
+I0316 10:53:28.558318   124 scope.cc:36] Destroy variable conv2d_12.w_0@GRAD.block0.trainer_1
+I0316 10:53:28.558321   124 scope.cc:36] Destroy variable batch_norm_10.w_1@GRAD.trainer_0
+I0316 10:53:28.558324   124 scope.cc:36] Destroy variable conv2d_6.b_0@GRAD.trainer_2
+I0316 10:53:28.558328   124 scope.cc:36] Destroy variable conv2d_8.b_0@GRAD.trainer_0
+I0316 10:53:28.558331   124 scope.cc:36] Destroy variable conv2d_2.w_0@GRAD.block1.trainer_2
+I0316 10:53:28.558334   124 scope.cc:36] Destroy variable batch_norm_7.w_2@GRAD.trainer_3
+I0316 10:53:28.558338   124 scope.cc:36] Destroy variable fc_0.w_0@GRAD.block2.trainer_2
+I0316 10:53:28.560298   124 scope.cc:36] Destroy variable batch_norm_11.b_0@GRAD.trainer_1
+I0316 10:53:28.560309   124 scope.cc:36] Destroy variable batch_norm_8.b_0@GRAD.trainer_3
+I0316 10:53:28.560313   124 scope.cc:36] Destroy variable conv2d_6.b_0@GRAD.trainer_1
+I0316 10:53:28.560317   124 scope.cc:36] Destroy variable fc_1.w_0@GRAD.block0.trainer_0
+I0316 10:53:28.560322   124 scope.cc:36] Destroy variable fc_0.w_0@GRAD.block2.trainer_0
+I0316 10:53:28.560325   124 scope.cc:36] Destroy variable batch_norm_3.b_0@GRAD.trainer_2
+I0316 10:53:28.560330   124 scope.cc:36] Destroy variable conv2d_9.b_0@GRAD.trainer_3
+I0316 10:53:28.560333   124 scope.cc:36] Destroy variable batch_norm_2.w_2@GRAD.trainer_0
+I0316 10:53:28.560336   124 scope.cc:36] Destroy variable conv2d_7.w_0@GRAD.block2.trainer_0
+I0316 10:53:28.560343   124 scope.cc:36] Destroy variable batch_norm_2.w_1@GRAD.trainer_0
+I0316 10:53:28.560345   124 scope.cc:36] Destroy variable conv2d_7.w_0@GRAD.block2.trainer_2
+I0316 10:53:28.560351   124 scope.cc:36] Destroy variable conv2d_8.b_0@GRAD.trainer_2
+I0316 10:53:28.560353   124 scope.cc:36] Destroy variable conv2d_2.w_0@GRAD.block1.trainer_0
+I0316 10:53:28.560356   124 scope.cc:36] Destroy variable conv2d_3.b_0@GRAD.trainer_3
+I0316 10:53:28.560361   124 scope.cc:36] Destroy variable fc_2.w_0@GRAD.block3.trainer_2
+I0316 10:53:28.560364   124 scope.cc:36] Destroy variable conv2d_5.w_0@GRAD.block1.trainer_2
+I0316 10:53:28.560370   124 scope.cc:36] Destroy variable batch_norm_11.w_2@GRAD.trainer_2
+I0316 10:53:28.560374   124 scope.cc:36] Destroy variable conv2d_5.w_0@GRAD.block1.trainer_1
+I0316 10:53:28.560376   124 scope.cc:36] Destroy variable conv2d_8.b_0@GRAD.trainer_1
+I0316 10:53:28.560382   124 scope.cc:36] Destroy variable batch_norm_11.w_2@GRAD.trainer_0
+I0316 10:53:28.560385   124 scope.cc:36] Destroy variable conv2d_0.b_0@GRAD.trainer_1
+I0316 10:53:28.560389   124 scope.cc:36] Destroy variable conv2d_3.b_0@GRAD.trainer_2
+I0316 10:53:28.560395   124 scope.cc:36] Destroy variable batch_norm_8.w_2@GRAD.trainer_0
+I0316 10:53:28.560397   124 scope.cc:36] Destroy variable conv2d_4.w_0@GRAD.block3.trainer_1
+I0316 10:53:28.560401   124 scope.cc:36] Destroy variable conv2d_0.b_0@GRAD.trainer_3
+I0316 10:53:28.560406   124 scope.cc:36] Destroy variable batch_norm_11.b_0@GRAD.trainer_2
+I0316 10:53:28.560410   124 scope.cc:36] Destroy variable batch_norm_13.b_0@GRAD.trainer_2
+I0316 10:53:28.560415   124 scope.cc:36] Destroy variable batch_norm_5.b_0@GRAD.trainer_2
+I0316 10:53:28.560417   124 scope.cc:36] Destroy variable fc_2.w_0@GRAD.block3.trainer_0
+I0316 10:53:28.560420   124 scope.cc:36] Destroy variable conv2d_10.w_0@GRAD.block3.trainer_0
+I0316 10:53:28.560425   124 scope.cc:36] Destroy variable batch_norm_1.w_2@GRAD.trainer_3
+I0316 10:53:28.560428   124 scope.cc:36] Destroy variable batch_norm_5.b_0@GRAD.trainer_1
+I0316 10:53:28.560431   124 scope.cc:36] Destroy variable batch_norm_3.b_0@GRAD.trainer_0
+I0316 10:53:28.560436   124 scope.cc:36] Destroy variable fc_1.w_0@GRAD.block0.trainer_2
+I0316 10:53:28.560439   124 scope.cc:36] Destroy variable batch_norm_2.w_1@GRAD.trainer_1
+I0316 10:53:28.560442   124 scope.cc:36] Destroy variable conv2d_3.w_0@GRAD.block2.trainer_0
+I0316 10:53:28.560447   124 scope.cc:36] Destroy variable batch_norm_3.b_0@GRAD.trainer_3
+I0316 10:53:28.560451   124 scope.cc:36] Destroy variable batch_norm_6.w_0@GRAD.trainer_1
+I0316 10:53:28.560456   124 scope.cc:36] Destroy variable batch_norm_5.b_0@GRAD.trainer_0
+I0316 10:53:28.560461   124 scope.cc:36] Destroy variable conv2d_12.w_0@GRAD.block0.trainer_3
+I0316 10:53:28.560463   124 scope.cc:36] Destroy variable conv2d_1.w_0@GRAD.block3.trainer_0
+I0316 10:53:28.560467   124 scope.cc:36] Destroy variable conv2d_11.w_0@GRAD.block2.trainer_0
+I0316 10:53:28.560472   124 scope.cc:36] Destroy variable batch_norm_11.b_0@GRAD.trainer_0
+I0316 10:53:28.560475   124 scope.cc:36] Destroy variable batch_norm_5.b_0@GRAD.trainer_3
+I0316 10:53:28.560479   124 scope.cc:36] Destroy variable fc_0.w_0@GRAD.block2.trainer_3
+I0316 10:53:28.560484   124 scope.cc:36] Destroy variable conv2d_3.b_0@GRAD.trainer_1
+I0316 10:53:28.560487   124 scope.cc:36] Destroy variable conv2d_9.w_0@GRAD.block0.trainer_2
+I0316 10:53:28.560490   124 scope.cc:36] Destroy variable batch_norm_6.w_0@GRAD.trainer_3
+I0316 10:53:28.560495   124 scope.cc:36] Destroy variable batch_norm_7.w_2@GRAD.trainer_1
+I0316 10:53:28.560498   124 scope.cc:36] Destroy variable batch_norm_1.w_2@GRAD.trainer_0
+I0316 10:53:28.560503   124 scope.cc:36] Destroy variable conv2d_3.w_0@GRAD.block2.trainer_3
+I0316 10:53:28.560506   124 scope.cc:36] Destroy variable fc_1.w_0@GRAD.block0.trainer_1
+I0316 10:53:28.560509   124 scope.cc:36] Destroy variable batch_norm_2.w_2@GRAD.trainer_3
+I0316 10:53:28.560515   124 scope.cc:36] Destroy variable conv2d_8.b_0@GRAD.trainer_3
+I0316 10:53:28.560518   124 scope.cc:36] Destroy variable batch_norm_1.w_2@GRAD.trainer_1
+I0316 10:53:28.560520   124 scope.cc:36] Destroy variable conv2d_5.w_0@GRAD.block1.trainer_0
+I0316 10:53:28.560525   124 scope.cc:36] Destroy variable conv2d_2.w_0@GRAD.block1.trainer_1
+I0316 10:53:28.560530   124 scope.cc:36] Destroy variable batch_norm_2.w_2@GRAD.trainer_2
+I0316 10:53:28.560534   124 scope.cc:36] Destroy variable conv2d_9.w_0@GRAD.block0.trainer_3
+I0316 10:53:28.560539   124 scope.cc:36] Destroy variable conv2d_1.w_0@GRAD.block3.trainer_1
+I0316 10:53:28.560541   124 scope.cc:36] Destroy variable conv2d_9.b_0@GRAD.trainer_0
+I0316 10:53:28.560547   124 scope.cc:36] Destroy variable batch_norm_1.w_2@GRAD.trainer_2
+I0316 10:53:28.560549   124 scope.cc:36] Destroy variable conv2d_3.w_0@GRAD.block2.trainer_2
+I0316 10:53:28.560552   124 scope.cc:36] Destroy variable conv2d_8.w_0@GRAD.block0.trainer_1
+I0316 10:53:28.560554   124 scope.cc:36] Destroy variable conv2d_7.w_0@GRAD.block2.trainer_3
+I0316 10:53:28.560557   124 scope.cc:36] Destroy variable batch_norm_2.w_2@GRAD.trainer_1
+I0316 10:53:28.560560   124 scope.cc:36] Destroy variable conv2d_4.w_0@GRAD.block3.trainer_3
+I0316 10:53:28.560564   124 scope.cc:36] Destroy variable fc_1.w_0@GRAD.block0.trainer_3
+I0316 10:53:28.560565   124 scope.cc:36] Destroy variable batch_norm_11.b_0@GRAD.trainer_3
+I0316 10:53:28.560569   124 scope.cc:36] Destroy variable batch_norm_13.b_0@GRAD.trainer_3
+I0316 10:53:28.560570   124 scope.cc:36] Destroy variable conv2d_8.w_0@GRAD.block0.trainer_0
+I0316 10:53:28.560573   124 scope.cc:36] Destroy variable batch_norm_8.w_2@GRAD.trainer_3
+I0316 10:53:28.560575   124 scope.cc:36] Destroy variable batch_norm_11.w_2@GRAD.trainer_3
+I0316 10:53:28.560578   124 scope.cc:36] Destroy variable batch_norm_13.b_0@GRAD.trainer_1
+I0316 10:53:28.560581   124 scope.cc:36] Destroy variable conv2d_6.w_0@GRAD.block2.trainer_0
+I0316 10:53:28.560585   124 scope.cc:36] Destroy variable conv2d_11.w_0@GRAD.block2.trainer_2
+I0316 10:53:28.560590   124 scope.cc:36] Destroy variable batch_norm_10.w_1@GRAD.trainer_2
+I0316 10:53:28.560592   124 scope.cc:36] Destroy variable conv2d_6.w_0@GRAD.block2.trainer_2
+I0316 10:53:28.560601   124 scope.cc:36] Destroy variable batch_norm_8.w_2@GRAD.trainer_2
+I0316 10:53:28.560608   124 scope.cc:36] Destroy variable fc_2.w_0@GRAD.block3.trainer_3
+I0316 10:53:28.560611   124 scope.cc:36] Destroy variable conv2d_3.b_0@GRAD.trainer_0
+I0316 10:53:28.560616   124 scope.cc:36] Destroy variable fc_2.w_0@GRAD.block3.trainer_1
+I0316 10:53:28.560621   124 scope.cc:36] Destroy variable conv2d_9.w_0@GRAD.block0.trainer_0
+I0316 10:53:28.562229    95 scope.cc:51] Create variable batch_norm_2.w_2@GRAD.trainer_2
+I0316 10:53:28.562243    95 executor.cc:293] Create Variable batch_norm_2.w_2@GRAD.trainer_2 locally, which pointer is 0x20178c30
+I0316 10:53:28.562252    95 scope.cc:51] Create variable conv2d_9.w_0@GRAD.block0.trainer_1
+I0316 10:53:28.562254    95 executor.cc:293] Create Variable conv2d_9.w_0@GRAD.block0.trainer_1 locally, which pointer is 0x20179400
+I0316 10:53:28.562258    95 scope.cc:51] Create variable conv2d_8.w_0@GRAD.block0.trainer_1
+I0316 10:53:28.562263    95 executor.cc:293] Create Variable conv2d_8.w_0@GRAD.block0.trainer_1 locally, which pointer is 0x20179510
+I0316 10:53:28.562265    95 scope.cc:51] Create variable conv2d_7.w_0@GRAD.block2.trainer_3
+I0316 10:53:28.562268    95 executor.cc:293] Create Variable conv2d_7.w_0@GRAD.block2.trainer_3 locally, which pointer is 0x20179620
+I0316 10:53:28.562273    95 executor.cc:288] Create Variable moment2_76 global, which pointer is 0x200f0040
+I0316 10:53:28.562276    95 executor.cc:288] Create Variable conv2d_7.w_0@GRAD.block2 global, which pointer is 0x200ec400
+I0316 10:53:28.562279    95 scope.cc:51] Create variable conv2d_4.w_0@GRAD.block3.trainer_2
+I0316 10:53:28.562285    95 executor.cc:293] Create Variable conv2d_4.w_0@GRAD.block3.trainer_2 locally, which pointer is 0x20179730
+I0316 10:53:28.562289    95 executor.cc:288] Create Variable batch_norm_7.w_2 global, which pointer is 0x200f68f0
+I0316 10:53:28.562292    95 executor.cc:288] Create Variable batch_norm_3.b_0@GRAD global, which pointer is 0x200f6a00
+I0316 10:53:28.562297    95 executor.cc:288] Create Variable moment1_42 global, which pointer is 0x200e8710
+I0316 10:53:28.562300    95 scope.cc:51] Create variable fc_2.w_0@GRAD.block3.trainer_2
+I0316 10:53:28.562304    95 executor.cc:293] Create Variable fc_2.w_0@GRAD.block3.trainer_2 locally, which pointer is 0x20179840
+I0316 10:53:28.562309    95 executor.cc:288] Create Variable moment1_67 global, which pointer is 0x200e9250
+I0316 10:53:28.562312    95 scope.cc:51] Create variable conv2d_3.b_0@GRAD.trainer_3
+I0316 10:53:28.562315    95 executor.cc:293] Create Variable conv2d_3.b_0@GRAD.trainer_3 locally, which pointer is 0x20179950
+I0316 10:53:28.562320    95 executor.cc:288] Create Variable conv2d_1.w_0@GRAD.block3 global, which pointer is 0x200f5a10
+I0316 10:53:28.562324    95 scope.cc:51] Create variable conv2d_2.w_0@GRAD.block1.trainer_0
+I0316 10:53:28.562326    95 executor.cc:293] Create Variable conv2d_2.w_0@GRAD.block1.trainer_0 locally, which pointer is 0x20179a60
+I0316 10:53:28.562332    95 scope.cc:51] Create variable conv2d_8.b_0@GRAD.trainer_2
+I0316 10:53:28.562335    95 executor.cc:293] Create Variable conv2d_8.b_0@GRAD.trainer_2 locally, which pointer is 0x20179b70
+I0316 10:53:28.562340    95 scope.cc:51] Create variable conv2d_8.b_0@GRAD.trainer_1
+I0316 10:53:28.562343    95 executor.cc:293] Create Variable conv2d_8.b_0@GRAD.trainer_1 locally, which pointer is 0x20179be0
+I0316 10:53:28.562347    95 scope.cc:51] Create variable conv2d_0.b_0@GRAD.trainer_3
+I0316 10:53:28.562352    95 executor.cc:293] Create Variable conv2d_0.b_0@GRAD.trainer_3 locally, which pointer is 0x2017a5a0
+I0316 10:53:28.562356    95 scope.cc:51] Create variable conv2d_8.b_0@GRAD.trainer_0
+I0316 10:53:28.562361    95 executor.cc:293] Create Variable conv2d_8.b_0@GRAD.trainer_0 locally, which pointer is 0x201780b0
+I0316 10:53:28.562364    95 scope.cc:51] Create variable batch_norm_2.w_1@GRAD.trainer_3
+I0316 10:53:28.562369    95 executor.cc:293] Create Variable batch_norm_2.w_1@GRAD.trainer_3 locally, which pointer is 0x2017a820
+I0316 10:53:28.562374    95 executor.cc:288] Create Variable conv2d_3.w_0.block2 global, which pointer is 0x200f6180
+I0316 10:53:28.562378    95 executor.cc:288] Create Variable conv2d_6.w_0@GRAD.block2 global, which pointer is 0x200f6070
+I0316 10:53:28.562382    95 executor.cc:288] Create Variable conv2d_9.b_0 global, which pointer is 0x200f6290
+I0316 10:53:28.562387    95 scope.cc:51] Create variable conv2d_12.w_0@GRAD.block0.trainer_2
+I0316 10:53:28.562391    95 executor.cc:293] Create Variable conv2d_12.w_0@GRAD.block0.trainer_2 locally, which pointer is 0x2017a930
+I0316 10:53:28.562396    95 scope.cc:51] Create variable batch_norm_2.w_1@GRAD.trainer_2
+I0316 10:53:28.562400    95 executor.cc:293] Create Variable batch_norm_2.w_1@GRAD.trainer_2 locally, which pointer is 0x2017aa40
+I0316 10:53:28.562403    95 scope.cc:51] Create variable batch_norm_2.w_1@GRAD.trainer_0
+I0316 10:53:28.562405    95 executor.cc:293] Create Variable batch_norm_2.w_1@GRAD.trainer_0 locally, which pointer is 0x2017ab50
+I0316 10:53:28.562410    95 scope.cc:51] Create variable batch_norm_1.w_2@GRAD.trainer_2
+I0316 10:53:28.562413    95 executor.cc:293] Create Variable batch_norm_1.w_2@GRAD.trainer_2 locally, which pointer is 0x2017ac60
+I0316 10:53:28.562417    95 scope.cc:51] Create variable batch_norm_1.w_2@GRAD.trainer_1
+I0316 10:53:28.562422    95 executor.cc:293] Create Variable batch_norm_1.w_2@GRAD.trainer_1 locally, which pointer is 0x2017ad70
+I0316 10:53:28.562423    95 scope.cc:51] Create variable batch_norm_1.w_2@GRAD.trainer_0
+I0316 10:53:28.562427    95 executor.cc:293] Create Variable batch_norm_1.w_2@GRAD.trainer_0 locally, which pointer is 0x2017ae80
+I0316 10:53:28.562433    95 scope.cc:51] Create variable fc_2.w_0@GRAD.block3.trainer_1
+I0316 10:53:28.562438    95 executor.cc:293] Create Variable fc_2.w_0@GRAD.block3.trainer_1 locally, which pointer is 0x2017af90
+I0316 10:53:28.562440    95 executor.cc:288] Create Variable batch_norm_1.w_2@GRAD global, which pointer is 0x200f3f70
+I0316 10:53:28.562445    95 scope.cc:51] Create variable conv2d_4.w_0@GRAD.block3.trainer_3
+I0316 10:53:28.562449    95 executor.cc:293] Create Variable conv2d_4.w_0@GRAD.block3.trainer_3 locally, which pointer is 0x2017b0a0
+I0316 10:53:28.562453    95 executor.cc:288] Create Variable conv2d_4.w_0.block3 global, which pointer is 0x200f0590
+I0316 10:53:28.562458    95 scope.cc:51] Create variable batch_norm_2.w_2@GRAD.trainer_1
+I0316 10:53:28.562460    95 executor.cc:293] Create Variable batch_norm_2.w_2@GRAD.trainer_1 locally, which pointer is 0x2017b1b0
+I0316 10:53:28.562465    95 scope.cc:51] Create variable conv2d_11.w_0@GRAD.block2.trainer_1
+I0316 10:53:28.562470    95 executor.cc:293] Create Variable conv2d_11.w_0@GRAD.block2.trainer_1 locally, which pointer is 0x2017b2c0
+I0316 10:53:28.562472    95 executor.cc:288] Create Variable conv2d_7.w_0.block2 global, which pointer is 0x200f0260
+I0316 10:53:28.562477    95 executor.cc:288] Create Variable batch_norm_2.w_2@GRAD global, which pointer is 0x200ed7e0
+I0316 10:53:28.562482    95 scope.cc:51] Create variable batch_norm_8.b_0@GRAD.trainer_1
+I0316 10:53:28.562485    95 executor.cc:293] Create Variable batch_norm_8.b_0@GRAD.trainer_1 locally, which pointer is 0x2017b490
+I0316 10:53:28.562489    95 executor.cc:288] Create Variable moment2_11 global, which pointer is 0x200ed6d0
+I0316 10:53:28.562494    95 executor.cc:288] Create Variable moment2_69 global, which pointer is 0x200f5e50
+I0316 10:53:28.562496    95 scope.cc:51] Create variable batch_norm_3.b_0@GRAD.trainer_1
+I0316 10:53:28.562500    95 executor.cc:293] Create Variable batch_norm_3.b_0@GRAD.trainer_1 locally, which pointer is 0x2017b5a0
+I0316 10:53:28.562505    95 executor.cc:288] Create Variable learning_rate_0 global, which pointer is 0x200f7060
+I0316 10:53:28.562507    95 scope.cc:51] Create variable conv2d_11.w_0@GRAD.block2.trainer_2
+I0316 10:53:28.562510    95 executor.cc:293] Create Variable conv2d_11.w_0@GRAD.block2.trainer_2 locally, which pointer is 0x2017b6b0
+I0316 10:53:28.562516    95 executor.cc:288] Create Variable conv2d_10.w_0@GRAD.block3 global, which pointer is 0x200f22c0
+I0316 10:53:28.562520    95 scope.cc:51] Create variable batch_norm_3.b_0@GRAD.trainer_3
+I0316 10:53:28.562522    95 executor.cc:293] Create Variable batch_norm_3.b_0@GRAD.trainer_3 locally, which pointer is 0x2017b7c0
+I0316 10:53:28.562530    95 scope.cc:51] Create variable fc_1.w_0@GRAD.block0.trainer_2
+I0316 10:53:28.562532    95 executor.cc:293] Create Variable fc_1.w_0@GRAD.block0.trainer_2 locally, which pointer is 0x2017b8d0
+I0316 10:53:28.562539    95 scope.cc:51] Create variable batch_norm_1.w_2@GRAD.trainer_3
+I0316 10:53:28.562541    95 executor.cc:293] Create Variable batch_norm_1.w_2@GRAD.trainer_3 locally, which pointer is 0x2017b9e0
+I0316 10:53:28.562546    95 scope.cc:51] Create variable conv2d_7.w_0@GRAD.block2.trainer_0
+I0316 10:53:28.562551    95 executor.cc:293] Create Variable conv2d_7.w_0@GRAD.block2.trainer_0 locally, which pointer is 0x2017baf0
+I0316 10:53:28.562554    95 scope.cc:51] Create variable batch_norm_5.b_0@GRAD.trainer_1
+I0316 10:53:28.562557    95 executor.cc:293] Create Variable batch_norm_5.b_0@GRAD.trainer_1 locally, which pointer is 0x2017bc00
+I0316 10:53:28.562562    95 scope.cc:51] Create variable conv2d_9.b_0@GRAD.trainer_1
+I0316 10:53:28.562564    95 executor.cc:293] Create Variable conv2d_9.b_0@GRAD.trainer_1 locally, which pointer is 0x2017bd10
+I0316 10:53:28.562568    95 executor.cc:288] Create Variable batch_norm_8.w_2@GRAD global, which pointer is 0x200f3d50
+I0316 10:53:28.562573    95 scope.cc:51] Create variable conv2d_10.w_0@GRAD.block3.trainer_1
+I0316 10:53:28.562577    95 executor.cc:293] Create Variable conv2d_10.w_0@GRAD.block3.trainer_1 locally, which pointer is 0x2017be20
+I0316 10:53:28.562580    95 scope.cc:51] Create variable conv2d_1.w_0@GRAD.block3.trainer_2
+I0316 10:53:28.562587    95 executor.cc:293] Create Variable conv2d_1.w_0@GRAD.block3.trainer_2 locally, which pointer is 0x2017bf30
+I0316 10:53:28.562590    95 executor.cc:288] Create Variable moment1_80 global, which pointer is 0x200f8f40
+I0316 10:53:28.562602    95 executor.cc:288] Create Variable conv2d_8.w_0.block0 global, which pointer is 0x200f8e30
+I0316 10:53:28.562608    95 executor.cc:288] Create Variable batch_norm_5.b_0 global, which pointer is 0x200f2c50
+I0316 10:53:28.562611    95 scope.cc:51] Create variable conv2d_10.w_0@GRAD.block3.trainer_0
+I0316 10:53:28.562614    95 executor.cc:293] Create Variable conv2d_10.w_0@GRAD.block3.trainer_0 locally, which pointer is 0x2017c040
+I0316 10:53:28.562619    95 executor.cc:288] Create Variable moment1_29 global, which pointer is 0x200f76c0
+I0316 10:53:28.562623    95 scope.cc:51] Create variable fc_2.w_0@GRAD.block3.trainer_0
+I0316 10:53:28.562625    95 executor.cc:293] Create Variable fc_2.w_0@GRAD.block3.trainer_0 locally, which pointer is 0x2017c150
+I0316 10:53:28.562631    95 executor.cc:288] Create Variable batch_norm_10.w_1@GRAD global, which pointer is 0x200f79f0
+I0316 10:53:28.562633    95 executor.cc:288] Create Variable moment1_13 global, which pointer is 0x200f54c0
+I0316 10:53:28.562639    95 scope.cc:51] Create variable batch_norm_8.w_2@GRAD.trainer_2
+I0316 10:53:28.562641    95 executor.cc:293] Create Variable batch_norm_8.w_2@GRAD.trainer_2 locally, which pointer is 0x2017c260
+I0316 10:53:28.562644    95 scope.cc:51] Create variable conv2d_6.w_0@GRAD.block2.trainer_2
+I0316 10:53:28.562649    95 executor.cc:293] Create Variable conv2d_6.w_0@GRAD.block2.trainer_2 locally, which pointer is 0x2017c370
+I0316 10:53:28.562652    95 executor.cc:288] Create Variable batch_norm_13.b_0 global, which pointer is 0x200f32b0
+I0316 10:53:28.562655    95 scope.cc:51] Create variable batch_norm_10.w_1@GRAD.trainer_2
+I0316 10:53:28.562660    95 executor.cc:293] Create Variable batch_norm_10.w_1@GRAD.trainer_2 locally, which pointer is 0x2017c480
+I0316 10:53:28.562664    95 scope.cc:51] Create variable batch_norm_3.b_0@GRAD.trainer_0
+I0316 10:53:28.562666    95 executor.cc:293] Create Variable batch_norm_3.b_0@GRAD.trainer_0 locally, which pointer is 0x2017c590
+I0316 10:53:28.562672    95 executor.cc:288] Create Variable fetch global, which pointer is 0x200ea9e0
+I0316 10:53:28.562675    95 scope.cc:51] Create variable batch_norm_5.b_0@GRAD.trainer_3
+I0316 10:53:28.562680    95 executor.cc:293] Create Variable batch_norm_5.b_0@GRAD.trainer_3 locally, which pointer is 0x2017c6a0
+I0316 10:53:28.562683    95 scope.cc:51] Create variable batch_norm_11.b_0@GRAD.trainer_0
+I0316 10:53:28.562686    95 executor.cc:293] Create Variable batch_norm_11.b_0@GRAD.trainer_0 locally, which pointer is 0x2017c7b0
+I0316 10:53:28.562691    95 executor.cc:288] Create Variable moment2_83 global, which pointer is 0x200ed8f0
+I0316 10:53:28.562696    95 scope.cc:51] Create variable batch_norm_8.w_2@GRAD.trainer_1
+I0316 10:53:28.562701    95 executor.cc:293] Create Variable batch_norm_8.w_2@GRAD.trainer_1 locally, which pointer is 0x2017c8c0
+I0316 10:53:28.562705    95 executor.cc:288] Create Variable fc_0.w_0.block2 global, which pointer is 0x200f07b0
+I0316 10:53:28.562707    95 scope.cc:51] Create variable conv2d_4.w_0@GRAD.block3.trainer_0
+I0316 10:53:28.562712    95 executor.cc:293] Create Variable conv2d_4.w_0@GRAD.block3.trainer_0 locally, which pointer is 0x2017c9d0
+I0316 10:53:28.562716    95 executor.cc:288] Create Variable conv2d_6.b_0 global, which pointer is 0x200f6e40
+I0316 10:53:28.562718    95 executor.cc:288] Create Variable moment2_12 global, which pointer is 0x200dcac0
+I0316 10:53:28.562723    95 executor.cc:288] Create Variable conv2d_0.b_0 global, which pointer is 0x200e9cc0
+I0316 10:53:28.562728    95 executor.cc:288] Create Variable moment1_76 global, which pointer is 0x200ecc30
+I0316 10:53:28.562731    95 scope.cc:51] Create variable conv2d_4.w_0@GRAD.block3.trainer_1
+I0316 10:53:28.562736    95 executor.cc:293] Create Variable conv2d_4.w_0@GRAD.block3.trainer_1 locally, which pointer is 0x2017cae0
+I0316 10:53:28.562738    95 executor.cc:288] Create Variable batch_norm_2.w_2 global, which pointer is 0x200f3910
+I0316 10:53:28.562742    95 scope.cc:51] Create variable conv2d_1.w_0@GRAD.block3.trainer_0
+I0316 10:53:28.562747    95 executor.cc:293] Create Variable conv2d_1.w_0@GRAD.block3.trainer_0 locally, which pointer is 0x2017cbf0
+I0316 10:53:28.562750    95 executor.cc:288] Create Variable batch_norm_6.w_0@GRAD global, which pointer is 0x200f8270
+I0316 10:53:28.562757    95 scope.cc:51] Create variable batch_norm_3.b_0@GRAD.trainer_2
+I0316 10:53:28.562762    95 executor.cc:293] Create Variable batch_norm_3.b_0@GRAD.trainer_2 locally, which pointer is 0x2017cd00
+I0316 10:53:28.562764    95 scope.cc:51] Create variable conv2d_9.b_0@GRAD.trainer_3
+I0316 10:53:28.562767    95 executor.cc:293] Create Variable conv2d_9.b_0@GRAD.trainer_3 locally, which pointer is 0x2017b3d0
+I0316 10:53:28.562773    95 scope.cc:51] Create variable conv2d_11.w_0@GRAD.block2.trainer_0
+I0316 10:53:28.562775    95 executor.cc:293] Create Variable conv2d_11.w_0@GRAD.block2.trainer_0 locally, which pointer is 0x2017b440
+I0316 10:53:28.562778    95 scope.cc:51] Create variable conv2d_12.w_0@GRAD.block0.trainer_1
+I0316 10:53:28.562783    95 executor.cc:293] Create Variable conv2d_12.w_0@GRAD.block0.trainer_1 locally, which pointer is 0x2017d1c0
+I0316 10:53:28.562786    95 executor.cc:288] Create Variable moment1_78 global, which pointer is 0x200f0bf0
+I0316 10:53:28.562789    95 scope.cc:51] Create variable fc_2.w_0@GRAD.block3.trainer_3
+I0316 10:53:28.562794    95 executor.cc:293] Create Variable fc_2.w_0@GRAD.block3.trainer_3 locally, which pointer is 0x2017d2d0
+I0316 10:53:28.562796    95 scope.cc:51] Create variable conv2d_1.w_0@GRAD.block3.trainer_3
+I0316 10:53:28.562799    95 executor.cc:293] Create Variable conv2d_1.w_0@GRAD.block3.trainer_3 locally, which pointer is 0x2017d3e0
+I0316 10:53:28.562804    95 executor.cc:288] Create Variable conv2d_9.w_0.block0 global, which pointer is 0x200ec730
+I0316 10:53:28.562808    95 executor.cc:288] Create Variable conv2d_3.w_0@GRAD.block2 global, which pointer is 0x200ec840
+I0316 10:53:28.562811    95 executor.cc:288] Create Variable moment2_70 global, which pointer is 0x200f1360
+I0316 10:53:28.562816    95 executor.cc:288] Create Variable batch_norm_1.w_2 global, which pointer is 0x200f86b0
+I0316 10:53:28.562819    95 executor.cc:288] Create Variable feed global, which pointer is 0x200eefc0
+I0316 10:53:28.562824    95 scope.cc:51] Create variable conv2d_3.w_0@GRAD.block2.trainer_3
+I0316 10:53:28.562827    95 executor.cc:293] Create Variable conv2d_3.w_0@GRAD.block2.trainer_3 locally, which pointer is 0x2017d4f0
+I0316 10:53:28.562830    95 scope.cc:51] Create variable batch_norm_7.w_2@GRAD.trainer_2
+I0316 10:53:28.562834    95 executor.cc:293] Create Variable batch_norm_7.w_2@GRAD.trainer_2 locally, which pointer is 0x2017d600
+I0316 10:53:28.562839    95 scope.cc:51] Create variable conv2d_3.b_0@GRAD.trainer_0
+I0316 10:53:28.562841    95 executor.cc:293] Create Variable conv2d_3.b_0@GRAD.trainer_0 locally, which pointer is 0x2017d710
+I0316 10:53:28.562844    95 executor.cc:288] Create Variable moment1_38 global, which pointer is 0x200f7e30
+I0316 10:53:28.562850    95 scope.cc:51] Create variable conv2d_8.w_0@GRAD.block0.trainer_3
+I0316 10:53:28.562855    95 executor.cc:293] Create Variable conv2d_8.w_0@GRAD.block0.trainer_3 locally, which pointer is 0x2017d820
+I0316 10:53:28.562861    95 scope.cc:51] Create variable batch_norm_8.w_2@GRAD.trainer_0
+I0316 10:53:28.562865    95 executor.cc:293] Create Variable batch_norm_8.w_2@GRAD.trainer_0 locally, which pointer is 0x2017d930
+I0316 10:53:28.562867    95 scope.cc:51] Create variable conv2d_3.b_0@GRAD.trainer_2
+I0316 10:53:28.562872    95 executor.cc:293] Create Variable conv2d_3.b_0@GRAD.trainer_2 locally, which pointer is 0x2017da40
+I0316 10:53:28.562875    95 scope.cc:51] Create variable conv2d_8.w_0@GRAD.block0.trainer_2
+I0316 10:53:28.562877    95 executor.cc:293] Create Variable conv2d_8.w_0@GRAD.block0.trainer_2 locally, which pointer is 0x2017db50
+I0316 10:53:28.562883    95 executor.cc:288] Create Variable conv2d_8.b_0 global, which pointer is 0x200f44c0
+I0316 10:53:28.562886    95 scope.cc:51] Create variable batch_norm_7.w_2@GRAD.trainer_0
+I0316 10:53:28.562889    95 executor.cc:293] Create Variable batch_norm_7.w_2@GRAD.trainer_0 locally, which pointer is 0x2017dc60
+I0316 10:53:28.562896    95 scope.cc:51] Create variable conv2d_7.w_0@GRAD.block2.trainer_2
+I0316 10:53:28.562897    95 executor.cc:293] Create Variable conv2d_7.w_0@GRAD.block2.trainer_2 locally, which pointer is 0x2017dd70
+I0316 10:53:28.562901    95 scope.cc:51] Create variable conv2d_6.w_0@GRAD.block2.trainer_0
+I0316 10:53:28.562906    95 executor.cc:293] Create Variable conv2d_6.w_0@GRAD.block2.trainer_0 locally, which pointer is 0x2017de80
+I0316 10:53:28.562911    95 executor.cc:288] Create Variable moment1_65 global, which pointer is 0x200eba20
+I0316 10:53:28.562916    95 scope.cc:51] Create variable conv2d_5.w_0@GRAD.block1.trainer_1
+I0316 10:53:28.562918    95 executor.cc:293] Create Variable conv2d_5.w_0@GRAD.block1.trainer_1 locally, which pointer is 0x2017df90
+I0316 10:53:28.562922    95 scope.cc:51] Create variable batch_norm_8.b_0@GRAD.trainer_0
+I0316 10:53:28.562927    95 executor.cc:293] Create Variable batch_norm_8.b_0@GRAD.trainer_0 locally, which pointer is 0x2017e0a0
+I0316 10:53:28.562928    95 executor.cc:288] Create Variable conv2d_2.w_0@GRAD.block1 global, which pointer is 0x200ee4a0
+I0316 10:53:28.562932    95 scope.cc:51] Create variable batch_norm_7.w_2@GRAD.trainer_3
+I0316 10:53:28.562937    95 executor.cc:293] Create Variable batch_norm_7.w_2@GRAD.trainer_3 locally, which pointer is 0x2017e1b0
+I0316 10:53:28.562939    95 scope.cc:51] Create variable conv2d_2.w_0@GRAD.block1.trainer_2
+I0316 10:53:28.562942    95 executor.cc:293] Create Variable conv2d_2.w_0@GRAD.block1.trainer_2 locally, which pointer is 0x2017e2c0
+I0316 10:53:28.562948    95 executor.cc:288] Create Variable conv2d_8.w_0@GRAD.block0 global, which pointer is 0x200ea100
+I0316 10:53:28.562952    95 executor.cc:288] Create Variable moment2_80 global, which pointer is 0x200e9ff0
+I0316 10:53:28.562955    95 executor.cc:288] Create Variable conv2d_6.b_0@GRAD global, which pointer is 0x200f3090
+I0316 10:53:28.562961    95 scope.cc:51] Create variable conv2d_3.w_0@GRAD.block2.trainer_1
+I0316 10:53:28.562963    95 executor.cc:293] Create Variable conv2d_3.w_0@GRAD.block2.trainer_1 locally, which pointer is 0x2017e3d0
+I0316 10:53:28.562966    95 executor.cc:288] Create Variable beta1_pow_acc_0 global, which pointer is 0x200ec950
+I0316 10:53:28.562971    95 scope.cc:51] Create variable conv2d_7.w_0@GRAD.block2.trainer_1
+I0316 10:53:28.562975    95 executor.cc:293] Create Variable conv2d_7.w_0@GRAD.block2.trainer_1 locally, which pointer is 0x2017e4e0
+I0316 10:53:28.562979    95 executor.cc:288] Create Variable moment1_70 global, which pointer is 0x200f85a0
+I0316 10:53:28.562984    95 scope.cc:51] Create variable conv2d_2.w_0@GRAD.block1.trainer_3
+I0316 10:53:28.562988    95 executor.cc:293] Create Variable conv2d_2.w_0@GRAD.block1.trainer_3 locally, which pointer is 0x2017e5f0
+I0316 10:53:28.562990    95 scope.cc:51] Create variable conv2d_6.b_0@GRAD.trainer_0
+I0316 10:53:28.562995    95 executor.cc:293] Create Variable conv2d_6.b_0@GRAD.trainer_0 locally, which pointer is 0x2017e700
+I0316 10:53:28.562997    95 scope.cc:51] Create variable conv2d_5.w_0@GRAD.block1.trainer_0
+I0316 10:53:28.563001    95 executor.cc:293] Create Variable conv2d_5.w_0@GRAD.block1.trainer_0 locally, which pointer is 0x2017e810
+I0316 10:53:28.563007    95 scope.cc:51] Create variable batch_norm_6.w_0@GRAD.trainer_0
+I0316 10:53:28.563009    95 executor.cc:293] Create Variable batch_norm_6.w_0@GRAD.trainer_0 locally, which pointer is 0x2017e920
+I0316 10:53:28.563014    95 executor.cc:288] Create Variable conv2d_6.w_0.block2 global, which pointer is 0x200f6d30
+I0316 10:53:28.563019    95 scope.cc:51] Create variable conv2d_3.w_0@GRAD.block2.trainer_2
+I0316 10:53:28.563022    95 executor.cc:293] Create Variable conv2d_3.w_0@GRAD.block2.trainer_2 locally, which pointer is 0x2017ea30
+I0316 10:53:28.563021   148 grpc_server.cc:146] Server listening on 192.168.16.26:30256
+I0316 10:53:28.563025    95 scope.cc:51] Create variable conv2d_9.w_0@GRAD.block0.trainer_3
+I0316 10:53:28.563055    95 executor.cc:293] Create Variable conv2d_9.w_0@GRAD.block0.trainer_3 locally, which pointer is 0x2017eb40
+I0316 10:53:28.563060    95 scope.cc:51] Create variable conv2d_2.w_0@GRAD.block1.trainer_1
+I0316 10:53:28.563064    95 executor.cc:293] Create Variable conv2d_2.w_0@GRAD.block1.trainer_1 locally, which pointer is 0x2017ec50
+I0316 10:53:28.563068    95 scope.cc:51] Create variable batch_norm_11.w_2@GRAD.trainer_1
+I0316 10:53:28.563071    95 executor.cc:293] Create Variable batch_norm_11.w_2@GRAD.trainer_1 locally, which pointer is 0x2017ed60
+I0316 10:53:28.563076    95 scope.cc:51] Create variable batch_norm_8.b_0@GRAD.trainer_2
+I0316 10:53:28.563078    95 executor.cc:293] Create Variable batch_norm_8.b_0@GRAD.trainer_2 locally, which pointer is 0x2017ee70
+I0316 10:53:28.563099    95 executor.cc:288] Create Variable moment2_42 global, which pointer is 0x200f78e0
+I0316 10:53:28.563103    95 executor.cc:288] Create Variable batch_norm_10.w_1 global, which pointer is 0x200f77d0
+I0316 10:53:28.563107    95 executor.cc:288] Create Variable batch_norm_11.w_2 global, which pointer is 0x200f7170
+I0316 10:53:28.563112    95 executor.cc:288] Create Variable fc_2.w_0@GRAD.block3 global, which pointer is 0x200eb680
+I0316 10:53:28.563114    95 executor.cc:288] Create Variable moment1_83 global, which pointer is 0x200f3c40
+I0316 10:53:28.563117    95 executor.cc:288] Create Variable batch_norm_8.b_0 global, which pointer is 0x200f3b30
+I0316 10:53:28.563123    95 scope.cc:51] Create variable conv2d_11.w_0@GRAD.block2.trainer_3
+I0316 10:53:28.563127    95 executor.cc:293] Create Variable conv2d_11.w_0@GRAD.block2.trainer_3 locally, which pointer is 0x2017ef80
+I0316 10:53:28.563133    95 executor.cc:288] Create Variable conv2d_12.w_0@GRAD.block0 global, which pointer is 0x200f3800
+I0316 10:53:28.563135    95 scope.cc:51] Create variable conv2d_0.b_0@GRAD.trainer_0
+I0316 10:53:28.563138    95 executor.cc:293] Create Variable conv2d_0.b_0@GRAD.trainer_0 locally, which pointer is 0x2017f090
+I0316 10:53:28.563143    95 scope.cc:51] Create variable conv2d_10.w_0@GRAD.block3.trainer_2
+I0316 10:53:28.563148    95 executor.cc:293] Create Variable conv2d_10.w_0@GRAD.block3.trainer_2 locally, which pointer is 0x2017f1a0
+I0316 10:53:28.563151    95 scope.cc:51] Create variable conv2d_9.b_0@GRAD.trainer_0
+I0316 10:53:28.563156    95 executor.cc:293] Create Variable conv2d_9.b_0@GRAD.trainer_0 locally, which pointer is 0x2017f2b0
+I0316 10:53:28.563159    95 executor.cc:288] Create Variable moment1_12 global, which pointer is 0x200eca60
+I0316 10:53:28.563163    95 executor.cc:288] Create Variable conv2d_9.b_0@GRAD global, which pointer is 0x200ecad0
+I0316 10:53:28.563168    95 executor.cc:288] Create Variable moment2_67 global, which pointer is 0x200f2d60
+I0316 10:53:28.563170    95 executor.cc:288] Create Variable moment2_29 global, which pointer is 0x200ed180
+I0316 10:53:28.563174    95 executor.cc:288] Create Variable batch_norm_7.w_2@GRAD global, which pointer is 0x200dc940
+I0316 10:53:28.563179    95 scope.cc:51] Create variable batch_norm_5.b_0@GRAD.trainer_0
+I0316 10:53:28.563182    95 executor.cc:293] Create Variable batch_norm_5.b_0@GRAD.trainer_0 locally, which pointer is 0x2017f3c0
+I0316 10:53:28.563186    95 scope.cc:51] Create variable conv2d_12.w_0@GRAD.block0.trainer_3
+I0316 10:53:28.563191    95 executor.cc:293] Create Variable conv2d_12.w_0@GRAD.block0.trainer_3 locally, which pointer is 0x2017f4d0
+I0316 10:53:28.563194    95 scope.cc:51] Create variable batch_norm_6.w_0@GRAD.trainer_3
+I0316 10:53:28.563196    95 executor.cc:293] Create Variable batch_norm_6.w_0@GRAD.trainer_3 locally, which pointer is 0x2017f5e0
+I0316 10:53:28.563202    95 executor.cc:288] Create Variable conv2d_0.b_0@GRAD global, which pointer is 0x200f25f0
+I0316 10:53:28.563205    95 executor.cc:288] Create Variable conv2d_1.w_0.block3 global, which pointer is 0x200f24e0
+I0316 10:53:28.563207    95 scope.cc:51] Create variable batch_norm_8.b_0@GRAD.trainer_3
+I0316 10:53:28.563213    95 executor.cc:293] Create Variable batch_norm_8.b_0@GRAD.trainer_3 locally, which pointer is 0x2017f6f0
+I0316 10:53:28.563216    95 scope.cc:51] Create variable fc_1.w_0@GRAD.block0.trainer_0
+I0316 10:53:28.563220    95 executor.cc:293] Create Variable fc_1.w_0@GRAD.block0.trainer_0 locally, which pointer is 0x2017f800
+I0316 10:53:28.563226    95 scope.cc:51] Create variable conv2d_6.b_0@GRAD.trainer_1
+I0316 10:53:28.563230    95 executor.cc:293] Create Variable conv2d_6.b_0@GRAD.trainer_1 locally, which pointer is 0x2017f910
+I0316 10:53:28.563233    95 scope.cc:51] Create variable batch_norm_11.b_0@GRAD.trainer_2
+I0316 10:53:28.563238    95 executor.cc:293] Create Variable batch_norm_11.b_0@GRAD.trainer_2 locally, which pointer is 0x2017fa20
+I0316 10:53:28.563241    95 scope.cc:51] Create variable batch_norm_13.b_0@GRAD.trainer_2
+I0316 10:53:28.563244    95 executor.cc:293] Create Variable batch_norm_13.b_0@GRAD.trainer_2 locally, which pointer is 0x2017fb30
+I0316 10:53:28.563249    95 scope.cc:51] Create variable batch_norm_5.b_0@GRAD.trainer_2
+I0316 10:53:28.563252    95 executor.cc:293] Create Variable batch_norm_5.b_0@GRAD.trainer_2 locally, which pointer is 0x2017fc40
+I0316 10:53:28.563256    95 executor.cc:288] Create Variable batch_norm_11.b_0@GRAD global, which pointer is 0x200f2700
+I0316 10:53:28.563261    95 executor.cc:288] Create Variable batch_norm_8.w_2 global, which pointer is 0x200f2f80
+I0316 10:53:28.563262    95 executor.cc:288] Create Variable batch_norm_2.w_1@GRAD global, which pointer is 0x200f2e70
+I0316 10:53:28.563266    95 executor.cc:288] Create Variable beta2_pow_acc_0 global, which pointer is 0x200f4190
+I0316 10:53:28.563271    95 executor.cc:288] Create Variable moment1_11 global, which pointer is 0x200edd30
+I0316 10:53:28.563275    95 scope.cc:51] Create variable fc_0.w_0@GRAD.block2.trainer_0
+I0316 10:53:28.563277    95 executor.cc:293] Create Variable fc_0.w_0@GRAD.block2.trainer_0 locally, which pointer is 0x2017fd50
+I0316 10:53:28.563282    95 executor.cc:288] Create Variable conv2d_8.b_0@GRAD global, which pointer is 0x200f0e10
+I0316 10:53:28.563285    95 scope.cc:51] Create variable batch_norm_11.b_0@GRAD.trainer_3
+I0316 10:53:28.563288    95 executor.cc:293] Create Variable batch_norm_11.b_0@GRAD.trainer_3 locally, which pointer is 0x2017fe60
+I0316 10:53:28.563294    95 executor.cc:288] Create Variable moment1_47 global, which pointer is 0x200f0ae0
+I0316 10:53:28.563297    95 scope.cc:51] Create variable batch_norm_11.b_0@GRAD.trainer_1
+I0316 10:53:28.563304    95 executor.cc:293] Create Variable batch_norm_11.b_0@GRAD.trainer_1 locally, which pointer is 0x2017ff70
+I0316 10:53:28.563308    95 scope.cc:51] Create variable conv2d_6.b_0@GRAD.trainer_2
+I0316 10:53:28.563311    95 executor.cc:293] Create Variable conv2d_6.b_0@GRAD.trainer_2 locally, which pointer is 0x20180080
+I0316 10:53:28.563316    95 scope.cc:51] Create variable fc_0.w_0@GRAD.block2.trainer_2
+I0316 10:53:28.563319    95 executor.cc:293] Create Variable fc_0.w_0@GRAD.block2.trainer_2 locally, which pointer is 0x20180190
+I0316 10:53:28.563323    95 scope.cc:51] Create variable conv2d_6.w_0@GRAD.block2.trainer_1
+I0316 10:53:28.563328    95 executor.cc:293] Create Variable conv2d_6.w_0@GRAD.block2.trainer_1 locally, which pointer is 0x201802a0
+I0316 10:53:28.563333    95 scope.cc:51] Create variable conv2d_0.b_0@GRAD.trainer_2
+I0316 10:53:28.563338    95 executor.cc:293] Create Variable conv2d_0.b_0@GRAD.trainer_2 locally, which pointer is 0x201803b0
+I0316 10:53:28.563343    95 scope.cc:51] Create variable conv2d_5.w_0@GRAD.block1.trainer_3
+I0316 10:53:28.563345    95 executor.cc:293] Create Variable conv2d_5.w_0@GRAD.block1.trainer_3 locally, which pointer is 0x2017ce10
+I0316 10:53:28.563350    95 scope.cc:51] Create variable conv2d_6.w_0@GRAD.block2.trainer_3
+I0316 10:53:28.563354    95 executor.cc:293] Create Variable conv2d_6.w_0@GRAD.block2.trainer_3 locally, which pointer is 0x2017cf20
+I0316 10:53:28.563356    95 scope.cc:51] Create variable batch_norm_8.w_2@GRAD.trainer_3
+I0316 10:53:28.563361    95 executor.cc:293] Create Variable batch_norm_8.w_2@GRAD.trainer_3 locally, which pointer is 0x2017d030
+I0316 10:53:28.563364    95 scope.cc:51] Create variable conv2d_8.w_0@GRAD.block0.trainer_0
+I0316 10:53:28.563366    95 executor.cc:293] Create Variable conv2d_8.w_0@GRAD.block0.trainer_0 locally, which pointer is 0x20180b30
+I0316 10:53:28.563372    95 scope.cc:51] Create variable fc_0.w_0@GRAD.block2.trainer_3
+I0316 10:53:28.563374    95 executor.cc:293] Create Variable fc_0.w_0@GRAD.block2.trainer_3 locally, which pointer is 0x20180c40
+I0316 10:53:28.563377    95 executor.cc:288] Create Variable conv2d_11.w_0.block2 global, which pointer is 0x200eb9b0
+I0316 10:53:28.563382    95 executor.cc:288] Create Variable moment2_78 global, which pointer is 0x200f57f0
+I0316 10:53:28.563386    95 scope.cc:51] Create variable conv2d_12.w_0@GRAD.block0.trainer_0
+I0316 10:53:28.563388    95 executor.cc:293] Create Variable conv2d_12.w_0@GRAD.block0.trainer_0 locally, which pointer is 0x20180d50
+I0316 10:53:28.563393    95 scope.cc:51] Create variable conv2d_10.w_0@GRAD.block3.trainer_3
+I0316 10:53:28.563396    95 executor.cc:293] Create Variable conv2d_10.w_0@GRAD.block3.trainer_3 locally, which pointer is 0x20180e60
+I0316 10:53:28.563400    95 scope.cc:51] Create variable batch_norm_6.w_0@GRAD.trainer_2
+I0316 10:53:28.563405    95 executor.cc:293] Create Variable batch_norm_6.w_0@GRAD.trainer_2 locally, which pointer is 0x20180f70
+I0316 10:53:28.563407    95 scope.cc:51] Create variable fc_0.w_0@GRAD.block2.trainer_1
+I0316 10:53:28.563410    95 executor.cc:293] Create Variable fc_0.w_0@GRAD.block2.trainer_1 locally, which pointer is 0x20181080
+I0316 10:53:28.563416    95 executor.cc:288] Create Variable batch_norm_11.w_2@GRAD global, which pointer is 0x200efc00
+I0316 10:53:28.563418    95 executor.cc:288] Create Variable fc_1.w_0.block0 global, which pointer is 0x200f35e0
+I0316 10:53:28.563421    95 executor.cc:288] Create Variable batch_norm_11.b_0 global, which pointer is 0x200f55d0
+I0316 10:53:28.563426    95 executor.cc:288] Create Variable conv2d_2.w_0.block1 global, which pointer is 0x200f7280
+I0316 10:53:28.563429    95 executor.cc:288] Create Variable conv2d_5.w_0@GRAD.block1 global, which pointer is 0x200f7390
+I0316 10:53:28.563432    95 scope.cc:51] Create variable batch_norm_13.b_0@GRAD.trainer_1
+I0316 10:53:28.563437    95 executor.cc:293] Create Variable batch_norm_13.b_0@GRAD.trainer_1 locally, which pointer is 0x20181190
+I0316 10:53:28.563441    95 scope.cc:51] Create variable batch_norm_7.w_2@GRAD.trainer_1
+I0316 10:53:28.563442    95 executor.cc:293] Create Variable batch_norm_7.w_2@GRAD.trainer_1 locally, which pointer is 0x201812a0
+I0316 10:53:28.563447    95 executor.cc:288] Create Variable conv2d_5.w_0.block1 global, which pointer is 0x200f1f90
+I0316 10:53:28.563452    95 scope.cc:51] Create variable batch_norm_2.w_1@GRAD.trainer_1
+I0316 10:53:28.563455    95 executor.cc:293] Create Variable batch_norm_2.w_1@GRAD.trainer_1 locally, which pointer is 0x201813b0
+I0316 10:53:28.563460    95 scope.cc:51] Create variable conv2d_3.w_0@GRAD.block2.trainer_0
+I0316 10:53:28.563462    95 executor.cc:293] Create Variable conv2d_3.w_0@GRAD.block2.trainer_0 locally, which pointer is 0x201814c0
+I0316 10:53:28.563465    95 executor.cc:288] Create Variable fc_0.w_0@GRAD.block2 global, which pointer is 0x200edb10
+I0316 10:53:28.563470    95 executor.cc:288] Create Variable moment2_38 global, which pointer is 0x200f8160
+I0316 10:53:28.563473    95 executor.cc:288] Create Variable batch_norm_3.b_0 global, which pointer is 0x200f8050
+I0316 10:53:28.563477    95 executor.cc:288] Create Variable conv2d_3.b_0 global, which pointer is 0x200f56e0
+I0316 10:53:28.563482    95 executor.cc:288] Create Variable batch_norm_6.w_0 global, which pointer is 0x34042c0
+I0316 10:53:28.563484    95 executor.cc:288] Create Variable conv2d_12.w_0.block0 global, which pointer is 0x200eb400
+I0316 10:53:28.563488    95 executor.cc:288] Create Variable conv2d_11.w_0@GRAD.block2 global, which pointer is 0x200ebb80
+I0316 10:53:28.563493    95 scope.cc:51] Create variable batch_norm_10.w_1@GRAD.trainer_1
+I0316 10:53:28.563498    95 executor.cc:293] Create Variable batch_norm_10.w_1@GRAD.trainer_1 locally, which pointer is 0x201815d0
+I0316 10:53:28.563500    95 executor.cc:288] Create Variable conv2d_4.w_0@GRAD.block3 global, which pointer is 0x200eba70
+I0316 10:53:28.563505    95 scope.cc:51] Create variable batch_norm_11.w_2@GRAD.trainer_3
+I0316 10:53:28.563508    95 executor.cc:293] Create Variable batch_norm_11.w_2@GRAD.trainer_3 locally, which pointer is 0x201816e0
+I0316 10:53:28.563511    95 executor.cc:288] Create Variable conv2d_3.b_0@GRAD global, which pointer is 0x200ebda0
+I0316 10:53:28.563516    95 executor.cc:288] Create Variable conv2d_10.w_0.block3 global, which pointer is 0x200f9380
+I0316 10:53:28.563519    95 executor.cc:288] Create Variable moment1_69 global, which pointer is 0x200ede40
+I0316 10:53:28.563521    95 scope.cc:51] Create variable conv2d_0.b_0@GRAD.trainer_1
+I0316 10:53:28.563529    95 executor.cc:293] Create Variable conv2d_0.b_0@GRAD.trainer_1 locally, which pointer is 0x201817f0
+I0316 10:53:28.563531    95 scope.cc:51] Create variable batch_norm_6.w_0@GRAD.trainer_1
+I0316 10:53:28.563534    95 executor.cc:293] Create Variable batch_norm_6.w_0@GRAD.trainer_1 locally, which pointer is 0x20181900
+I0316 10:53:28.563539    95 scope.cc:51] Create variable batch_norm_11.w_2@GRAD.trainer_0
+I0316 10:53:28.563544    95 executor.cc:293] Create Variable batch_norm_11.w_2@GRAD.trainer_0 locally, which pointer is 0x20181a10
+I0316 10:53:28.563546    95 scope.cc:51] Create variable batch_norm_11.w_2@GRAD.trainer_2
+I0316 10:53:28.563551    95 executor.cc:293] Create Variable batch_norm_11.w_2@GRAD.trainer_2 locally, which pointer is 0x20181b20
+I0316 10:53:28.563554    95 scope.cc:51] Create variable conv2d_5.w_0@GRAD.block1.trainer_2
+I0316 10:53:28.563556    95 executor.cc:293] Create Variable conv2d_5.w_0@GRAD.block1.trainer_2 locally, which pointer is 0x20181c30
+I0316 10:53:28.563561    95 executor.cc:288] Create Variable batch_norm_13.b_0@GRAD global, which pointer is 0x200eb790
+I0316 10:53:28.563565    95 scope.cc:51] Create variable batch_norm_10.w_1@GRAD.trainer_0
+I0316 10:53:28.563566    95 executor.cc:293] Create Variable batch_norm_10.w_1@GRAD.trainer_0 locally, which pointer is 0x20181d40
+I0316 10:53:28.563572    95 scope.cc:51] Create variable conv2d_6.b_0@GRAD.trainer_3
+I0316 10:53:28.563575    95 executor.cc:293] Create Variable conv2d_6.b_0@GRAD.trainer_3 locally, which pointer is 0x20181e50
+I0316 10:53:28.563578    95 scope.cc:51] Create variable batch_norm_13.b_0@GRAD.trainer_0
+I0316 10:53:28.563583    95 executor.cc:293] Create Variable batch_norm_13.b_0@GRAD.trainer_0 locally, which pointer is 0x20181f60
+I0316 10:53:28.563585    95 executor.cc:288] Create Variable fc_2.w_0.block3 global, which pointer is 0x200f1030
+I0316 10:53:28.563588    95 executor.cc:288] Create Variable moment2_13 global, which pointer is 0x200f1250
+I0316 10:53:28.563593    95 scope.cc:51] Create variable batch_norm_13.b_0@GRAD.trainer_3
+I0316 10:53:28.563611    95 executor.cc:293] Create Variable batch_norm_13.b_0@GRAD.trainer_3 locally, which pointer is 0x20182070
+I0316 10:53:28.563614    95 scope.cc:51] Create variable conv2d_9.b_0@GRAD.trainer_2
+I0316 10:53:28.563617    95 executor.cc:293] Create Variable conv2d_9.b_0@GRAD.trainer_2 locally, which pointer is 0x20182180
+I0316 10:53:28.563619    95 scope.cc:51] Create variable conv2d_1.w_0@GRAD.block3.trainer_1
+I0316 10:53:28.563622    95 executor.cc:293] Create Variable conv2d_1.w_0@GRAD.block3.trainer_1 locally, which pointer is 0x20182290
+I0316 10:53:28.563628    95 executor.cc:288] Create Variable moment2_47 global, which pointer is 0x200ebfc0
+I0316 10:53:28.563630    95 executor.cc:288] Create Variable conv2d_9.w_0@GRAD.block0 global, which pointer is 0x200ec0d0
+I0316 10:53:28.563633    95 scope.cc:51] Create variable batch_norm_2.w_2@GRAD.trainer_3
+I0316 10:53:28.563638    95 executor.cc:293] Create Variable batch_norm_2.w_2@GRAD.trainer_3 locally, which pointer is 0x201823a0
+I0316 10:53:28.563642    95 scope.cc:51] Create variable conv2d_8.b_0@GRAD.trainer_3
+I0316 10:53:28.563643    95 executor.cc:293] Create Variable conv2d_8.b_0@GRAD.trainer_3 locally, which pointer is 0x201824b0
+I0316 10:53:28.563648    95 executor.cc:288] Create Variable batch_norm_8.b_0@GRAD global, which pointer is 0x200ef270
+I0316 10:53:28.563652    95 scope.cc:51] Create variable conv2d_9.w_0@GRAD.block0.trainer_0
+I0316 10:53:28.563654    95 executor.cc:293] Create Variable conv2d_9.w_0@GRAD.block0.trainer_0 locally, which pointer is 0x201825c0
+I0316 10:53:28.563659    95 scope.cc:51] Create variable conv2d_9.w_0@GRAD.block0.trainer_2
+I0316 10:53:28.563663    95 executor.cc:293] Create Variable conv2d_9.w_0@GRAD.block0.trainer_2 locally, which pointer is 0x201826d0
+I0316 10:53:28.563665    95 scope.cc:51] Create variable conv2d_3.b_0@GRAD.trainer_1
+I0316 10:53:28.563671    95 executor.cc:293] Create Variable conv2d_3.b_0@GRAD.trainer_1 locally, which pointer is 0x201827e0
+I0316 10:53:28.563674    95 executor.cc:288] Create Variable batch_norm_5.b_0@GRAD global, which pointer is 0x200ea210
+I0316 10:53:28.563678    95 executor.cc:288] Create Variable batch_norm_2.w_1 global, which pointer is 0x200ea320
+I0316 10:53:28.563683    95 executor.cc:288] Create Variable fc_1.w_0@GRAD.block0 global, which pointer is 0x200f6f50
+I0316 10:53:28.563685    95 executor.cc:288] Create Variable moment2_65 global, which pointer is 0x200ef6b0
+I0316 10:53:28.563688    95 scope.cc:51] Create variable fc_1.w_0@GRAD.block0.trainer_1
+I0316 10:53:28.563694    95 executor.cc:293] Create Variable fc_1.w_0@GRAD.block0.trainer_1 locally, which pointer is 0x201828f0
+I0316 10:53:28.563696    95 scope.cc:51] Create variable fc_1.w_0@GRAD.block0.trainer_3
+I0316 10:53:28.563699    95 executor.cc:293] Create Variable fc_1.w_0@GRAD.block0.trainer_3 locally, which pointer is 0x20182a00
+I0316 10:53:28.563704    95 scope.cc:51] Create variable batch_norm_10.w_1@GRAD.trainer_3
+I0316 10:53:28.563706    95 executor.cc:293] Create Variable batch_norm_10.w_1@GRAD.trainer_3 locally, which pointer is 0x20182b10
+I0316 10:53:28.563709    95 scope.cc:51] Create variable batch_norm_2.w_2@GRAD.trainer_0
+I0316 10:53:28.563714    95 executor.cc:293] Create Variable batch_norm_2.w_2@GRAD.trainer_0 locally, which pointer is 0x20182c20

@@ -1,0 +1,80 @@
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
+metadata:
+  name: vgg16v2job-pserver
+spec:
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        paddle-job-pserver: vgg16v2job
+    spec:
+      hostNetwork: true
+      imagePullSecrets:
+      - name: job-registry-secret
+      containers:
+      - name: pserver
+        image: "bootstrapper:5000/fluid_benchmark:vgg16"
+        imagePullPolicy: Always
+        ports:
+        - name: jobport-30236
+          containerPort: 30236
+        - name: jobport-30237
+          containerPort: 30237
+        - name: jobport-30238
+          containerPort: 30238
+        - name: jobport-30239
+          containerPort: 30239
+        - name: jobport-30240
+          containerPort: 30240
+        - name: jobport-30241
+          containerPort: 30241
+        - name: jobport-30242
+          containerPort: 30242
+        - name: jobport-30243
+          containerPort: 30243
+        - name: jobport-30244
+          containerPort: 30244
+        env:
+        - name: PADDLE_JOB_NAME
+          value: vgg16v2job
+        - name: TRAINERS
+          value: "4"
+        - name: PSERVERS
+          value: "4"
+        - name: TOPOLOGY
+          value: ""
+        - name: ENTRY
+          value: "python train.py"
+        - name: TRAINER_PACKAGE
+          value: "/workspace"
+        - name: PADDLE_INIT_PORT
+          value: "30236"
+        - name: PADDLE_INIT_NICS
+          value: "eth2"
+        - name: PADDLE_INIT_TRAINER_COUNT
+          value: "1"
+        - name: PADDLE_INIT_PORTS_NUM
+          value: "1"
+        - name: PADDLE_INIT_PORTS_NUM_FOR_SPARSE
+          value: "1"
+        - name: PADDLE_INIT_NUM_GRADIENT_SERVERS
+          value: "4"
+        - name: PADDLE_INIT_NUM_PASSES
+          value: "2"
+        - name: PADDLE_INIT_USE_GPU
+          value: "0"
+        - name: LD_LIBRARY_PATH
+          value: "/usr/local/lib:/usr/local/nvidia/lib64"
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: "metadata.namespace"
+        command: ["paddle_k8s", "start_pserver"]
+        resources:
+          requests:
+            memory: 10Gi
+            cpu: 1
+          limits:
+            memory: 10Gi
+            cpu: 1
