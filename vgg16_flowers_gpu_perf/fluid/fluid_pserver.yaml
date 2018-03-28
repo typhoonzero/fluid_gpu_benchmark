@@ -46,6 +46,7 @@ spec:
           value: "1"
         - name: ENTRY
           value: "unset http_proxy && unset https_proxy && python /workspace/vgg16_fluid.py --local 0 --data_set flowers --batch_size 20 --device CPU"
+          #value: "unset http_proxy && unset https_proxy && python /workspace/mnist.py"
         - name: TRAINER_PACKAGE
           value: "/workspace"
         - name: PADDLE_INIT_PORT
@@ -78,9 +79,9 @@ spec:
         resources:
           requests:
             memory: 30Gi
-            cpu: 6
-            alpha.kubernetes.io/nvidia-gpu: 1
+            cpu: 8
+            #alpha.kubernetes.io/nvidia-gpu: 1
           limits:
             memory: 30Gi
-            cpu: 6
-            alpha.kubernetes.io/nvidia-gpu: 1
+            cpu: 8
+            #alpha.kubernetes.io/nvidia-gpu: 1

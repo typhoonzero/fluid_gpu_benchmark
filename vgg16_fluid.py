@@ -98,10 +98,10 @@ def vgg16_bn_drop(input):
     conv5 = conv_block(conv4, 512, 3, [0.4, 0.4, 0])
 
     drop = fluid.layers.dropout(x=conv5, dropout_prob=0.5)
-    fc1 = fluid.layers.fc(input=drop, size=512, act=None)
+    fc1 = fluid.layers.fc(input=drop, size=4096, act=None)
     bn = fluid.layers.batch_norm(input=fc1, act='relu')
     drop2 = fluid.layers.dropout(x=bn, dropout_prob=0.5)
-    fc2 = fluid.layers.fc(input=drop2, size=512, act=None)
+    fc2 = fluid.layers.fc(input=drop2, size=4096, act=None)
     return fc2
 
 
@@ -130,14 +130,14 @@ def main():
     avg_cost = fluid.layers.mean(x=cost)
 
     # Evaluator
-    #accuracy = fluid.evaluator.Accuracy(input=predict, label=label)
-    accuracy = fluid.layers.accuracy(input=predict, label=label)
+    batch_size_tensor = fluid.layers.create_tensor(dtype='int64')
+    batch_acc = fluid.layers.accuracy(input=predict, label=label, total=batch_size_tensor)
 
     # inference program
-    inference_program = fluid.default_main_program().clone(for_test=True)
-    #with fluid.program_guard(inference_program):
-    #    test_target = accuracy.metrics + accuracy.states
-    #    inference_program = fluid.io.get_inference_program(test_target)
+    inference_program = fluid.default_main_program().clone()
+    with fluid.program_guard(inference_program):
+        inference_program = fluid.io.get_inference_program(
+                            target_vars=[batch_acc, batch_size_tensor])
 
     # Optimization
     optimizer = fluid.optimizer.Adam(learning_rate=args.learning_rate)
@@ -150,59 +150,60 @@ def main():
 
     # test
     def test(exe):
-        acc_set = []
-        avg_loss_set = []
-
+        test_accuracy = fluid.average.WeightedAverage()
         for batch_id, data in enumerate(test_reader()):
             img_data = np.array(map(lambda x: x[0].reshape(data_shape),
                                     data)).astype("float32")
             y_data = np.array(map(lambda x: x[1], data)).astype("int64")
             y_data = y_data.reshape([-1, 1])
 
-            acc_np, loss_np = exe.run(inference_program,
-                    feed={"pixel": img_data,
-                          "label": y_data},
-                    fetch_list=[accuracy, avg_cost])
-            acc_set.append(float(acc_np))
-            avg_loss_set.append(float(loss_np))
-        acc_val = np.array(acc_set).mean()
-        avg_loss_val = np.array(avg_loss_set).mean()
+            acc, weight = exe.run(inference_program,
+                            feed={"pixel": img_data,
+                                  "label": y_data},
+                            fetch_list=[batch_acc, batch_size_tensor])
+            test_accuracy.add(value=acc, weight=weight)
+        return test_accuracy.eval()
 
-        return acc_val, avg_loss_val
-
-    def train_loop(exe, trainer_prog):
+    def train_loop(exe, trainer_prog, trainer_id=0):
         iters = 0
-        ts = time.time()
+        accuracy = fluid.average.WeightedAverage()
+        start_time = time.time()
+        num_samples = 0
+        accuracy.reset()
+
         for pass_id in range(args.num_passes):
             # train
             start_time = time.time()
             num_samples = 0
-            with profiler.profiler("GPU", 'total', profile_path="/usr/local/nvidia/lib64") as prof:
+            with profiler.profiler("All", 'total', profile_path="/usr/local/nvidia/lib64/tmp") as prof:
                 for batch_id, data in enumerate(train_reader()):
-                    ts = time.time()
+                    batch_st = time.time()
                     img_data = np.array(
                         map(lambda x: x[0].reshape(data_shape), data)).astype(
                             "float32")
                     y_data = np.array(map(lambda x: x[1], data)).astype("int64")
                     y_data = y_data.reshape([-1, 1])
 
-                    exe.run(
+                    loss, acc, weight = exe.run(
                         trainer_prog,
                         feed={"pixel": img_data,
-                              "label": y_data})
+                              "label": y_data},
+                        fetch_list=[avg_cost, batch_acc, batch_size_tensor])
+                    accuracy.add(value=acc, weight=weight)
                     iters += 1
                     num_samples += len(data)
                     print(
-                        "Pass = %d, Iters = %d, spent %f"
-                        % (pass_id, iters, time.time() - ts)
+                        "Pass = %d, Iters = %d, Loss = %f, Accuracy = %f, batch spent %f" %
+                        (pass_id, iters, loss, acc, time.time() - batch_st)
                     )  # The accuracy is the accumulation of batches, but not the current batch.
 
             pass_elapsed = time.time() - start_time
-            pass_test_acc, pass_test_cost = test(exe)
+            pass_train_acc = accuracy.eval()
+            pass_test_acc = test(exe)
             print(
-                "Pass = %d, Training performance = %f imgs/s, Test accuracy = %f, Test cost = %f\n"
-                % (pass_id, num_samples / pass_elapsed,
-                   pass_test_acc, pass_test_cost))
+                "Pass = %d, Training performance = %f imgs/s, Train accuracy = %f, Test accuracy = %f\n"
+                % (pass_id, num_samples / pass_elapsed, pass_train_acc,
+                pass_test_acc))
 
     if args.local:
         # Parameter initialization
@@ -250,8 +251,8 @@ def main():
                 exit(1)
             pserver_prog = t.get_pserver_program(current_endpoint)
             print("######## pserver prog #############")
-            with open("/tmp/prog", 'w') as fn:
-                fn.write(pserver_prog.__str__())
+            with open("/tmp/pserver_prog", "w") as f:
+                f.write(pserver_prog.__str__())
             print("######## pserver prog #############")
             pserver_startup = t.get_startup_program(current_endpoint,
                                                     pserver_prog)
@@ -276,10 +277,14 @@ def main():
                 batch_size=args.batch_size)
 
             trainer_prog = t.get_trainer_program()
+            print("######## trainer prog #############")
+            with open("/tmp/trainer_prog", "w") as f:
+                f.write(trainer_prog.__str__())
+            print("######## trainer prog #############")
             feeder = fluid.DataFeeder(feed_list=[images, label], place=place)
             # TODO(typhoonzero): change trainer startup program to fetch parameters from pserver
             exe.run(fluid.default_startup_program())
-            train_loop(exe, trainer_prog)
+            train_loop(exe, trainer_prog, trainer_id)
         else:
             print("environment var TRAINER_ROLE should be TRAINER os PSERVER")
 

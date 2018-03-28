@@ -1,0 +1,33 @@
++ case "$1" in
++ start_fluid_process
++ pserver_label=paddle-job-pserver=text-classi
++ trainer_label=paddle-job=text-classi
++ task_index=
++ stdbuf -oL python /root/k8s_tools.py wait_pods_running paddle-job-pserver=text-classi 4
+label selector: paddle-job-pserver=text-classi, desired: 4
+current cnt: 0 sleep for 5 seconds...
++ '[' TRAINER == TRAINER ']'
++ stdbuf -oL python /root/k8s_tools.py wait_pods_running paddle-job=text-classi 4
+label selector: paddle-job=text-classi, desired: 4
+++ python /root/k8s_tools.py fetch_ips paddle-job-pserver=text-classi 30256
++ export PADDLE_INIT_PSERVERS=192.168.16.27,192.168.16.28,192.168.16.29,192.168.16.34
++ PADDLE_INIT_PSERVERS=192.168.16.27,192.168.16.28,192.168.16.29,192.168.16.34
++ '[' TRAINER == TRAINER ']'
++ check_failed_cnt 4
++ max_failed=4
+++ python /root/k8s_tools.py count_pods_by_phase paddle-job=text-classi Failed
++ failed_count=0
++ '[' 0 -gt 4 ']'
+++ python /root/k8s_tools.py fetch_id paddle-job=text-classi
++ task_index=2
++ export PADDLE_INIT_TRAINER_ID=2
++ PADDLE_INIT_TRAINER_ID=2
++ stdbuf -oL sh -c 'unset http_proxy && unset https_proxy && python /workspace/text_fluid.py --local 0 --dict_path /workspace/aclImdb/imdb.vocab'
+W0328 11:49:34.548526   153 init.cc:81] 'CUDA' is not supported, Please re-compile with WITH_GPU option
+The dictionary size is : 89528
+('pserver endpoints: ', '192.168.16.27:30256,192.168.16.28:30256,192.168.16.29:30256,192.168.16.34:30256')
+('trainers total: ', 4)
+######## trainer prog in /tmp/trainer_prog #############
+job returned 1...setting pod return message...
+===============================
+termination log wroted...

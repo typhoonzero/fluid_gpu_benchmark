@@ -1,14 +1,14 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: vgg16-gpu-trainer
+  name: text-classi-trainer
 spec:
   parallelism: 4
   completions: 4
   template:
     metadata:
       labels:
-        paddle-job: vgg16-gpu
+        paddle-job: text-classi
     spec:
       imagePullSecrets:
         - name: job-registry-secret
@@ -22,8 +22,8 @@ spec:
             path: /usr/bin/nvidia-smi
       containers:
       - name: trainer
-        #image: "registry.baidu.com/paddlepaddle/fluid_benchmark:vgg16"
-        image: "bootstrapper:5000/fluid_benchmark:vgg16"
+        #image: "registry.baidu.com/paddlepaddle/fluid_benchmark:cpu"
+        image: "bootstrapper:5000/fluid_benchmark:cpu"
         imagePullPolicy: Always
         command: ["paddle_k8s", "start_fluid"]
         #command: ["sleep", "3600"]
@@ -34,7 +34,7 @@ spec:
             name: nvidia-smi
         env:
         - name: PADDLE_JOB_NAME
-          value: vgg16-gpu
+          value: text-classi
         - name: TRAINING_ROLE
           value: "TRAINER"
         - name: TRAINERS
@@ -54,8 +54,8 @@ spec:
         - name: MKL_NUM_THREADS
           value: "1"
         - name: ENTRY
-          value: "unset http_proxy && unset https_proxy && python /workspace/vgg16_fluid.py --local 0 --batch_size 20 --data_set flowers --device GPU --device_id 0"
-          #value: "unset http_proxy && unset https_proxy && python /workspace/mnist.py"
+          #value: "unset http_proxy && unset https_proxy && python /workspace/vgg16_fluid.py --local 0 --batch_size 20 --data_set flowers --device GPU --device_id 0"
+          value: "unset http_proxy && unset https_proxy && python /workspace/text_fluid.py --local 0 --dict_path /workspace/aclImdb/imdb.vocab"
         - name: TRAINER_PACKAGE
           value: "/workspace"
         - name: PADDLE_INIT_PORT
@@ -83,10 +83,8 @@ spec:
         resources:
           requests:
             memory: 30Gi
-            cpu: 4
-            alpha.kubernetes.io/nvidia-gpu: 1
+            cpu: 6
           limits:
             memory: 30Gi
-            cpu: 4
-            alpha.kubernetes.io/nvidia-gpu: 1
+            cpu: 6
       restartPolicy: Never

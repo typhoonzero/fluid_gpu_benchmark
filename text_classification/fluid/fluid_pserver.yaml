@@ -1,61 +1,52 @@
-apiVersion: batch/v1
-kind: Job
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
 metadata:
-  name: vgg16-gpu-trainer
+  name: text-classi-pserver
 spec:
-  parallelism: 4
-  completions: 4
+  replicas: 4
   template:
     metadata:
       labels:
-        paddle-job: vgg16-gpu
+        paddle-job-pserver: text-classi
     spec:
-      imagePullSecrets:
-        - name: job-registry-secret
       hostNetwork: true
       volumes:
         - name: nvidia-driver
           hostPath:
             path: /usr/local/nvidia/lib64
-        - name: nvidia-smi
-          hostPath:
-            path: /usr/bin/nvidia-smi
+      imagePullSecrets:
+      - name: job-registry-secret
       containers:
-      - name: trainer
-        #image: "registry.baidu.com/paddlepaddle/fluid_benchmark:vgg16"
-        image: "bootstrapper:5000/fluid_benchmark:vgg16"
+      - name: pserver
+        #image: "registry.baidu.com/paddlepaddle/fluid_benchmark:cpu"
+        image: "bootstrapper:5000/fluid_benchmark:cpu"
         imagePullPolicy: Always
-        command: ["paddle_k8s", "start_fluid"]
-        #command: ["sleep", "3600"]
         volumeMounts:
           - mountPath: /usr/local/nvidia/lib64
             name: nvidia-driver
-          - mountPath: /opt/bin/nvidia-smi
-            name: nvidia-smi
+        ports:
+        - name: jobport-30256
+          containerPort: 30256
         env:
         - name: PADDLE_JOB_NAME
-          value: vgg16-gpu
+          value: text-classi
+        - name: MKL_NUM_THREADS
+          value: "1"
         - name: TRAINING_ROLE
-          value: "TRAINER"
+          value: "PSERVER"
         - name: TRAINERS
           value: "4"
         - name: PSERVERS
           value: "4"
         - name: TOPOLOGY
           value: ""
-        #- name: GLOG_v
-        #  value: "2"
-        - name: FLAGS_fraction_of_gpu_memory_to_use
-          value: "0.4"
-        - name: FLAGS_benchmark
-          value: "1"
+        - name: GLOG_v
+          value: "3"
         - name: GLOG_logtostderr
           value: "1"
-        - name: MKL_NUM_THREADS
-          value: "1"
         - name: ENTRY
-          value: "unset http_proxy && unset https_proxy && python /workspace/vgg16_fluid.py --local 0 --batch_size 20 --data_set flowers --device GPU --device_id 0"
-          #value: "unset http_proxy && unset https_proxy && python /workspace/mnist.py"
+          #value: "unset http_proxy && unset https_proxy && python /workspace/vgg16_fluid.py --local 0 --data_set flowers --batch_size 20 --device CPU"
+          value: "unset http_proxy && unset https_proxy && python /workspace/text_fluid.py --local 0 --dict_path /workspace/aclImdb/imdb.vocab"
         - name: TRAINER_PACKAGE
           value: "/workspace"
         - name: PADDLE_INIT_PORT
@@ -70,6 +61,10 @@ spec:
           value: "1"
         - name: PADDLE_INIT_NUM_GRADIENT_SERVERS
           value: "4"
+        - name: PADDLE_INIT_NUM_PASSES
+          value: "1"
+        - name: PADDLE_INIT_USE_GPU
+          value: "0"
         - name: LD_LIBRARY_PATH
           value: "/usr/local/nvidia/lib64:/usr/local/lib:/usr/local/cuda/lib64"
         - name: NAMESPACE
@@ -80,13 +75,13 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: "status.podIP"
+        command: ["paddle_k8s", "start_fluid"]
         resources:
           requests:
             memory: 30Gi
             cpu: 4
-            alpha.kubernetes.io/nvidia-gpu: 1
+            #alpha.kubernetes.io/nvidia-gpu: 1
           limits:
             memory: 30Gi
             cpu: 4
-            alpha.kubernetes.io/nvidia-gpu: 1
-      restartPolicy: Never
+            #alpha.kubernetes.io/nvidia-gpu: 1
