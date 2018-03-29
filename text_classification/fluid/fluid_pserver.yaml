@@ -1,15 +1,17 @@
-apiVersion: extensions/v1beta1
-kind: ReplicaSet
+apiVersion: batch/v1
+kind: Job
 metadata:
   name: text-classi-pserver
 spec:
-  replicas: 4
+  parallelism: 4
+  completions: 4
   template:
     metadata:
       labels:
         paddle-job-pserver: text-classi
     spec:
       hostNetwork: true
+      restartPolicy: Never
       volumes:
         - name: nvidia-driver
           hostPath:

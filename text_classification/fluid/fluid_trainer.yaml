@@ -33,6 +33,10 @@ spec:
           - mountPath: /opt/bin/nvidia-smi
             name: nvidia-smi
         env:
+        #- name: GRPC_TRACE
+        #  value: all,-tcp
+        #- name: GRPC_VERBOSITY
+        #  value: debug
         - name: PADDLE_JOB_NAME
           value: text-classi
         - name: TRAINING_ROLE
@@ -55,7 +59,7 @@ spec:
           value: "1"
         - name: ENTRY
           #value: "unset http_proxy && unset https_proxy && python /workspace/vgg16_fluid.py --local 0 --batch_size 20 --data_set flowers --device GPU --device_id 0"
-          value: "unset http_proxy && unset https_proxy && python /workspace/text_fluid.py --local 0 --dict_path /workspace/aclImdb/imdb.vocab"
+          value: "sleep 60 && unset http_proxy && unset https_proxy && python /workspace/text_fluid.py --local 0 --dict_path /workspace/aclImdb/imdb.vocab"
         - name: TRAINER_PACKAGE
           value: "/workspace"
         - name: PADDLE_INIT_PORT

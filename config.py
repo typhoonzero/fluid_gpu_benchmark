@@ -4,7 +4,7 @@ class TrainConfig(object):
     use_gpu = False
 
     # The training batch size.
-    batch_size = 4
+    batch_size = 512
 
     # The epoch number.
     num_passes = 30
