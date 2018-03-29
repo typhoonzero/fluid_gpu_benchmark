@@ -144,13 +144,13 @@ def main(dict_path):
         test_acc = test_pass_acc_evaluator.eval()
         return test_acc
 
-    def train_loop(exe, train_program):
+    def train_loop(exe, train_program, trainer_id):
         total_time = 0.
         for pass_id in xrange(conf.num_passes):
             train_pass_acc_evaluator.reset()
             start_time = time.time()
             total_samples = 0
-            with profiler.profiler("CPU", 'total') as prof:
+            with profiler.profiler("CPU", 'total', profile_path='./profile_res_%d' % trainer_id) as prof:
                 for batch_id, data in enumerate(train_reader()):
                     batch_start = time.time()
                     cost_val, acc_val, size_val = exe.run(
@@ -173,7 +173,7 @@ def main(dict_path):
     if False:
         print("run as local mode")
         exe.run(fluid.default_startup_program())
-        train_loop(exe, fluid.default_main_program())
+        train_loop(exe, fluid.default_main_program(), 0)
     else:
         pserver_ips = os.getenv("PADDLE_INIT_PSERVERS")  # all pserver endpoints
         eplist = []
@@ -219,7 +219,7 @@ def main(dict_path):
             print("######## trainer prog in /tmp/trainer_prog #############")
             # TODO(typhoonzero): change trainer startup program to fetch parameters from pserver
             exe.run(fluid.default_startup_program())
-            train_loop(exe, trainer_prog)
+            train_loop(exe, trainer_prog, trainer_id)
         else:
             print("environment var TRAINER_ROLE should be TRAINER os PSERVER")
 

@@ -73,7 +73,7 @@ start_fluid_process() {
   export PADDLE_INIT_PSERVERS=$(python /root/k8s_tools.py fetch_ips ${pserver_label} ${PADDLE_INIT_PORT})
 
   if [ "${TRAINING_ROLE}" == "TRAINER" ]; then
-    check_failed_cnt ${TRAINERS}
+    check_failed_cnt 1
     task_index=$(python /root/k8s_tools.py fetch_id ${trainer_label})
   else
     task_index=$(python /root/k8s_tools.py fetch_id ${pserver_label})
