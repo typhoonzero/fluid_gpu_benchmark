@@ -31,4 +31,5 @@ chmod +x /usr/bin/paddle_k8s
 ADD paddle_k8s /usr/bin
 ENV LD_LIBRARY_PATH=/usr/local/lib
 ADD vgg16_fluid.py vgg16_v2.py vgg16_fluid_nosplit.py text_fluid.py config.py /workspace/
+ADD seq_tag_ner /workspace/seq_tag_ner
 RUN ln -s /usr/lib/x86_64-linux-gnu/libcudnn.so.5 /usr/lib/libcudnn.so

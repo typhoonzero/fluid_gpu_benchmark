@@ -10,6 +10,14 @@ import paddle.fluid.profiler as profiler
 
 from config import TrainConfig as conf
 
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -20,7 +28,7 @@ def parse_args():
         help="Path of the word dictionary.")
     parser.add_argument(
         '--local',
-        type=bool,
+        type=str2bool,
         default=False,
         help="whether to run as local mode.")
     return parser.parse_args()
@@ -170,7 +178,7 @@ def main(dict_path):
             print("Pass id: %d, test_acc: %f, speed: %f" % (pass_id, pass_test_acc, total_samples / (end_time - start_time)))
         print("Total train time: %f" % (total_time))
 
-    if False:
+    if args.local:
         print("run as local mode")
         exe.run(fluid.default_startup_program())
         train_loop(exe, fluid.default_main_program(), 0)

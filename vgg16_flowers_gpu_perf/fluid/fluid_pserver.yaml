@@ -19,7 +19,7 @@ spec:
       containers:
       - name: pserver
         #image: "registry.baidu.com/paddlepaddle/fluid_benchmark:vgg16"
-        image: "bootstrapper:5000/fluid_benchmark:vgg16"
+        image: "bootstrapper:5000/fluid_benchmark:gpu"
         imagePullPolicy: Always
         volumeMounts:
           - mountPath: /usr/local/nvidia/lib64
@@ -45,7 +45,8 @@ spec:
         - name: GLOG_logtostderr
           value: "1"
         - name: ENTRY
-          value: "unset http_proxy && unset https_proxy && python /workspace/vgg16_fluid.py --local 0 --data_set flowers --batch_size 20 --device CPU"
+          value: "unset http_proxy && unset https_proxy && python /workspace/vgg16_fluid.py --local 0 --data_set flowers --batch_size 40 --device CPU"
+
           #value: "unset http_proxy && unset https_proxy && python /workspace/mnist.py"
         - name: TRAINER_PACKAGE
           value: "/workspace"
@@ -79,9 +80,9 @@ spec:
         resources:
           requests:
             memory: 30Gi
-            cpu: 8
+            cpu: 1
             #alpha.kubernetes.io/nvidia-gpu: 1
           limits:
             memory: 30Gi
-            cpu: 8
+            cpu: 1
             #alpha.kubernetes.io/nvidia-gpu: 1

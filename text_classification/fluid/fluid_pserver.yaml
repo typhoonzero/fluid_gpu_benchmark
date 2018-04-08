@@ -3,8 +3,8 @@ kind: Job
 metadata:
   name: text-classi-pserver
 spec:
-  parallelism: 4
-  completions: 4
+  parallelism: 20
+  completions: 20
   template:
     metadata:
       labels:
@@ -20,8 +20,8 @@ spec:
       - name: job-registry-secret
       containers:
       - name: pserver
-        #image: "registry.baidu.com/paddlepaddle/fluid_benchmark:cpu"
-        image: "bootstrapper:5000/fluid_benchmark:cpu"
+        image: "registry.baidu.com/paddlepaddle/fluid_benchmark:cpu"
+        #image: "bootstrapper:5000/fluid_benchmark:cpu"
         imagePullPolicy: Always
         volumeMounts:
           - mountPath: /usr/local/nvidia/lib64
@@ -37,13 +37,13 @@ spec:
         - name: TRAINING_ROLE
           value: "PSERVER"
         - name: TRAINERS
-          value: "4"
+          value: "100"
         - name: PSERVERS
-          value: "4"
+          value: "20"
         - name: TOPOLOGY
           value: ""
         - name: GLOG_v
-          value: "3"
+          value: "2"
         - name: GLOG_logtostderr
           value: "1"
         - name: ENTRY
@@ -62,7 +62,7 @@ spec:
         - name: PADDLE_INIT_PORTS_NUM_FOR_SPARSE
           value: "1"
         - name: PADDLE_INIT_NUM_GRADIENT_SERVERS
-          value: "4"
+          value: "100"
         - name: PADDLE_INIT_NUM_PASSES
           value: "1"
         - name: PADDLE_INIT_USE_GPU
@@ -81,9 +81,9 @@ spec:
         resources:
           requests:
             memory: 30Gi
-            cpu: 4
+            cpu: 2
             #alpha.kubernetes.io/nvidia-gpu: 1
           limits:
             memory: 30Gi
-            cpu: 4
+            cpu: 2
             #alpha.kubernetes.io/nvidia-gpu: 1

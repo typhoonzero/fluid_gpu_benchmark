@@ -3,8 +3,8 @@ kind: Job
 metadata:
   name: text-classi-trainer
 spec:
-  parallelism: 4
-  completions: 4
+  parallelism: 100
+  completions: 100
   template:
     metadata:
       labels:
@@ -22,8 +22,8 @@ spec:
             path: /usr/bin/nvidia-smi
       containers:
       - name: trainer
-        #image: "registry.baidu.com/paddlepaddle/fluid_benchmark:cpu"
-        image: "bootstrapper:5000/fluid_benchmark:cpu"
+        image: "registry.baidu.com/paddlepaddle/fluid_benchmark:cpu"
+        #image: "bootstrapper:5000/fluid_benchmark:cpu"
         imagePullPolicy: Always
         command: ["paddle_k8s", "start_fluid"]
         #command: ["sleep", "3600"]
@@ -42,9 +42,9 @@ spec:
         - name: TRAINING_ROLE
           value: "TRAINER"
         - name: TRAINERS
-          value: "4"
+          value: "100"
         - name: PSERVERS
-          value: "4"
+          value: "20"
         - name: TOPOLOGY
           value: ""
         #- name: GLOG_v
@@ -73,7 +73,7 @@ spec:
         - name: PADDLE_INIT_PORTS_NUM_FOR_SPARSE
           value: "1"
         - name: PADDLE_INIT_NUM_GRADIENT_SERVERS
-          value: "4"
+          value: "100"
         - name: LD_LIBRARY_PATH
           value: "/usr/local/nvidia/lib64:/usr/local/lib:/usr/local/cuda/lib64"
         - name: NAMESPACE
@@ -87,8 +87,8 @@ spec:
         resources:
           requests:
             memory: 30Gi
-            cpu: 6
+            cpu: 2
           limits:
             memory: 30Gi
-            cpu: 6
+            cpu: 2
       restartPolicy: Never
