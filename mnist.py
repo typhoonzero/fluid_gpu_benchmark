@@ -14,6 +14,7 @@
 from __future__ import print_function
 import argparse
 import paddle.fluid as fluid
+import paddle.fluid.core as core
 import paddle.v2 as paddle
 import sys
 import numpy
@@ -64,7 +65,7 @@ def train(nn_type,
           save_dirname=None,
           model_filename=None,
           params_filename=None,
-          is_local=False):
+          is_local=os.getenv("LOCAL") == "TRUE"):
     if use_cuda and not fluid.core.is_compiled_with_cuda():
         return
     img = fluid.layers.data(name='img', shape=[1, 28, 28], dtype='float32')
@@ -149,21 +150,41 @@ def train(nn_type,
                         sys.exit("got NaN loss, training failed.")
         raise AssertionError("Loss of recognize digits is too large")
 
+    def train_loop_parallel(use_gpu, bcast=False):
+        place = core.CPUPlace() if not use_gpu else core.CUDAPlace(0)
+        startup_exe = fluid.Executor(place)
+        startup_exe.run(fluid.default_startup_program())
+        print("init parallel exe...")
+        exe = fluid.ParallelExecutor(use_gpu, avg_loss.name)
+
+        for pass_id in range(1000):
+            for batch_id, data in enumerate(train_reader()):
+                loss, = exe.run(
+                        [avg_loss.name],
+                        feed_dict=feeder.feed(data))
+                if bcast:
+                    exe.bcast_params()
+                print("Pass %d, batch %d, loss %s" % (pass_id, batch_id, numpy.array(loss)))
+
     if is_local:
-        train_loop(fluid.default_main_program())
+        # train_loop(fluid.default_main_program())
+        exe.run(fluid.default_startup_program())
+        train_loop_parallel(True)
     else:
-        pserver_ips = os.getenv("PADDLE_INIT_PSERVERS")  # all pserver endpoints
-        eplist = []
-        port = os.getenv("PADDLE_INIT_PORT")
-        for ip in pserver_ips.split(","):
-            eplist.append(':'.join([ip, port]))
-        pserver_endpoints = ",".join(eplist)
+        # pserver_ips = os.getenv("PADDLE_INIT_PSERVERS")  # all pserver endpoints
+        # eplist = []
+        # port = os.getenv("PADDLE_INIT_PORT")
+        # for ip in pserver_ips.split(","):
+        #     eplist.append(':'.join([ip, port]))
+        # pserver_endpoints = ",".join(eplist)
+        pserver_endpoints =  os.getenv("PSERVERS")
         print("pserver endpoints: ", pserver_endpoints)
         trainers = int(os.getenv("TRAINERS"))  # total trainer count
         print("trainers total: ", trainers)
         trainer_id = int(os.getenv("PADDLE_INIT_TRAINER_ID", "0"))
-        current_endpoint = os.getenv(
-            "POD_IP") + ":" + port  # current pserver endpoint
+        # current_endpoint = os.getenv(
+        #     "POD_IP") + ":" + port  # current pserver endpoint
+        current_endpoint = os.getenv("SERVER_ENDPOINT")
         training_role = os.getenv(
             "TRAINING_ROLE",
             "TRAINER")  # get the training role: trainer/pserver
@@ -185,7 +206,9 @@ def train(nn_type,
             server_exe.run(pserver_startup)
             server_exe.run(pserver_prog)
         elif training_role == "TRAINER":
-            train_loop(t.get_trainer_program())
+            t.get_trainer_program()
+            train_loop_parallel(True)
+            # train_loop(t.get_trainer_program())
 
 
 def infer(use_cuda,

@@ -23,7 +23,8 @@ spec:
       containers:
       - name: trainer
         #image: "registry.baidu.com/paddlepaddle/fluid_benchmark:gpu"
-        image: "bootstrapper:5000/fluid_benchmark:gpu"
+        #image: "bootstrapper:5000/fluid_benchmark:gpu"
+        image: "bootstrapper:5000/yancey1989/fluid_benchmakr:gpu"
         imagePullPolicy: Always
         command: ["paddle_k8s", "start_fluid"]
         #command: ["sleep", "3600"]
@@ -57,6 +58,8 @@ spec:
           value: "1"
         - name: MKL_NUM_THREADS
           value: "1"
+        - name: LOCAL
+          value: "FALSE"
         - name: ENTRY
           #value: "unset http_proxy && unset https_proxy && python /workspace/vgg16_fluid.py --local 0 --batch_size 20 --data_set flowers --device GPU --device_id 0"
           #value: "sleep 60 && unset http_proxy && unset https_proxy && python /workspace/text_fluid.py --local 0 --dict_path /workspace/aclImdb/imdb.vocab"

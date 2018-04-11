@@ -27,7 +27,7 @@ def ner_net(word_dict_len, label_dict_len, parallel, stack_num=2):
             input=mark,
             size=[mark_dict_len, mark_dim],
             dtype='float32',
-            is_sparse=IS_SPARSE)
+            is_sparse=False)
 
         word_caps_vector = fluid.layers.concat(
             input=[word_embedding, mark_embedding], axis=1)

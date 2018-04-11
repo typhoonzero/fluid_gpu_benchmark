@@ -21,7 +21,8 @@ spec:
       containers:
       - name: pserver
         #image: "registry.baidu.com/paddlepaddle/fluid_benchmark:gpu"
-        image: "bootstrapper:5000/fluid_benchmark:gpu"
+        #image: "bootstrapper:5000/fluid_benchmark:gpu"
+        image: "bootstrapper:5000/yancey1989/fluid_benchmakr:gpu"
         imagePullPolicy: Always
         volumeMounts:
           - mountPath: /usr/local/nvidia/lib64

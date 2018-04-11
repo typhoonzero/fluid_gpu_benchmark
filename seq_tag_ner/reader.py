@@ -64,3 +64,14 @@ def data_reader(data_file, word_dict, label_dict):
                         labels.append(segs[-1])
 
     return reader
+
+
+if __name__ == "__main__":
+    from utils import logger, load_dict
+    d1 = load_dict("data/vocab.txt")
+    d2 = load_dict("data/target.txt")
+    r = data_reader("data/train", d1, d2)
+    t = 0
+    for d in r():
+        t += 1
+    print t

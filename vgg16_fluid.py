@@ -17,7 +17,7 @@ from __future__ import print_function
 import sys
 import time
 import numpy as np
-import paddle.v2 as paddle
+import paddle as paddle
 import paddle.fluid as fluid
 import paddle.fluid.core as core
 import paddle.fluid.profiler as profiler
@@ -34,14 +34,6 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
-def get_device_id():
-    for devname in os.listdir("/dev"):
-        if devname.startswith("nvidia") and len(devname) == 7:
-            # return first device fornow
-            print("using device ", devname)
-            return int(devname[-1])
-
-
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument(
     '--batch_size', type=int, default=128, help="Batch size for training.")
@@ -57,7 +49,6 @@ parser.add_argument(
     default='CPU',
     choices=['CPU', 'GPU'],
     help="The device type.")
-parser.add_argument('--device_id', type=int, default=0, help="The device id.")
 parser.add_argument(
     '--data_format',
     type=str,
@@ -142,11 +133,19 @@ def main():
     # Optimization
     optimizer = fluid.optimizer.Adam(learning_rate=args.learning_rate)
     optimize_ops, params_grads = optimizer.minimize(avg_cost)
+    params = [p for p, g in params_grads]
 
-    # Initialize executor
-    place = core.CPUPlace() if args.device == 'CPU' else core.CUDAPlace(
-        args.device_id)
-    exe = fluid.Executor(place)
+    # data reader
+    train_reader = paddle.batch(
+        paddle.reader.shuffle(
+            paddle.dataset.cifar.train10() if args.data_set == 'cifar10'
+            else paddle.dataset.flowers.train(),
+            buf_size=5120),
+        batch_size=args.batch_size)
+    test_reader = paddle.batch(
+        paddle.dataset.cifar.test10()
+        if args.data_set == 'cifar10' else paddle.dataset.flowers.test(),
+        batch_size=args.batch_size)
 
     # test
     def test(exe):
@@ -164,12 +163,15 @@ def main():
             test_accuracy.add(value=acc, weight=weight)
         return test_accuracy.eval()
 
-    def train_loop(exe, trainer_prog, trainer_id=0):
+    def train_loop(use_gpu, trainer_prog, trainer_id=0):
+        place = core.CPUPlace() if not use_gpu else core.CUDAPlace(0)
         iters = 0
         accuracy = fluid.average.WeightedAverage()
         start_time = time.time()
         num_samples = 0
         accuracy.reset()
+        feeder = fluid.DataFeeder(place=place, feed_list=[images, label])
+        exe = fluid.Executor(place)
 
         for pass_id in range(args.num_passes):
             # train
@@ -178,16 +180,9 @@ def main():
             with profiler.profiler("All", 'total', profile_path="/usr/local/nvidia/lib64/tmp") as prof:
                 for batch_id, data in enumerate(train_reader()):
                     batch_st = time.time()
-                    img_data = np.array(
-                        map(lambda x: x[0].reshape(data_shape), data)).astype(
-                            "float32")
-                    y_data = np.array(map(lambda x: x[1], data)).astype("int64")
-                    y_data = y_data.reshape([-1, 1])
-
                     loss, acc, weight = exe.run(
                         trainer_prog,
-                        feed={"pixel": img_data,
-                              "label": y_data},
+                        feed=feeder.feed(data),
                         fetch_list=[avg_cost, batch_acc, batch_size_tensor])
                     accuracy.add(value=acc, weight=weight)
                     iters += 1
@@ -205,36 +200,40 @@ def main():
                 % (pass_id, num_samples / pass_elapsed, pass_train_acc,
                 pass_test_acc))
 
-    if args.local:
-        # Parameter initialization
-        exe.run(fluid.default_startup_program())
+    def train_loop_parallel(use_gpu, trainer_prog, trainer_id=0, bcast=False):
+        place = core.CPUPlace() if not use_gpu else core.CUDAPlace(0)
+        startup_exe = fluid.Executor(place)
+        startup_exe.run(fluid.default_startup_program())
+        exe = fluid.ParallelExecutor(use_gpu, avg_cost.name)
 
-        # data reader
-        train_reader = paddle.batch(
-            paddle.reader.shuffle(
-                paddle.dataset.cifar.train10() if args.data_set == 'cifar10'
-                else paddle.dataset.flowers.train(),
-                buf_size=5120),
-            batch_size=args.batch_size)
-        test_reader = paddle.batch(
-            paddle.dataset.cifar.test10()
-            if args.data_set == 'cifar10' else paddle.dataset.flowers.test(),
-            batch_size=args.batch_size)
-        train_loop(exe, fluid.default_main_program())
-    else:
-        pserver_ips = os.getenv("PADDLE_INIT_PSERVERS")  # all pserver endpoints
-        eplist = []
-        port = os.getenv("PADDLE_INIT_PORT")
-        for ip in pserver_ips.split(","):
-            eplist.append(':'.join([ip, port]))
-        pserver_endpoints = ",".join(eplist)
+        feeder = fluid.DataFeeder(place=place, feed_list=[images, label])
+
+        for pass_id in range(args.num_passes):
+            for batch_id, data in enumerate(train_reader()):
+                print("before run one...")
+                loss, = exe.run(
+                        [avg_cost.name],
+                        feed_dict=feeder.feed(data))
+                if bcast:
+                    exe.bcast_params()
+                print("Pass %d, batch %d, loss %s" % (pass_id, batch_id, np.array(loss)))
+
+    def transpile2dist():
+        # pserver_ips = os.getenv("PADDLE_INIT_PSERVERS")  # all pserver endpoints
+        # eplist = []
+        # port = os.getenv("PADDLE_INIT_PORT")
+        # for ip in pserver_ips.split(","):
+        #     eplist.append(':'.join([ip, port]))
+        # pserver_endpoints = ",".join(eplist)
+        pserver_endpoints = os.getenv("PSERVERS")
         print("pserver endpoints: ", pserver_endpoints)
         trainers = int(os.getenv("TRAINERS"))  # total trainer count
         print("trainers total: ", trainers)
         trainer_id = int(os.getenv("PADDLE_INIT_TRAINER_ID", "0"))
-        current_endpoint = os.getenv(
-            "POD_IP") + ":" + port  # current pserver endpoint
-        training_role = os.getenv(
+        # current_endpoint = os.getenv(
+        #         "POD_IP") + ":" + port  # current pserver endpoint
+        current_endpoint = os.getenv("SERVER_ENDPOINT")
+        role = os.getenv(
             "TRAINING_ROLE",
             "TRAINER")  # get the training role: trainer/pserver
         t = fluid.DistributeTranspiler()
@@ -244,47 +243,31 @@ def main():
             trainer_id,
             pservers=pserver_endpoints,
             trainers=trainers)
+        return t, role, current_endpoint, trainer_id
 
-        if training_role == "PSERVER":
-            if not current_endpoint:
-                print("need env SERVER_ENDPOINT")
-                exit(1)
+    use_gpu = False if args.device == 'CPU' else True
+    if args.local:
+        train_loop_parallel(use_gpu, fluid.default_main_program())
+    else:
+        t, role, current_endpoint, trainer_id  = transpile2dist()
+
+        if role == "PSERVER":
+            place = fluid.CUDAPlace(0) if use_gpu else fluid.CPUPlace()
+            exe = fluid.Executor(place)
             pserver_prog = t.get_pserver_program(current_endpoint)
-            print("######## pserver prog #############")
+            # For debug program
             with open("/tmp/pserver_prog", "w") as f:
                 f.write(pserver_prog.__str__())
-            print("######## pserver prog #############")
             pserver_startup = t.get_startup_program(current_endpoint,
                                                     pserver_prog)
-            print("starting server side startup")
             exe.run(pserver_startup)
-            print("starting parameter server...")
             exe.run(pserver_prog)
-        elif training_role == "TRAINER":
-            # Parameter initialization
-            exe.run(fluid.default_startup_program())
-
-            # data reader
-            train_reader = paddle.batch(
-                paddle.reader.shuffle(
-                    paddle.dataset.cifar.train10() if args.data_set == 'cifar10'
-                    else paddle.dataset.flowers.train(),
-                    buf_size=5120),
-                batch_size=args.batch_size)
-            test_reader = paddle.batch(
-                paddle.dataset.cifar.test10() if args.data_set == 'cifar10' else
-                paddle.dataset.flowers.test(),
-                batch_size=args.batch_size)
-
+        elif role == "TRAINER":
             trainer_prog = t.get_trainer_program()
-            print("######## trainer prog #############")
+            # For debug program
             with open("/tmp/trainer_prog", "w") as f:
                 f.write(trainer_prog.__str__())
-            print("######## trainer prog #############")
-            feeder = fluid.DataFeeder(feed_list=[images, label], place=place)
-            # TODO(typhoonzero): change trainer startup program to fetch parameters from pserver
-            exe.run(fluid.default_startup_program())
-            train_loop(exe, trainer_prog, trainer_id)
+            train_loop_parallel(use_gpu, trainer_prog, trainer_id, True)
         else:
             print("environment var TRAINER_ROLE should be TRAINER os PSERVER")
 
