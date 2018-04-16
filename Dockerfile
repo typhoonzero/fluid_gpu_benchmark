@@ -17,6 +17,7 @@ RUN sed -i "s/52808999861908f626f3c1f4e79d11fa/33bfc11892f1e405ca193ae9a9f2a118/
 
 RUN sh -c 'echo "import paddle.v2 as paddle\npaddle.dataset.cifar.train10()\npaddle.dataset.flowers.train()" | python'
 RUN sh -c 'echo "import paddle.v2 as paddle\npaddle.dataset.mnist.train()\npaddle.dataset.mnist.test()\npaddle.dataset.imdb.fetch()" | python'
+RUN sh -c 'echo "import paddle.v2 as paddle\npaddle.dataset.imikolov.fetch()" | python'
 RUN pip uninstall -y paddlepaddle
 RUN apt-get install -y vim net-tools iftop
 RUN mkdir /workspace && wget -q -O /workspace/aclImdb_v1.tar.gz http://ai.stanford.edu/%7Eamaas/data/sentiment/aclImdb_v1.tar.gz && cd /workspace && tar zxf aclImdb_v1.tar.gz && cd -
@@ -32,4 +33,5 @@ ADD paddle_k8s /usr/bin
 ENV LD_LIBRARY_PATH=/usr/local/lib
 ADD vgg16_fluid.py vgg16_v2.py vgg16_fluid_nosplit.py text_fluid.py config.py /workspace/
 ADD seq_tag_ner /workspace/seq_tag_ner
+ADD lm /workspace/lm
 RUN ln -s /usr/lib/x86_64-linux-gnu/libcudnn.so.5 /usr/lib/libcudnn.so
