@@ -65,6 +65,14 @@ def data_reader(data_file, word_dict, label_dict):
 
     return reader
 
+def cluster_data_reader(data_file, word_dict, label_dict, num_trainers, trainer_id):
+    def reader():
+        idx = 0
+        for d in data_reader(data_file, word_dict, label_dict)():
+            if idx % num_trainers == trainer_id:
+                yield d
+            idx += 1
+    return reader
 
 if __name__ == "__main__":
     from utils import logger, load_dict

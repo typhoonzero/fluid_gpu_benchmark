@@ -3,8 +3,8 @@ kind: Job
 metadata:
   name: seq-tag-ner-trainer
 spec:
-  parallelism: 4
-  completions: 4
+  parallelism: 1
+  completions: 1
   template:
     metadata:
       labels:
@@ -23,8 +23,7 @@ spec:
       containers:
       - name: trainer
         #image: "registry.baidu.com/paddlepaddle/fluid_benchmark:gpu"
-        #image: "bootstrapper:5000/fluid_benchmark:gpu"
-        image: "bootstrapper:5000/yancey1989/fluid_benchmakr:gpu"
+        image: "bootstrapper:5000/fluid_benchmark:gpu"
         imagePullPolicy: Always
         command: ["paddle_k8s", "start_fluid"]
         #command: ["sleep", "3600"]
@@ -34,18 +33,14 @@ spec:
           - mountPath: /opt/bin/nvidia-smi
             name: nvidia-smi
         env:
-        #- name: GRPC_TRACE
-        #  value: all,-tcp
-        #- name: GRPC_VERBOSITY
-        #  value: debug
         - name: PADDLE_JOB_NAME
           value: seq-tag-ner
         - name: TRAINING_ROLE
           value: "TRAINER"
         - name: TRAINERS
-          value: "4"
+          value: "1"
         - name: PSERVERS
-          value: "4"
+          value: "1"
         - name: TOPOLOGY
           value: ""
         #- name: GLOG_v
@@ -60,14 +55,14 @@ spec:
           value: "1"
         - name: LOCAL
           value: "FALSE"
+        - name: BATCH_SIZE
+          value: "200"
         - name: ENTRY
-          #value: "unset http_proxy && unset https_proxy && python /workspace/vgg16_fluid.py --local 0 --batch_size 20 --data_set flowers --device GPU --device_id 0"
-          #value: "sleep 60 && unset http_proxy && unset https_proxy && python /workspace/text_fluid.py --local 0 --dict_path /workspace/aclImdb/imdb.vocab"
           value: "sleep 60 && unset http_proxy && unset https_proxy && cd /workspace/seq_tag_ner && python train.py"
         - name: TRAINER_PACKAGE
           value: "/workspace"
         - name: PADDLE_INIT_PORT
-          value: "30256"
+          value: "30258"
         - name: PADDLE_INIT_NICS
           value: "eth2"
         - name: PADDLE_INIT_TRAINER_COUNT

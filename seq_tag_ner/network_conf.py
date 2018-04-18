@@ -27,7 +27,7 @@ def ner_net(word_dict_len, label_dict_len, parallel, stack_num=2):
             input=mark,
             size=[mark_dict_len, mark_dim],
             dtype='float32',
-            is_sparse=False)
+            is_sparse=IS_SPARSE)
 
         word_caps_vector = fluid.layers.concat(
             input=[word_embedding, mark_embedding], axis=1)
@@ -100,7 +100,8 @@ def ner_net(word_dict_len, label_dict_len, parallel, stack_num=2):
                 initializer=NormalInitializer(
                     loc=0.0, scale=(1. / math.sqrt(hidden_dim) / 3)),
                 learning_rate=mix_hidden_lr))
-        avg_cost = fluid.layers.mean(x=crf_cost)
+        # avg_cost = fluid.layers.mean(x=crf_cost)
+        avg_cost = fluid.layers.sum(x=crf_cost)
         return avg_cost, emission
 
     word = fluid.layers.data(name='word', shape=[1], dtype='int64', lod_level=1)

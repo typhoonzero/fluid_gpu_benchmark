@@ -30,7 +30,7 @@ def main(train_data_file, test_data_file, vocab_file, target_file, emb_file,
     if not os.path.exists(model_save_dir):
         os.mkdir(model_save_dir)
 
-    BATCH_SIZE = 200
+    BATCH_SIZE = int(os.getenv("BATCH_SIZE", "200"))
     word_dict = load_dict(vocab_file)
     label_dict = load_dict(target_file)
 
@@ -42,7 +42,7 @@ def main(train_data_file, test_data_file, vocab_file, target_file, emb_file,
     avg_cost, feature_out, word, mark, target = ner_net(
         word_dict_len, label_dict_len, parallel)
 
-    sgd_optimizer = fluid.optimizer.SGD(learning_rate=1e-3)
+    sgd_optimizer = fluid.optimizer.SGD(learning_rate=1e-3 / BATCH_SIZE)
     optimize_ops, params_grads = sgd_optimizer.minimize(avg_cost)
 
     crf_decode = fluid.layers.crf_decoding(
@@ -74,10 +74,8 @@ def main(train_data_file, test_data_file, vocab_file, target_file, emb_file,
     feeder = fluid.DataFeeder(feed_list=[word, mark, target], place=place)
     exe = fluid.Executor(place)
 
-    # exe.run(fluid.default_startup_program())
 
-
-    def train_loop(exe, trainer_prog, trainer_id = 0):
+    def train_loop(exe, trainer_prog, trainer_id = 0, reader = train_reader):
         embedding_name = 'emb'
         embedding_param = fluid.global_scope().find_var(embedding_name).get_tensor()
         embedding_param.set(word_vector_values, place)
@@ -87,16 +85,16 @@ def main(train_data_file, test_data_file, vocab_file, target_file, emb_file,
             chunk_evaluator.reset(exe)
             start_time = time.time()
             with profiler.profiler("CPU", 'total', profile_path="/usr/local/nvidia/lib64/tmp") as prof:
-                for data in train_reader():
+                for data in reader():
                     cost, batch_precision, batch_recall, batch_f1_score = exe.run(
                         trainer_prog,
                         feed=feeder.feed(data),
                         fetch_list=[avg_cost] + chunk_evaluator.metrics)
-                    # if batch_id % 5 == 0:
-                    #     print("Pass " + str(pass_id) + ", Batch " + str(
-                    #         batch_id) + ", Cost " + str(cost[0]) + ", Precision " + str(
-                    #             batch_precision[0]) + ", Recall " + str(batch_recall[0])
-                    #         + ", F1_score" + str(batch_f1_score[0]))
+                    if batch_id % 5 == 0:
+                        print("Pass " + str(pass_id) + ", Batch " + str(
+                            batch_id) + ", Cost " + str(cost[0]) + ", Precision " + str(
+                                batch_precision[0]) + ", Recall " + str(batch_recall[0])
+                            + ", F1_score" + str(batch_f1_score[0]))
                     batch_id = batch_id + 1
 
                 pass_precision, pass_recall, pass_f1_score = chunk_evaluator.eval(exe)
@@ -104,16 +102,19 @@ def main(train_data_file, test_data_file, vocab_file, target_file, emb_file,
                 print("pass_id: %d, precision: %f, recall: %f, f1: %f, spent: %f, speed: %f" % \
                       (pass_id, pass_precision, pass_recall, pass_f1_score,
                       spent, 14987.0 / spent))
-                # pass_precision, pass_recall, pass_f1_score = test(
-                #     exe, chunk_evaluator, inference_program, test_reader, place)
-                # print("[TestSet] pass_id:" + str(pass_id) + " pass_precision:" + str(
-                #     pass_precision) + " pass_recall:" + str(pass_recall) +
-                #     " pass_f1_score:" + str(pass_f1_score))
+                pass_precision, pass_recall, pass_f1_score = test(
+                    exe, chunk_evaluator, inference_program, test_reader, place)
+                print("[TestSet] pass_id:" + str(pass_id) + " pass_precision:" + str(
+                    pass_precision) + " pass_recall:" + str(pass_recall) +
+                    " pass_f1_score:" + str(pass_f1_score))
 
                 # save_dirname = os.path.join(model_save_dir,
                 #     "params_pass_%d_trainer%d" % (pass_id, trainer_id))
                 # fluid.io.save_inference_model(save_dirname, ['word', 'mark', 'target'],
                 #                             [crf_decode], exe)
+
+    with open("/tmp/origin_prog", "w") as fn:
+        fn.write(fluid.default_main_program().__str__())
 
     if os.getenv("LOCAL") == "TRUE":
         exe.run(fluid.default_startup_program())
@@ -125,9 +126,7 @@ def main(train_data_file, test_data_file, vocab_file, target_file, emb_file,
         for ip in pserver_ips.split(","):
             eplist.append(':'.join([ip, port]))
         pserver_endpoints = ",".join(eplist)
-        print("pserver endpoints: ", pserver_endpoints)
         trainers = int(os.getenv("TRAINERS"))  # total trainer count
-        print("trainers total: ", trainers)
         trainer_id = int(os.getenv("PADDLE_INIT_TRAINER_ID", "0"))
         current_endpoint = os.getenv(
             "POD_IP") + ":" + port  # current pserver endpoint
@@ -142,6 +141,8 @@ def main(train_data_file, test_data_file, vocab_file, target_file, emb_file,
             pservers=pserver_endpoints,
             trainers=trainers)
 
+        print("endpoints: %s, current: %s, trainers: %d, trainer_id: %d, role: %s" %\
+              (pserver_endpoints, current_endpoint, trainers, trainer_id, training_role))
         if training_role == "PSERVER":
             if not current_endpoint:
                 print("need env SERVER_ENDPOINT")
@@ -153,6 +154,8 @@ def main(train_data_file, test_data_file, vocab_file, target_file, emb_file,
             print("######## pserver prog #############")
             pserver_startup = t.get_startup_program(current_endpoint,
                                                     pserver_prog)
+            with open("/tmp/pserver_startup", "w") as f:
+                f.write(pserver_startup.__str__())
             print("starting server side startup")
             exe.run(pserver_startup)
             print("starting parameter server...")
@@ -160,11 +163,17 @@ def main(train_data_file, test_data_file, vocab_file, target_file, emb_file,
         elif training_role == "TRAINER":
             exe.run(fluid.default_startup_program())
             trainer_prog = t.get_trainer_program()
+            cluster_train_reader = paddle.batch(
+                paddle.reader.shuffle(
+                    reader.cluster_data_reader(
+                        train_data_file, word_dict, label_dict, trainers, trainer_id),
+                    buf_size=20000),
+                batch_size=BATCH_SIZE)
             print("######## trainer prog #############")
             with open("/tmp/trainer_prog", "w") as f:
                 f.write(trainer_prog.__str__())
             print("######## trainer prog #############")
-            train_loop(exe, trainer_prog, trainer_id)
+            train_loop(exe, trainer_prog, trainer_id, cluster_train_reader)
         else:
             print("environment var TRAINER_ROLE should be TRAINER os PSERVER")
     

@@ -30,6 +30,8 @@ RUN pip install /*.whl && rm -f /*.whl && \
 chmod +x /usr/bin/paddle_k8s
 
 ADD paddle_k8s /usr/bin
+# patch
+ADD distribute_transpiler.py /usr/local/lib/python2.7/dist-packages/paddle/fluid/distribute_transpiler.py
 ENV LD_LIBRARY_PATH=/usr/local/lib
 ADD vgg16_fluid.py vgg16_v2.py vgg16_fluid_nosplit.py text_fluid.py config.py /workspace/
 ADD seq_tag_ner /workspace/seq_tag_ner
