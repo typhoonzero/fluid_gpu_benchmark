@@ -3,8 +3,8 @@ kind: Job
 metadata:
   name: seq-tag-ner-trainer
 spec:
-  parallelism: 1
-  completions: 1
+  parallelism: 4
+  completions: 4
   template:
     metadata:
       labels:
@@ -26,7 +26,9 @@ spec:
         image: "bootstrapper:5000/fluid_benchmark:gpu"
         imagePullPolicy: Always
         command: ["paddle_k8s", "start_fluid"]
-        #command: ["sleep", "3600"]
+        ports:
+        - name: spread-50010
+          containerPort: 50010
         volumeMounts:
           - mountPath: /usr/local/nvidia/lib64
             name: nvidia-driver
@@ -38,17 +40,17 @@ spec:
         - name: TRAINING_ROLE
           value: "TRAINER"
         - name: TRAINERS
-          value: "1"
+          value: "4"
         - name: PSERVERS
-          value: "1"
+          value: "4"
         - name: TOPOLOGY
           value: ""
-        #- name: GLOG_v
-        #  value: "2"
         - name: FLAGS_fraction_of_gpu_memory_to_use
           value: "0.4"
         - name: FLAGS_benchmark
           value: "1"
+        #- name: GLOG_v
+        #  value: "3"
         - name: GLOG_logtostderr
           value: "1"
         - name: MKL_NUM_THREADS
@@ -56,9 +58,9 @@ spec:
         - name: LOCAL
           value: "FALSE"
         - name: BATCH_SIZE
-          value: "200"
+          value: "50"
         - name: ENTRY
-          value: "sleep 60 && unset http_proxy && unset https_proxy && cd /workspace/seq_tag_ner && python train.py"
+          value: "sleep 10 && unset http_proxy && unset https_proxy && cd /workspace/seq_tag_ner && python train.py"
         - name: TRAINER_PACKAGE
           value: "/workspace"
         - name: PADDLE_INIT_PORT

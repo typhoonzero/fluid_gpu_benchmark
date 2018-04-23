@@ -25,15 +25,18 @@ RUN mkdir /workspace && wget -q -O /workspace/aclImdb_v1.tar.gz http://ai.stanfo
 # below lines may change a lot for debugging
 ADD https://raw.githubusercontent.com/PaddlePaddle/cloud/develop/docker/paddle_k8s /usr/bin
 ADD https://raw.githubusercontent.com/PaddlePaddle/cloud/develop/docker/k8s_tools.py /root
+RUN apt-get install -y libnccl2=2.1.2-1+cuda8.0
 ADD *.whl /
 RUN pip install /*.whl && rm -f /*.whl && \
 chmod +x /usr/bin/paddle_k8s
+ENV http_proxy=""
+ENV https_proxy=""
+
+RUN ln -s /usr/lib/x86_64-linux-gnu/libcudnn.so.5 /usr/lib/libcudnn.so && ln -s /usr/lib/x86_64-linux-gnu/libnccl.so.2 /usr/lib/libnccl.so
 
 ADD paddle_k8s /usr/bin
 # patch
-ADD distribute_transpiler.py /usr/local/lib/python2.7/dist-packages/paddle/fluid/distribute_transpiler.py
 ENV LD_LIBRARY_PATH=/usr/local/lib
 ADD vgg16_fluid.py vgg16_v2.py vgg16_fluid_nosplit.py text_fluid.py config.py /workspace/
 ADD seq_tag_ner /workspace/seq_tag_ner
 ADD lm /workspace/lm
-RUN ln -s /usr/lib/x86_64-linux-gnu/libcudnn.so.5 /usr/lib/libcudnn.so

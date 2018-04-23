@@ -30,7 +30,7 @@ parser.add_argument(
 parser.add_argument(
     '--plot_item',
     type=str,
-    choices=['sum loss', 'avg loss', 'ppl', 'Cost'],
+    choices=['sum loss', 'avg loss', 'ppl', 'Cost', 'Acc'],
     default='ppl',
     help='Item to plot. (default: %(default)d)')
 parser.add_argument(
@@ -63,6 +63,8 @@ def item_to_name(item):
         return 'AVG Loss'
     elif item == 'Cost':
         return 'AVG Loss'
+    elif item == 'Acc':
+        return 'Acc'
     elif item == 'ppl':
         return 'PPL'
 

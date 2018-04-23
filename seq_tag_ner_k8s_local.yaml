@@ -1,57 +1,64 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: seq-tag-ner-pserver
+  name: seq-tag-ner-local
 spec:
-  parallelism: 4
-  completions: 4
+  parallelism: 1
+  completions: 1
   template:
     metadata:
       labels:
-        paddle-job-pserver: seq-tag-ner
+        paddle-job: seq-tag-ner-local
     spec:
+      imagePullSecrets:
+        - name: job-registry-secret
       hostNetwork: true
-      restartPolicy: Never
       volumes:
         - name: nvidia-driver
           hostPath:
             path: /usr/local/nvidia/lib64
-      imagePullSecrets:
-      - name: job-registry-secret
+        - name: nvidia-smi
+          hostPath:
+            path: /usr/bin/nvidia-smi
       containers:
-      - name: pserver
+      - name: trainer
         #image: "registry.baidu.com/paddlepaddle/fluid_benchmark:gpu"
         image: "bootstrapper:5000/fluid_benchmark:gpu"
         imagePullPolicy: Always
+        #command: ["paddle_k8s", "start_fluid"]
+        command: ["bash", "-c", "unset http_proxy && unset https_proxy && cd /workspace/seq_tag_ner && python train.py"]
         volumeMounts:
           - mountPath: /usr/local/nvidia/lib64
             name: nvidia-driver
-        ports:
-        - name: jobport-30258
-          containerPort: 30258
+          - mountPath: /opt/bin/nvidia-smi
+            name: nvidia-smi
         env:
         - name: PADDLE_JOB_NAME
-          value: seq-tag-ner
-        - name: MKL_NUM_THREADS
-          value: "1"
+          value: seq-tag-ner-local
         - name: TRAINING_ROLE
-          value: "PSERVER"
+          value: "TRAINER"
         - name: TRAINERS
-          value: "4"
+          value: "1"
         - name: PSERVERS
-          value: "4"
+          value: "1"
         - name: TOPOLOGY
           value: ""
         #- name: GLOG_v
         #  value: "2"
+        - name: FLAGS_fraction_of_gpu_memory_to_use
+          value: "0.4"
+        - name: FLAGS_benchmark
+          value: "1"
         - name: GLOG_logtostderr
           value: "1"
+        - name: MKL_NUM_THREADS
+          value: "1"
         - name: LOCAL
-          value: "FALSE"
+          value: "TRUE"
         - name: BATCH_SIZE
-          value: "50"
+          value: "200"
         - name: ENTRY
-          value: "unset http_proxy && unset https_proxy && cd /workspace/seq_tag_ner && python train.py"
+          value: "sleep 60 && unset http_proxy && unset https_proxy && cd /workspace/seq_tag_ner && python train.py"
         - name: TRAINER_PACKAGE
           value: "/workspace"
         - name: PADDLE_INIT_PORT
@@ -66,10 +73,6 @@ spec:
           value: "1"
         - name: PADDLE_INIT_NUM_GRADIENT_SERVERS
           value: "4"
-        - name: PADDLE_INIT_NUM_PASSES
-          value: "1"
-        - name: PADDLE_INIT_USE_GPU
-          value: "0"
         - name: LD_LIBRARY_PATH
           value: "/usr/local/nvidia/lib64:/usr/local/lib:/usr/local/cuda/lib64"
         - name: NAMESPACE
@@ -80,13 +83,11 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: "status.podIP"
-        command: ["paddle_k8s", "start_fluid"]
         resources:
           requests:
             memory: 30Gi
             cpu: 2
-            #alpha.kubernetes.io/nvidia-gpu: 1
           limits:
             memory: 30Gi
             cpu: 2
-            #alpha.kubernetes.io/nvidia-gpu: 1
+      restartPolicy: Never

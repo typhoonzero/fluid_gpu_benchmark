@@ -26,7 +26,9 @@ spec:
         image: "bootstrapper:5000/fluid_benchmark:gpu"
         imagePullPolicy: Always
         command: ["paddle_k8s", "start_fluid"]
-        #command: ["sleep", "3600"]
+        ports:
+        - name: spread-50011
+          containerPort: 50011
         volumeMounts:
           - mountPath: /usr/local/nvidia/lib64
             name: nvidia-driver
@@ -62,7 +64,7 @@ spec:
         - name: USE_GPU
           value: "TRUE"
         - name: BATCH_SIZE
-          value: "5"
+          value: "20"
         - name: IS_SPARSE
           value: "FALSE"
         - name: ENTRY
@@ -94,10 +96,10 @@ spec:
         resources:
           requests:
             memory: 30Gi
-            cpu: 2
+            cpu: 1
             alpha.kubernetes.io/nvidia-gpu: 1
           limits:
             memory: 30Gi
-            cpu: 2
+            cpu: 1
             alpha.kubernetes.io/nvidia-gpu: 1
       restartPolicy: Never

@@ -7,7 +7,6 @@ import time
 import numpy as np
 import paddle.v2 as paddle
 import paddle.fluid as fluid
-import paddle.fluid.profiler as profiler
 
 # set hyper parameters
 N = 1000
@@ -129,18 +128,17 @@ def main():
             print "epoch_%d start" % epoch_id
             pass_start = time.time()
             i = 0
-            with profiler.profiler("All", 'total', profile_path="/usr/local/nvidia/lib64/tmp") as prof:
-                for data in reader():
-                    i += 1
-                    lod_src_wordseq = to_lodtensor(map(lambda x: x[0], data), place)
-                    lod_dst_wordseq = to_lodtensor(map(lambda x: x[1], data), place)
-                    ret_average_cost = exe.run(
-                            trainer_prog,
-                            feed={"src_wordseq": lod_src_wordseq, "dst_wordseq": lod_dst_wordseq},
-                            fetch_list=[average_cost])
-                    average_ppl = math.exp(ret_average_cost[0])
-                    if i % 100 == 0:
-                        print "step %d ppl: %.3f" % (i, average_ppl)
+            for data in reader():
+                i += 1
+                lod_src_wordseq = to_lodtensor(map(lambda x: x[0], data), place)
+                lod_dst_wordseq = to_lodtensor(map(lambda x: x[1], data), place)
+                ret_average_cost = exe.run(
+                        trainer_prog,
+                        feed={"src_wordseq": lod_src_wordseq, "dst_wordseq": lod_dst_wordseq},
+                        fetch_list=[average_cost])
+                average_ppl = math.exp(ret_average_cost[0])
+                if i % 100 == 0:
+                    print "step %d ppl: %.3f" % (i, average_ppl)
             print "total steps:", i
             test(exe, epoch_id, place)
             # NO saving model
@@ -150,11 +148,30 @@ def main():
             # fluid.io.save_inference_model(save_dir, feed_var_names, fetch_vars, exe)
             print "epoch_%d finished, spent: %f" % (epoch_id, time.time() - pass_start)
 
+    def train_loop_parallel(reader):
+        place = fluid.CUDAPlace(0)
+        feed_place = fluid.CPUPlace()
+        startup_exe = fluid.Executor(place)
+        startup_exe.run(fluid.default_startup_program())
+        exe = fluid.ParallelExecutor(True, average_cost.name)
+        print("#### para_exe running on %d GPUs." % exe.device_count)
+
+        for pass_id in xrange(epoch_num):
+            for batch_id, data in enumerate(reader()):
+                lod_src_wordseq = to_lodtensor(map(lambda x: x[0], data), feed_place)
+                lod_dst_wordseq = to_lodtensor(map(lambda x: x[1], data), feed_place)
+                loss, = exe.run([average_cost.name],
+                        feed={"src_wordseq": lod_src_wordseq, "dst_wordseq": lod_dst_wordseq})
+                # broadcast params to all GPU per batch
+                exe.bcast_params()
+                print("Pass %d, batch %d, loss %s" % (pass_id, batch_id, np.array(loss)))
+
     use_gpu = True if os.getenv("USE_GPU") == "TRUE" else False
     if os.getenv("LOCAL") == "TRUE":
-        place = fluid.CUDAPlace(0) if use_gpu else fluid.CPUPlace()
-        exe = fluid.Executor(place)
-        train_loop(exe, fluid.default_main_program(), train_reader)
+        # place = fluid.CUDAPlace(0) if use_gpu else fluid.CPUPlace()
+        # exe = fluid.Executor(place)
+        # train_loop(exe, fluid.default_main_program(), train_reader)
+        train_loop_parallel(train_reader)
     elif os.getenv("LOCAL") == "FALSE":
         pserver_ips = os.getenv("PADDLE_INIT_PSERVERS")
         eplist = []
@@ -202,12 +219,9 @@ def main():
             exe.run(pserver_prog)
         elif role == "TRAINER":
             trainer_prog = t.get_trainer_program()
-            place = fluid.CUDAPlace(0) if use_gpu else fluid.CPUPlace()
-            exe = fluid.Executor(place)
-            # For debug program
             with open("/tmp/trainer_prog", "w") as f:
                 f.write(trainer_prog.__str__())
-            train_loop(exe, trainer_prog, cluster_batch_reader)
+            train_loop_parallel(cluster_batch_reader)
         else:
             raise("role %s not supported" % role)
 

@@ -11,6 +11,7 @@ from network_conf import ner_net
 from utils import logger, load_dict
 from utils_extend import to_lodtensor, get_embedding
 
+SEED = 1524039846
 
 def test(exe, chunk_evaluator, inference_program, test_data, place):
     chunk_evaluator.reset(exe)
@@ -42,7 +43,7 @@ def main(train_data_file, test_data_file, vocab_file, target_file, emb_file,
     avg_cost, feature_out, word, mark, target = ner_net(
         word_dict_len, label_dict_len, parallel)
 
-    sgd_optimizer = fluid.optimizer.SGD(learning_rate=1e-3 / BATCH_SIZE)
+    sgd_optimizer = fluid.optimizer.SGD(learning_rate=1e-3)
     optimize_ops, params_grads = sgd_optimizer.minimize(avg_cost)
 
     crf_decode = fluid.layers.crf_decoding(
@@ -60,14 +61,14 @@ def main(train_data_file, test_data_file, vocab_file, target_file, emb_file,
         inference_program = fluid.io.get_inference_program(test_target)
 
     train_reader = paddle.batch(
-        paddle.reader.shuffle(
-            reader.data_reader(train_data_file, word_dict, label_dict),
-            buf_size=20000),
+        # paddle.reader.shuffle(
+        reader.data_reader(train_data_file, word_dict, label_dict),
+            # buf_size=20000),
         batch_size=BATCH_SIZE)
     test_reader = paddle.batch(
-        paddle.reader.shuffle(
-            reader.data_reader(test_data_file, word_dict, label_dict),
-            buf_size=20000),
+        # paddle.reader.shuffle(
+        reader.data_reader(test_data_file, word_dict, label_dict),
+            # buf_size=20000),
         batch_size=BATCH_SIZE)
 
     place = fluid.CUDAPlace(0) if use_gpu else fluid.CPUPlace()
@@ -117,6 +118,7 @@ def main(train_data_file, test_data_file, vocab_file, target_file, emb_file,
         fn.write(fluid.default_main_program().__str__())
 
     if os.getenv("LOCAL") == "TRUE":
+        fluid.default_startup_program().random_seed = SEED
         exe.run(fluid.default_startup_program())
         train_loop(exe, fluid.default_main_program())
     else:
@@ -154,6 +156,7 @@ def main(train_data_file, test_data_file, vocab_file, target_file, emb_file,
             print("######## pserver prog #############")
             pserver_startup = t.get_startup_program(current_endpoint,
                                                     pserver_prog)
+            pserver_startup.random_seed = SEED
             with open("/tmp/pserver_startup", "w") as f:
                 f.write(pserver_startup.__str__())
             print("starting server side startup")
@@ -161,13 +164,14 @@ def main(train_data_file, test_data_file, vocab_file, target_file, emb_file,
             print("starting parameter server...")
             exe.run(pserver_prog)
         elif training_role == "TRAINER":
+            fluid.default_startup_program().random_seed = SEED
             exe.run(fluid.default_startup_program())
             trainer_prog = t.get_trainer_program()
             cluster_train_reader = paddle.batch(
-                paddle.reader.shuffle(
-                    reader.cluster_data_reader(
-                        train_data_file, word_dict, label_dict, trainers, trainer_id),
-                    buf_size=20000),
+                # paddle.reader.shuffle(
+                reader.cluster_data_reader(
+                    train_data_file, word_dict, label_dict, trainers, trainer_id),
+                    # buf_size=20000),
                 batch_size=BATCH_SIZE)
             print("######## trainer prog #############")
             with open("/tmp/trainer_prog", "w") as f:

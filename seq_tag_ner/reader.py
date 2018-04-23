@@ -4,7 +4,7 @@ Conll03 dataset.
 
 from utils import *
 
-__all__ = ["data_reader"]
+__all__ = ["data_reader", "cluster_data_reader"]
 
 
 def canonicalize_digits(word):
@@ -69,9 +69,10 @@ def cluster_data_reader(data_file, word_dict, label_dict, num_trainers, trainer_
     def reader():
         idx = 0
         for d in data_reader(data_file, word_dict, label_dict)():
+            idx += 1
             if idx % num_trainers == trainer_id:
                 yield d
-            idx += 1
+            
     return reader
 
 if __name__ == "__main__":

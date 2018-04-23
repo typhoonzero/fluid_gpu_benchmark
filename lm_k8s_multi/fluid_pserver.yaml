@@ -1,14 +1,14 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: seq-tag-ner-pserver
+  name: lm-multi-pserver
 spec:
   parallelism: 4
   completions: 4
   template:
     metadata:
       labels:
-        paddle-job-pserver: seq-tag-ner
+        paddle-job-pserver: lm-multi
     spec:
       hostNetwork: true
       restartPolicy: Never
@@ -27,11 +27,11 @@ spec:
           - mountPath: /usr/local/nvidia/lib64
             name: nvidia-driver
         ports:
-        - name: jobport-30258
-          containerPort: 30258
+        - name: jobport-30260
+          containerPort: 30260
         env:
         - name: PADDLE_JOB_NAME
-          value: seq-tag-ner
+          value: lm-multi
         - name: MKL_NUM_THREADS
           value: "1"
         - name: TRAINING_ROLE
@@ -42,20 +42,22 @@ spec:
           value: "4"
         - name: TOPOLOGY
           value: ""
-        #- name: GLOG_v
-        #  value: "2"
+        - name: GLOG_v
+          value: "2"
         - name: GLOG_logtostderr
           value: "1"
         - name: LOCAL
           value: "FALSE"
         - name: BATCH_SIZE
-          value: "50"
+          value: "5"
+        - name: IS_SPARSE
+          value: "FALSE"
         - name: ENTRY
-          value: "unset http_proxy && unset https_proxy && cd /workspace/seq_tag_ner && python train.py"
+          value: "unset http_proxy && unset https_proxy && cd /workspace/lm && python gru_lm_multi.py"
         - name: TRAINER_PACKAGE
           value: "/workspace"
         - name: PADDLE_INIT_PORT
-          value: "30258"
+          value: "30260"
         - name: PADDLE_INIT_NICS
           value: "eth2"
         - name: PADDLE_INIT_TRAINER_COUNT
@@ -81,12 +83,13 @@ spec:
             fieldRef:
               fieldPath: "status.podIP"
         command: ["paddle_k8s", "start_fluid"]
+        #command: ["sleep", "3600"]
         resources:
           requests:
             memory: 30Gi
-            cpu: 2
+            cpu: 1
             #alpha.kubernetes.io/nvidia-gpu: 1
           limits:
             memory: 30Gi
-            cpu: 2
+            cpu: 1
             #alpha.kubernetes.io/nvidia-gpu: 1
