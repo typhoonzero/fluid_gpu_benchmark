@@ -25,7 +25,6 @@ spec:
         #image: "registry.baidu.com/paddlepaddle/fluid_benchmark:gpu"
         image: "bootstrapper:5000/fluid_benchmark:gpu"
         imagePullPolicy: Always
-        #command: ["paddle_k8s", "start_fluid"]
         command: ["paddle_k8s", "start_fluid"]
         ports:
         - name: spread-50012
@@ -51,21 +50,25 @@ spec:
         - name: TOPOLOGY
           value: ""
         #- name: GLOG_v
-        #  value: "2"
+        #  value: "3"
+        #- name: GLOG_vmodule
+        #  value: "threaded_ssa_graph_executor=10"
         - name: FLAGS_fraction_of_gpu_memory_to_use
           value: "0.4"
         - name: FLAGS_benchmark
-          value: "1"
+          value: "0"
         - name: GLOG_logtostderr
           value: "1"
         - name: MKL_NUM_THREADS
           value: "1"
         - name: LOCAL
-          value: "TRUE"
+          value: "FALSE"
         - name: USE_GPU
           value: "TRUE"
         - name: BATCH_SIZE
-          value: "5"
+          value: "80"
+        - name: LEARNING_RATE
+          value: "1.0"
         - name: IS_SPARSE
           value: "FALSE"
         - name: ENTRY
@@ -97,10 +100,10 @@ spec:
         resources:
           requests:
             memory: 30Gi
-            cpu: 4
+            cpu: 2
             alpha.kubernetes.io/nvidia-gpu: 4
           limits:
             memory: 30Gi
-            cpu: 4
+            cpu: 2
             alpha.kubernetes.io/nvidia-gpu: 4
       restartPolicy: Never

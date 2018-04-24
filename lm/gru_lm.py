@@ -17,7 +17,7 @@ batch_size = int(os.getenv("BATCH_SIZE", "20"))
 emb_size = 200
 hid_size = 200
 cuda_id =0
-base_lr = 1.0
+base_lr = float(os.getenv("LEARNING_RATE", "1.0"))
 emb_lr_x = 10.0
 l1_lr_x = 1.0
 l2_lr_x = 1.0
@@ -57,13 +57,14 @@ cost = fluid.layers.cross_entropy(input=fc, label=dst_wordseq)
 average_cost = fluid.layers.mean(x=cost)
 infer_program = fluid.default_main_program().clone()
 
-sgd_optimizer = fluid.optimizer.SGD(
-        learning_rate=fluid.layers.exponential_decay(
-            learning_rate=base_lr,
-            decay_steps=2100 * 4,
-            decay_rate=0.5,
-            staircase=True))
-optimize_ops, params_grads = sgd_optimizer.minimize(average_cost)
+# sgd_optimizer = fluid.optimizer.SGD(
+#         learning_rate=fluid.layers.exponential_decay(
+#             learning_rate=base_lr,
+#             decay_steps=2100 * 4,
+#             decay_rate=0.5,
+#             staircase=True))
+momentum_optimizer = fluid.optimizer.Momentum(learning_rate=1.0, momentum=0.1)
+optimize_ops, params_grads = momentum_optimizer.minimize(average_cost)
 
 
 def test(exe, pass_id, place):
@@ -142,13 +143,14 @@ def main():
                     if i % 100 == 0:
                         print "step %d ppl: %.3f" % (i, average_ppl)
             print "total steps:", i
+            spent = time.time() - pass_start
+            print("Pass %d end, spent: %f, speed: %f" % (epoch_id, spent, 42068 / spent))
             test(exe, epoch_id, place)
             # NO saving model
             # save_dir = "%s/epoch_%d" % (model_dir, epoch_id)
             # feed_var_names = ["src_wordseq", "dst_wordseq"]
             # fetch_vars = [fc, average_cost]
             # fluid.io.save_inference_model(save_dir, feed_var_names, fetch_vars, exe)
-            print "epoch_%d finished, spent: %f" % (epoch_id, time.time() - pass_start)
 
     use_gpu = True if os.getenv("USE_GPU") == "TRUE" else False
     if os.getenv("LOCAL") == "TRUE":
@@ -207,7 +209,7 @@ def main():
             # For debug program
             with open("/tmp/trainer_prog", "w") as f:
                 f.write(trainer_prog.__str__())
-            train_loop(exe, trainer_prog, cluster_batch_reader)
+            train_loop(exe, trainer_prog, train_reader)
         else:
             raise("role %s not supported" % role)
 

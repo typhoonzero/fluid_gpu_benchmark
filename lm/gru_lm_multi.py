@@ -56,13 +56,14 @@ cost = fluid.layers.cross_entropy(input=fc, label=dst_wordseq)
 average_cost = fluid.layers.mean(x=cost)
 infer_program = fluid.default_main_program().clone()
 
-sgd_optimizer = fluid.optimizer.SGD(
-        learning_rate=fluid.layers.exponential_decay(
-            learning_rate=base_lr,
-            decay_steps=2100 * 4,
-            decay_rate=0.5,
-            staircase=True))
-optimize_ops, params_grads = sgd_optimizer.minimize(average_cost)
+# sgd_optimizer = fluid.optimizer.SGD(
+#         learning_rate=fluid.layers.exponential_decay(
+#             learning_rate=base_lr,
+#             decay_steps=2100 * 4,
+#             decay_rate=0.5,
+#             staircase=True))
+momentum_optimizer = fluid.optimizer.Momentum(learning_rate=1.0, momentum=0.1)
+optimize_ops, params_grads = momentum_optimizer.minimize(average_cost)
 
 
 def test(exe, pass_id, place):
@@ -157,6 +158,7 @@ def main():
         print("#### para_exe running on %d GPUs." % exe.device_count)
 
         for pass_id in xrange(epoch_num):
+            pass_start = time.time()
             for batch_id, data in enumerate(reader()):
                 lod_src_wordseq = to_lodtensor(map(lambda x: x[0], data), feed_place)
                 lod_dst_wordseq = to_lodtensor(map(lambda x: x[1], data), feed_place)
@@ -164,7 +166,11 @@ def main():
                         feed={"src_wordseq": lod_src_wordseq, "dst_wordseq": lod_dst_wordseq})
                 # broadcast params to all GPU per batch
                 exe.bcast_params()
-                print("Pass %d, batch %d, loss %s" % (pass_id, batch_id, np.array(loss)))
+                if batch_id % 100 == 0:
+                    print("Pass %d, batch %d, loss %s" % (pass_id, batch_id, np.array(loss)))
+            spent = time.time() - pass_start
+            print("Pass %d end, spent: %f, speed: %f" % (pass_id, spent, 42068 / spent))
+            test(startup_exe, pass_id, place)
 
     use_gpu = True if os.getenv("USE_GPU") == "TRUE" else False
     if os.getenv("LOCAL") == "TRUE":
@@ -221,7 +227,7 @@ def main():
             trainer_prog = t.get_trainer_program()
             with open("/tmp/trainer_prog", "w") as f:
                 f.write(trainer_prog.__str__())
-            train_loop_parallel(cluster_batch_reader)
+            train_loop_parallel(train_reader)
         else:
             raise("role %s not supported" % role)
 

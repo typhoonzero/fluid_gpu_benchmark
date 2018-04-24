@@ -60,15 +60,17 @@ spec:
         - name: MKL_NUM_THREADS
           value: "1"
         - name: LOCAL
-          value: "FALSE"
+          value: "TRUE"
         - name: USE_GPU
           value: "TRUE"
         - name: BATCH_SIZE
-          value: "20"
+          value: "200"
+        - name: LEARNING_RATE
+          value: "1.0"
         - name: IS_SPARSE
           value: "FALSE"
         - name: ENTRY
-          value: "sleep 60 && unset http_proxy && unset https_proxy && cd /workspace/lm && python gru_lm.py"
+          value: "sleep 10 && unset http_proxy && unset https_proxy && cd /workspace/lm && python gru_lm.py"
         - name: TRAINER_PACKAGE
           value: "/workspace"
         - name: PADDLE_INIT_PORT

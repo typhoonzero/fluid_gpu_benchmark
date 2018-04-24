@@ -36,7 +36,7 @@ def loss_net(hidden, label):
 
 def mlp(img, label):
     hidden = fluid.layers.fc(input=img, size=200, act='tanh')
-    hidden = fluid.layers.fc(input=hidden, size=200, act='tanh')
+    # hidden = fluid.layers.fc(input=hidden, size=200, act='tanh')
     return loss_net(hidden, label)
 
 
@@ -61,7 +61,6 @@ def conv_net(img, label):
 
 def train(nn_type,
           use_cuda,
-          parallel,
           save_dirname=None,
           model_filename=None,
           params_filename=None,
@@ -76,22 +75,7 @@ def train(nn_type,
     else:
         net_conf = conv_net
 
-    if parallel:
-        places = fluid.layers.get_places()
-        pd = fluid.layers.ParallelDo(places)
-        with pd.do():
-            img_ = pd.read_input(img)
-            label_ = pd.read_input(label)
-            prediction, avg_loss, acc = net_conf(img_, label_)
-            for o in [avg_loss, acc]:
-                pd.write_output(o)
-
-        avg_loss, acc = pd()
-        # get mean loss and acc through every devices.
-        avg_loss = fluid.layers.mean(avg_loss)
-        acc = fluid.layers.mean(acc)
-    else:
-        prediction, avg_loss, acc = net_conf(img, label)
+    prediction, avg_loss, acc = net_conf(img, label)
 
     test_program = fluid.default_main_program().clone(for_test=True)
 
@@ -132,16 +116,6 @@ def train(nn_type,
                     # get test acc and loss
                     acc_val = numpy.array(acc_set).mean()
                     avg_loss_val = numpy.array(avg_loss_set).mean()
-                    #if float(acc_val
-                    #         ) > 0.2:  # Smaller value to increase CI speed
-                    #    if save_dirname is not None:
-                    #        fluid.io.save_inference_model(
-                    #            save_dirname, ["img"], [prediction],
-                    #            exe,
-                    #            model_filename=model_filename,
-                    #            params_filename=params_filename)
-                    #    return
-                    #else:
                     print(
                         'PassID {0:1}, BatchID {1:04}, Test Loss {2:2.2}, Acc {3:2.2}'.
                         format(pass_id, batch_id + 1,
@@ -155,13 +129,13 @@ def train(nn_type,
         startup_exe = fluid.Executor(place)
         startup_exe.run(fluid.default_startup_program())
         print("init parallel exe...")
-        exe = fluid.ParallelExecutor(use_gpu, avg_loss.name)
+        exe = fluid.ParallelExecutor(use_gpu, avg_loss.name, num_threads=1)
 
         for pass_id in range(1000):
             for batch_id, data in enumerate(train_reader()):
                 loss, = exe.run(
                         [avg_loss.name],
-                        feed_dict=feeder.feed(data))
+                        feed=feeder.feed(data))
                 if bcast:
                     exe.bcast_params()
                 print("Pass %d, batch %d, loss %s" % (pass_id, batch_id, numpy.array(loss)))
@@ -184,7 +158,7 @@ def train(nn_type,
         trainer_id = int(os.getenv("PADDLE_INIT_TRAINER_ID", "0"))
         # current_endpoint = os.getenv(
         #     "POD_IP") + ":" + port  # current pserver endpoint
-        current_endpoint = os.getenv("SERVER_ENDPOINT")
+        current_endpoint = os.getenv("CURRENT_ENDPOINT")
         training_role = os.getenv(
             "TRAINING_ROLE",
             "TRAINER")  # get the training role: trainer/pserver
@@ -208,103 +182,9 @@ def train(nn_type,
         elif training_role == "TRAINER":
             t.get_trainer_program()
             train_loop_parallel(True)
-            # train_loop(t.get_trainer_program())
-
-
-def infer(use_cuda,
-          save_dirname=None,
-          model_filename=None,
-          params_filename=None):
-    if save_dirname is None:
-        return
-
-    place = fluid.CUDAPlace(0) if use_cuda else fluid.CPUPlace()
-    exe = fluid.Executor(place)
-
-    inference_scope = fluid.core.Scope()
-    with fluid.scope_guard(inference_scope):
-        # Use fluid.io.load_inference_model to obtain the inference program desc,
-        # the feed_target_names (the names of variables that will be feeded
-        # data using feed operators), and the fetch_targets (variables that
-        # we want to obtain data from using fetch operators).
-        [inference_program, feed_target_names,
-         fetch_targets] = fluid.io.load_inference_model(
-             save_dirname, exe, model_filename, params_filename)
-
-        # The input's dimension of conv should be 4-D or 5-D.
-        # Use normilized image pixels as input data, which should be in the range [-1.0, 1.0].
-        batch_size = 1
-        tensor_img = numpy.random.uniform(
-            -1.0, 1.0, [batch_size, 1, 28, 28]).astype("float32")
-
-        # Construct feed as a dictionary of {feed_target_name: feed_target_data}
-        # and results will contain a list of data corresponding to fetch_targets.
-        results = exe.run(inference_program,
-                          feed={feed_target_names[0]: tensor_img},
-                          fetch_list=fetch_targets)
-        print("infer results: ", results[0])
-
-
-def main(use_cuda, parallel, nn_type, combine):
-    save_dirname = None
-    model_filename = None
-    params_filename = None
-    if not use_cuda and not parallel:
-        save_dirname = "recognize_digits_" + nn_type + ".inference.model"
-        if combine == True:
-            model_filename = "__model_combined__"
-            params_filename = "__params_combined__"
-
-    # call train() with is_local argument to run distributed train
-    train(
-        nn_type=nn_type,
-        use_cuda=use_cuda,
-        parallel=parallel,
-        save_dirname=save_dirname,
-        model_filename=model_filename,
-        params_filename=params_filename)
-    infer(
-        use_cuda=use_cuda,
-        save_dirname=save_dirname,
-        model_filename=model_filename,
-        params_filename=params_filename)
-
-
-class TestRecognizeDigits(unittest.TestCase):
-    pass
-
-
-def inject_test_method(use_cuda, parallel, nn_type, combine):
-    def __impl__(self):
-        prog = fluid.Program()
-        startup_prog = fluid.Program()
-        scope = fluid.core.Scope()
-        with fluid.scope_guard(scope):
-            with fluid.program_guard(prog, startup_prog):
-                main(use_cuda, parallel, nn_type, combine)
-
-    fn = 'test_{0}_{1}_{2}_{3}'.format(nn_type, 'cuda'
-                                       if use_cuda else 'cpu', 'parallel'
-                                       if parallel else 'normal', 'combine'
-                                       if combine else 'separate')
-
-    setattr(TestRecognizeDigits, fn, __impl__)
-
-
-def inject_all_tests():
-    for use_cuda in (False, True):
-        for parallel in (False, True):
-            for nn_type in ('mlp', 'conv'):
-                inject_test_method(use_cuda, parallel, nn_type, True)
-
-    # Two unit-test for saving parameters as separate files
-    inject_test_method(False, False, 'mlp', False)
-    inject_test_method(False, False, 'conv', False)
-
-
-inject_all_tests()
 
 if __name__ == '__main__':
-    #unittest.main()
-    main(True, False, "conv", False)
+    train("mlp",
+          True  # use_cuda
+    )
 

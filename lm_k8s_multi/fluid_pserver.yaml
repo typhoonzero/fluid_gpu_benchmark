@@ -49,7 +49,9 @@ spec:
         - name: LOCAL
           value: "FALSE"
         - name: BATCH_SIZE
-          value: "5"
+          value: "20"
+        - name: LEARNING_RATE
+          value: "2.0"
         - name: IS_SPARSE
           value: "FALSE"
         - name: ENTRY
@@ -87,9 +89,9 @@ spec:
         resources:
           requests:
             memory: 30Gi
-            cpu: 1
+            cpu: 2
             #alpha.kubernetes.io/nvidia-gpu: 1
           limits:
             memory: 30Gi
-            cpu: 1
+            cpu: 2
             #alpha.kubernetes.io/nvidia-gpu: 1

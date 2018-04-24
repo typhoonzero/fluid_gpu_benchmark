@@ -49,7 +49,9 @@ spec:
         - name: LOCAL
           value: "FALSE"
         - name: BATCH_SIZE
-          value: "20"
+          value: "200"
+        - name: LEARNING_RATE
+          value: "1.0"
         - name: IS_SPARSE
           value: "FALSE"
         - name: ENTRY
