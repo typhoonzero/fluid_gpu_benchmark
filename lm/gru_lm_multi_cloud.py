@@ -4,32 +4,41 @@ import os
 import sys
 import math
 import time
+import pickle
 import numpy as np
 import paddle.v2 as paddle
 import paddle.fluid as fluid
-import paddle.fluid.profiler as profiler
 
 # set hyper parameters
 N = 1000
 
-epoch_num = 200000
+epoch_num = 20
 batch_size = int(os.getenv("BATCH_SIZE", "20"))
 emb_size = 200
 hid_size = 200
 cuda_id =0
-base_lr = float(os.getenv("LEARNING_RATE", "1.0"))
+base_lr = 1.0
 emb_lr_x = 10.0
 l1_lr_x = 1.0
 l2_lr_x = 1.0
 fc_lr_x = 1.0
 init_bound = 0.1
 
-model_dir = "model/gru"
-os.system("mkdir -p " + model_dir)
-os.system("cp %s %s/" % (sys.argv[0], model_dir))
-vocab = paddle.dataset.imikolov.build_dict(0)
-vocab_size = len(vocab)
-print "vocab_size: %d" % vocab_size
+class DataType(object):
+    """
+    Definition of datatype
+    """
+    NGRAM = 1
+    SEQ = 2
+
+cluster_train_file = "./train"
+cluster_test_file = "./test"
+
+dict_pkl_file = open('./thirdparty/worddict.pkl', 'rb')
+word_dict = pickle.load(dict_pkl_file)
+dict_size = len(word_dict)
+vocab_size = dict_size
+print "dict_size: %d" % dict_size
 
 
 # build computational graph
@@ -55,7 +64,7 @@ fc = fluid.layers.fc(input=gru_h0, size=vocab_size, act='softmax',
             learning_rate=fc_lr_x))
 cost = fluid.layers.cross_entropy(input=fc, label=dst_wordseq)
 average_cost = fluid.layers.mean(x=cost)
-#infer_program = fluid.default_main_program().clone()
+infer_program = fluid.default_main_program().clone()
 
 # sgd_optimizer = fluid.optimizer.SGD(
 #         learning_rate=fluid.layers.exponential_decay(
@@ -67,16 +76,48 @@ momentum_optimizer = fluid.optimizer.Momentum(learning_rate=1.0, momentum=0.1)
 optimize_ops, params_grads = momentum_optimizer.minimize(average_cost)
 
 
+def reader_creator(file_dir, word_idx, n, data_type):
+    """
+    Create data reader from file
+    """
+    def reader():
+        """
+        reader function
+        """
+        files = os.listdir(file_dir)
+        for fi in files:
+            with open(file_dir + '/' + fi, "r") as f:
+                UNK = word_idx['<unk>']
+                for line in f:
+                    if DataType.NGRAM == data_type:
+                        assert n > -1, 'Invalid gram length'
+                        line = ['<s>'] + line.strip().split() + ['<e>']
+                        if len(line) >= n:
+                            line = [word_idx.get(w, UNK) for w in line]
+                            for i in range(n, len(line) + 1):
+                                yield tuple(line[i - n:i])
+                    elif DataType.SEQ == data_type:
+                        line = line.strip().split()
+                        line = [word_idx.get(w, UNK) for w in line]
+                        src_seq = [word_idx['<s>']] + line
+                        trg_seq = line + [word_idx['<e>']]
+                        if n > 0 and len(src_seq) > n: 
+                            continue
+                        yield src_seq, trg_seq
+                    else:
+                        assert False, 'Unknow data type'
+
+    return reader
+
+
 def test(exe, pass_id, place):
-    test_reader = paddle.batch(
-            paddle.reader.shuffle(
-                paddle.dataset.imikolov.train(vocab, N, data_type=paddle.dataset.imikolov.DataType.SEQ),
-                buf_size=N),
-            batch_size)
+    cloud_test_reader = paddle.batch(
+        reader_creator(cluster_test_file, word_dict, N, DataType.SEQ), 
+        batch_size)
 
     total_loss = 0
     idx = 0
-    for data in test_reader():
+    for data in cloud_test_reader():
         lod_src_wordseq = to_lodtensor(map(lambda x: x[0], data), place)
         lod_dst_wordseq = to_lodtensor(map(lambda x: x[1], data), place)
 
@@ -106,29 +147,10 @@ def to_lodtensor(data, place):
     return res
 
 def main():
-    def cluster_reader(trainer_id, trainers):
-        def reader():
-            idx = 0
-            for data in paddle.dataset.imikolov.train(vocab, N, data_type=paddle.dataset.imikolov.DataType.SEQ)():
-                idx += 1
-                if idx % trainers == trainer_id:
-                    yield data
-        return reader
-
-    if os.getenv("READER") == "LOCAL":
-        train_reader = paddle.batch(
-                paddle.reader.shuffle(
-                    paddle.dataset.imikolov.train(vocab, N, data_type=paddle.dataset.imikolov.DataType.SEQ),
-                    buf_size=N),
-                batch_size)
-    else:
-        train_reader = paddle.batch(
-                paddle.reader.shuffle(
-                    cluster_reader(0, 1),
-                    buf_size=N),
-                batch_size)
+    cloud_train_reader = paddle.batch(
+        reader_creator(cluster_train_file, word_dict, N, DataType.SEQ), 
+        batch_size)
     
-
     def train_loop(exe, trainer_prog, reader):
         exe.run(fluid.default_startup_program())
 
@@ -136,43 +158,60 @@ def main():
             print "epoch_%d start" % epoch_id
             pass_start = time.time()
             i = 0
-            with profiler.profiler("All", 'total', profile_path="/usr/local/nvidia/lib64/tmp") as prof:
-                for data in reader():
-                    i += 1
-                    lod_src_wordseq = to_lodtensor(map(lambda x: x[0], data), place)
-                    lod_dst_wordseq = to_lodtensor(map(lambda x: x[1], data), place)
-                    ret_average_cost = exe.run(
-                            trainer_prog,
-                            feed={"src_wordseq": lod_src_wordseq, "dst_wordseq": lod_dst_wordseq},
-                            fetch_list=[average_cost])
-                    average_ppl = math.exp(ret_average_cost[0])
-                    if i % 100 == 0:
-                        print "step %d ppl: %.3f" % (i, average_ppl)
+            for data in reader():
+                i += 1
+                lod_src_wordseq = to_lodtensor(map(lambda x: x[0], data), place)
+                lod_dst_wordseq = to_lodtensor(map(lambda x: x[1], data), place)
+                ret_average_cost = exe.run(
+                        trainer_prog,
+                        feed={"src_wordseq": lod_src_wordseq, "dst_wordseq": lod_dst_wordseq},
+                        fetch_list=[average_cost])
+                average_ppl = math.exp(ret_average_cost[0])
+                if i % 100 == 0:
+                    print "step %d ppl: %.3f" % (i, average_ppl)
             print "total steps:", i
-            spent = time.time() - pass_start
-            print("Pass %d end, spent: %f, speed: %f" % (epoch_id, spent, 42068 / spent))
-            #test(exe, epoch_id, place)
+            test(exe, epoch_id, place)
             # NO saving model
             # save_dir = "%s/epoch_%d" % (model_dir, epoch_id)
             # feed_var_names = ["src_wordseq", "dst_wordseq"]
             # fetch_vars = [fc, average_cost]
             # fluid.io.save_inference_model(save_dir, feed_var_names, fetch_vars, exe)
+            print "epoch_%d finished, spent: %f" % (epoch_id, time.time() - pass_start)
 
-    use_gpu = True if os.getenv("USE_GPU") == "TRUE" else False
-    if os.getenv("LOCAL") == "TRUE":
-        place = fluid.CUDAPlace(0) if use_gpu else fluid.CPUPlace()
-        exe = fluid.Executor(place)
-        train_loop(exe, fluid.default_main_program(), train_reader)
-    elif os.getenv("LOCAL") == "FALSE":
-        pserver_ips = os.getenv("PADDLE_INIT_PSERVERS")
+    def train_loop_parallel(reader):
+        place = fluid.CUDAPlace(0)
+        feed_place = fluid.CPUPlace()
+        startup_exe = fluid.Executor(place)
+        startup_exe.run(fluid.default_startup_program())
+        exe = fluid.ParallelExecutor(True, average_cost.name)
+        print("#### para_exe running on %d GPUs." % exe.device_count)
+
+        for pass_id in xrange(epoch_num):
+            pass_start = time.time()
+            for batch_id, data in enumerate(reader()):
+                lod_src_wordseq = to_lodtensor(map(lambda x: x[0], data), feed_place)
+                lod_dst_wordseq = to_lodtensor(map(lambda x: x[1], data), feed_place)
+                loss, = exe.run([average_cost.name],
+                        feed={"src_wordseq": lod_src_wordseq, "dst_wordseq": lod_dst_wordseq})
+                # broadcast params to all GPU per batch
+                exe.bcast_params()
+                if batch_id % 100 == 0:
+                    print("Pass %d, batch %d, loss %s" % (pass_id, batch_id, np.array(loss)))
+            spent = time.time() - pass_start
+            print("Pass %d end, spent: %f, speed: %f" % (pass_id, spent, 42068 / spent))
+            test(startup_exe, pass_id, place)
+
+    use_gpu = True
+    if True:
+        pserver_ips = os.getenv("PADDLE_PSERVERS")
         eplist = []
-        port = os.getenv("PADDLE_INIT_PORT")
+        port = os.getenv("PADDLE_PORT")
         for ip in pserver_ips.split(","):
             eplist.append(':'.join([ip, port]))
         pserver_endpoints = ",".join(eplist)
 
-        trainers = int(os.getenv("TRAINERS"))  # total trainer count
-        trainer_id = int(os.getenv("PADDLE_INIT_TRAINER_ID", "0"))
+        trainers = int(os.getenv("PADDLE_TRAINERS_NUM"))  # total trainer count
+        trainer_id = int(os.getenv("PADDLE_TRAINER_ID", "0"))
         current_endpoint = os.getenv(
                 "POD_IP") + ":" + port  # current pserver endpoint
         role = os.getenv(
@@ -181,10 +220,6 @@ def main():
 
         print("role: %s endpoints: %s, trainers: %d, trainer_id: %d, current: %s" %\
             (role, pserver_endpoints, trainers, trainer_id, current_endpoint))
-
-        cluster_batch_reader = paddle.batch(
-            paddle.reader.shuffle(cluster_reader(trainer_id, trainers), buf_size=N),
-            batch_size)
         
         with open("/tmp/origin_prog", "w") as f:
             f.write(fluid.default_main_program().__str__())
@@ -210,12 +245,9 @@ def main():
             exe.run(pserver_prog)
         elif role == "TRAINER":
             trainer_prog = t.get_trainer_program()
-            place = fluid.CUDAPlace(0) if use_gpu else fluid.CPUPlace()
-            exe = fluid.Executor(place)
-            # For debug program
             with open("/tmp/trainer_prog", "w") as f:
                 f.write(trainer_prog.__str__())
-            train_loop(exe, trainer_prog, train_reader)
+            train_loop_parallel(cloud_train_reader)
         else:
             raise("role %s not supported" % role)
 

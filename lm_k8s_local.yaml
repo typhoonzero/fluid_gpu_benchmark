@@ -68,6 +68,8 @@ spec:
           value: "20"
         - name: IS_SPARSE
           value: "FALSE"
+        - name: READER
+          value: "CLUSTER"
         - name: ENTRY
           value: "sleep 10 && unset http_proxy && unset https_proxy && cd /workspace/lm && python gru_lm.py"
         - name: TRAINER_PACKAGE

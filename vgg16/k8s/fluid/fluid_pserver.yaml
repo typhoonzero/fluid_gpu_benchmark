@@ -1,28 +1,35 @@
 apiVersion: extensions/v1beta1
 kind: ReplicaSet
 metadata:
-  name: vgg16job-pserver
+  name: vgg16-gpu-pserver
 spec:
   replicas: 4
   template:
     metadata:
       labels:
-        paddle-job-pserver: vgg16job
+        paddle-job-pserver: vgg16-gpu
     spec:
       hostNetwork: true
+      volumes:
+        - name: nvidia-driver
+          hostPath:
+            path: /usr/local/nvidia/lib64
       imagePullSecrets:
       - name: job-registry-secret
       containers:
       - name: pserver
         #image: "registry.baidu.com/paddlepaddle/fluid_benchmark:vgg16"
-        image: "bootstrapper:5000/fluid_benchmark:vgg16"
+        image: "bootstrapper:5000/fluid_benchmark:gpu"
         imagePullPolicy: Always
+        volumeMounts:
+          - mountPath: /usr/local/nvidia/lib64
+            name: nvidia-driver
         ports:
-        - name: jobport-30236
-          containerPort: 30236
+        - name: jobport-30256
+          containerPort: 30256
         env:
         - name: PADDLE_JOB_NAME
-          value: vgg16job
+          value: vgg16-gpu
         - name: MKL_NUM_THREADS
           value: "1"
         - name: TRAINING_ROLE
@@ -34,17 +41,19 @@ spec:
         - name: TOPOLOGY
           value: ""
         - name: GLOG_v
-          value: "3"
+          value: "2"
         - name: GLOG_logtostderr
           value: "1"
         - name: ENTRY
-          value: "MKL_NUM_THREADS=1 python /workspace/vgg16_fluid.py --local 0 --data_set flowers --batch_size 20"
+          value: "unset http_proxy && unset https_proxy && python /workspace/vgg16_fluid.py --local 0 --data_set flowers --batch_size 20 --device CPU"
+
+          #value: "unset http_proxy && unset https_proxy && python /workspace/mnist.py"
         - name: TRAINER_PACKAGE
           value: "/workspace"
         - name: PADDLE_INIT_PORT
-          value: "30236"
+          value: "30256"
         - name: PADDLE_INIT_NICS
-          value: "xgbe0"
+          value: "eth2"
         - name: PADDLE_INIT_TRAINER_COUNT
           value: "1"
         - name: PADDLE_INIT_PORTS_NUM
@@ -58,7 +67,7 @@ spec:
         - name: PADDLE_INIT_USE_GPU
           value: "0"
         - name: LD_LIBRARY_PATH
-          value: "/usr/local/lib:/usr/local/nvidia/lib64"
+          value: "/usr/local/nvidia/lib64:/usr/local/lib:/usr/local/cuda/lib64"
         - name: NAMESPACE
           valueFrom:
             fieldRef:
@@ -71,7 +80,9 @@ spec:
         resources:
           requests:
             memory: 30Gi
-            cpu: 1
+            cpu: 4
+            #alpha.kubernetes.io/nvidia-gpu: 1
           limits:
             memory: 30Gi
-            cpu: 1
+            cpu: 4
+            #alpha.kubernetes.io/nvidia-gpu: 1

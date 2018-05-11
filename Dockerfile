@@ -37,6 +37,7 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/libcudnn.so.5 /usr/lib/libcudnn.so && ln -s 
 ADD paddle_k8s /usr/bin
 # patch
 ENV LD_LIBRARY_PATH=/usr/local/lib
-ADD vgg16_fluid.py vgg16_v2.py vgg16_fluid_nosplit.py text_fluid.py config.py /workspace/
+ADD vgg16_fluid.py vgg16_v2.py vgg16_fluid_nosplit.py mnist.py /workspace/
 ADD seq_tag_ner /workspace/seq_tag_ner
+ADD text_classification /workspace/text_classification
 ADD lm /workspace/lm

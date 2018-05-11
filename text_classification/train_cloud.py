@@ -3,20 +3,48 @@ import sys
 import os
 import argparse
 import time
+import pickle
 
 import paddle.v2 as paddle
 import paddle.fluid as fluid
 import paddle.fluid.profiler as profiler
 
-from config import TrainConfig as conf
+# Whether to use GPU in training or not.
+use_gpu = False
 
-def str2bool(v):
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+# The training batch size.
+batch_size = 512
+
+# The epoch number.
+num_passes = 30
+
+# The global learning rate.
+learning_rate = 0.01
+
+# Training log will be printed every log_period.
+log_period = 100
+
+def cloud_load_dict(path):
+    fn = open(path, "r")
+    ret = pickle.load(fn)
+    fn.close()
+    return ret
+
+def cloud_train_reader(dirname):
+    """
+    Data reader
+    """
+    def reader():
+        """
+        Reader
+        """
+        for fn in os.listdir(dirname):
+            with open(dirname + "/" + fn, "r") as f:
+                for line in f:
+                    ins = np.fromstring(line.strip(), dtype=np.int32, sep=" ")
+                    ins_list = ins.tolist()
+                    yield ins_list[:-1], ins_list[-1]
+    return reader
 
 
 def parse_args():
@@ -24,7 +52,7 @@ def parse_args():
     parser.add_argument(
         '--dict_path',
         type=str,
-        required=True,
+        required=False,
         help="Path of the word dictionary.")
     parser.add_argument(
         '--local',
@@ -51,12 +79,12 @@ def to_lodtensor(data, place):
 
 
 # Load the dictionary.
-def load_vocab(filename):
-    vocab = {}
-    with open(filename) as f:
-        for idx, line in enumerate(f):
-            vocab[line.strip()] = idx
-    return vocab
+# def load_vocab(filename):
+#     vocab = {}
+#     with open(filename) as f:
+#         for idx, line in enumerate(f):
+#             vocab[line.strip()] = idx
+#     return vocab
 
 
 # Define the convolution model.
@@ -93,14 +121,15 @@ def conv_net(dict_dim,
 
 
 def main(dict_path):
-    word_dict = load_vocab(dict_path)
-    word_dict["<unk>"] = len(word_dict)
+    # word_dict = load_vocab(dict_path)
+    # word_dict["<unk>"] = len(word_dict)
+    word_dict = cloud_load_dict("./thirdparty/word_dict.pkl")
     dict_dim = len(word_dict)
     print("The dictionary size is : %d" % dict_dim)
 
     data, label, prediction, avg_cost = conv_net(dict_dim)
 
-    sgd_optimizer = fluid.optimizer.SGD(learning_rate=conf.learning_rate)
+    sgd_optimizer = fluid.optimizer.SGD(learning_rate=learning_rate)
     optimize_ops, params_grads = sgd_optimizer.minimize(avg_cost)
 
     batch_size_var = fluid.layers.create_tensor(dtype='int64')
@@ -113,18 +142,19 @@ def main(dict_path):
             target_vars=[batch_acc_var, batch_size_var])
 
     # The training data set.
+    # paddle.dataset.imdb.train(word_dict)
     train_reader = paddle.batch(
         paddle.reader.shuffle(
-            paddle.dataset.imdb.train(word_dict), buf_size=51200),
-        batch_size=conf.batch_size)
+            cloud_train_reader("./train"), buf_size=51200),
+        batch_size=batch_size)
 
     # The testing data set.
     test_reader = paddle.batch(
         paddle.reader.shuffle(
-            paddle.dataset.imdb.test(word_dict), buf_size=51200),
-        batch_size=conf.batch_size)
+            cloud_train_reader("./test"), buf_size=51200),
+        batch_size=batch_size)
 
-    if conf.use_gpu:
+    if use_gpu:
         place = fluid.CUDAPlace(0)
     else:
         place = fluid.CPUPlace()
@@ -154,7 +184,7 @@ def main(dict_path):
 
     def train_loop(exe, train_program, trainer_id):
         total_time = 0.
-        for pass_id in xrange(conf.num_passes):
+        for pass_id in xrange(num_passes):
             train_pass_acc_evaluator.reset()
             start_time = time.time()
             total_samples = 0
@@ -167,7 +197,7 @@ def main(dict_path):
                         fetch_list=[avg_cost, batch_acc_var, batch_size_var])
                     train_pass_acc_evaluator.add(value=acc_val, weight=size_val)
                     total_samples += float(size_val)
-                    if batch_id and batch_id % conf.log_period == 0:
+                    if batch_id and batch_id % log_period == 0:
                         print("Pass id: %d, batch id: %d, cost: %f, pass_acc: %f, speed: %f, time: %f" %
                             (pass_id, batch_id, cost_val,
                             train_pass_acc_evaluator.eval(),
@@ -183,16 +213,16 @@ def main(dict_path):
         exe.run(fluid.default_startup_program())
         train_loop(exe, fluid.default_main_program(), 0)
     else:
-        pserver_ips = os.getenv("PADDLE_INIT_PSERVERS")  # all pserver endpoints
+        pserver_ips = os.getenv("PADDLE_PSERVERS")  # all pserver endpoints
         eplist = []
-        port = os.getenv("PADDLE_INIT_PORT")
+        port = os.getenv("PADDLE_PORT")
         for ip in pserver_ips.split(","):
             eplist.append(':'.join([ip, port]))
         pserver_endpoints = ",".join(eplist)
         print("pserver endpoints: ", pserver_endpoints)
-        trainers = int(os.getenv("TRAINERS"))  # total trainer count
+        trainers = int(os.getenv("PADDLE_TRAINERS_NUM"))  # total trainer count
         print("trainers total: ", trainers)
-        trainer_id = int(os.getenv("PADDLE_INIT_TRAINER_ID", "0"))
+        trainer_id = int(os.getenv("PADDLE_TRAINER_ID", "0"))
         current_endpoint = os.getenv(
             "POD_IP") + ":" + port  # current pserver endpoint
         training_role = os.getenv(

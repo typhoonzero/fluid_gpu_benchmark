@@ -3,8 +3,8 @@ kind: Job
 metadata:
   name: vgg16-gpu-trainer
 spec:
-  parallelism: 4
-  completions: 4
+  parallelism: 1
+  completions: 1
   template:
     metadata:
       labels:
@@ -25,8 +25,8 @@ spec:
         #image: "registry.baidu.com/paddlepaddle/fluid_benchmark:vgg16"
         image: "bootstrapper:5000/fluid_benchmark:gpu"
         imagePullPolicy: Always
-        command: ["paddle_k8s", "start_fluid"]
-        #command: ["sleep", "3600"]
+        #command: ["paddle_k8s", "start_fluid"]
+        command: ["sleep", "36000"]
         volumeMounts:
           - mountPath: /usr/local/nvidia/lib64
             name: nvidia-driver
@@ -38,9 +38,9 @@ spec:
         - name: TRAINING_ROLE
           value: "TRAINER"
         - name: TRAINERS
-          value: "4"
+          value: "1"
         - name: PSERVERS
-          value: "4"
+          value: "1"
         - name: TOPOLOGY
           value: ""
         #- name: GLOG_v
@@ -54,7 +54,7 @@ spec:
         - name: MKL_NUM_THREADS
           value: "1"
         - name: ENTRY
-          value: "unset http_proxy && unset https_proxy && python /workspace/vgg16_fluid.py --local 0 --batch_size 20 --data_set flowers --device GPU --device_id 0"
+          value: "unset http_proxy && unset https_proxy && python /workspace/vgg16_fluid.py --local 0 --batch_size 20 --data_set flowers --device GPU"
           #value: "unset http_proxy && unset https_proxy && python /workspace/mnist.py"
         - name: TRAINER_PACKAGE
           value: "/workspace"
@@ -69,7 +69,7 @@ spec:
         - name: PADDLE_INIT_PORTS_NUM_FOR_SPARSE
           value: "1"
         - name: PADDLE_INIT_NUM_GRADIENT_SERVERS
-          value: "4"
+          value: "1"
         - name: LD_LIBRARY_PATH
           value: "/usr/local/nvidia/lib64:/usr/local/lib:/usr/local/cuda/lib64"
         - name: NAMESPACE
@@ -83,10 +83,10 @@ spec:
         resources:
           requests:
             memory: 30Gi
-            cpu: 6
-            alpha.kubernetes.io/nvidia-gpu: 1
+            cpu: 4
+            alpha.kubernetes.io/nvidia-gpu: 4
           limits:
             memory: 30Gi
-            cpu: 6
-            alpha.kubernetes.io/nvidia-gpu: 1
+            cpu: 4
+            alpha.kubernetes.io/nvidia-gpu: 4
       restartPolicy: Never

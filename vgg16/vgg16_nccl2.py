@@ -36,7 +36,7 @@ def str2bool(v):
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument(
-    '--batch_size', type=int, default=128, help="Batch size for training.")
+    '--batch_size', type=int, default=20, help="Batch size for training.")
 parser.add_argument(
     '--learning_rate',
     type=float,
@@ -46,7 +46,7 @@ parser.add_argument('--num_passes', type=int, default=50, help="No. of passes.")
 parser.add_argument(
     '--device',
     type=str,
-    default='CPU',
+    default='GPU',
     choices=['CPU', 'GPU'],
     help="The device type.")
 parser.add_argument(
@@ -58,7 +58,7 @@ parser.add_argument(
 parser.add_argument(
     '--data_set',
     type=str,
-    default='cifar10',
+    default='flowers',
     choices=['cifar10', 'flowers'],
     help='Optional dataset for benchmark.')
 parser.add_argument(
@@ -89,10 +89,10 @@ def vgg16_bn_drop(input):
     conv5 = conv_block(conv4, 512, 3, [0.4, 0.4, 0])
 
     drop = fluid.layers.dropout(x=conv5, dropout_prob=0.5)
-    fc1 = fluid.layers.fc(input=drop, size=512, act=None)
+    fc1 = fluid.layers.fc(input=drop, size=4096, act=None)
     bn = fluid.layers.batch_norm(input=fc1, act='relu')
     drop2 = fluid.layers.dropout(x=bn, dropout_prob=0.5)
-    fc2 = fluid.layers.fc(input=drop2, size=512, act=None)
+    fc2 = fluid.layers.fc(input=drop2, size=4096, act=None)
     return fc2
 
 
@@ -133,7 +133,6 @@ def main():
     # Optimization
     optimizer = fluid.optimizer.Adam(learning_rate=args.learning_rate)
     optimize_ops, params_grads = optimizer.minimize(avg_cost)
-    params = [p for p, g in params_grads]
 
     # data reader
     train_reader = paddle.batch(
@@ -158,119 +157,63 @@ def main():
 
             acc, weight = exe.run(inference_program,
                             feed={"pixel": img_data,
-                                  "label": y_data},
+                                    "label": y_data},
                             fetch_list=[batch_acc, batch_size_tensor])
             test_accuracy.add(value=acc, weight=weight)
         return test_accuracy.eval()
 
-    def train_loop(use_gpu, trainer_prog, trainer_id=0):
-        place = core.CPUPlace() if not use_gpu else core.CUDAPlace(0)
-        iters = 0
-        accuracy = fluid.average.WeightedAverage()
-        start_time = time.time()
+    # ========================= for nccl2 dist train =================================
+    if os.getenv("PADDLE_TRAINER_ID", None) != None:
+        # append gen_nccl_id at the end of startup program
+        trainer_id = int(os.getenv("PADDLE_TRAINER_ID"))
+        port = os.getenv("PADDLE_PORT")
+        worker_ips = os.getenv("PADDLE_WORKERS")
+        worker_endpoints = []
+        for ip in worker_ips.split(","):
+            print(ip)
+            worker_endpoints.append(':'.join([ip, port]))
+        num_nodes = len(worker_endpoints)
+        current_endpoint = os.getenv("POD_IP") + ":" + port
+        worker_endpoints.remove(current_endpoint)
+
+        nccl_id_var = fluid.default_startup_program().global_block().create_var(
+            name="NCCLID",
+            persistable=True,
+            type=fluid.core.VarDesc.VarType.RAW
+        )
+        fluid.default_startup_program().global_block().append_op(
+            type="gen_nccl_id",
+            inputs={},
+            outputs={"NCCLID": nccl_id_var},
+            attrs={"endpoint": current_endpoint,
+                   "endpoint_list": worker_endpoints,
+                   "trainer_id": trainer_id}
+        )
+    # ========================= for nccl2 dist train =================================
+
+    place = core.CUDAPlace(0)
+    startup_exe = fluid.Executor(place)
+    startup_exe.run(fluid.default_startup_program())
+    exe = fluid.ParallelExecutor(True, avg_cost.name, num_threads=1,
+                                 allow_op_delay=False,
+                                 num_nodes=num_nodes, trainer_id=trainer_id)
+
+    feeder = fluid.DataFeeder(place=place, feed_list=[images, label])
+    for pass_id in range(args.num_passes):
         num_samples = 0
-        accuracy.reset()
-        feeder = fluid.DataFeeder(place=place, feed_list=[images, label])
-        exe = fluid.Executor(place)
-
-        for pass_id in range(args.num_passes):
-            # train
-            start_time = time.time()
-            num_samples = 0
-            with profiler.profiler("All", 'total', profile_path="/usr/local/nvidia/lib64/tmp") as prof:
-                for batch_id, data in enumerate(train_reader()):
-                    batch_st = time.time()
-                    loss, acc, weight = exe.run(
-                        trainer_prog,
-                        feed=feeder.feed(data),
-                        fetch_list=[avg_cost, batch_acc, batch_size_tensor])
-                    accuracy.add(value=acc, weight=weight)
-                    iters += 1
-                    num_samples += len(data)
-                    print(
-                        "Pass = %d, Iters = %d, Loss = %f, Accuracy = %f, batch spent %f" %
-                        (pass_id, iters, loss, acc, time.time() - batch_st)
-                    )  # The accuracy is the accumulation of batches, but not the current batch.
-
-            pass_elapsed = time.time() - start_time
-            pass_train_acc = accuracy.eval()
-            pass_test_acc = test(exe)
-            print(
-                "Pass = %d, Training performance = %f imgs/s, Train accuracy = %f, Test accuracy = %f\n"
-                % (pass_id, num_samples / pass_elapsed, pass_train_acc,
-                pass_test_acc))
-
-    def train_loop_parallel(use_gpu, trainer_prog, trainer_id=0, bcast=False):
-        place = core.CPUPlace() if not use_gpu else core.CUDAPlace(0)
-        startup_exe = fluid.Executor(place)
-        startup_exe.run(fluid.default_startup_program())
-        exe = fluid.ParallelExecutor(use_gpu, avg_cost.name)
-
-        feeder = fluid.DataFeeder(place=place, feed_list=[images, label])
-
-        for pass_id in range(args.num_passes):
-            for batch_id, data in enumerate(train_reader()):
-                print("before run one...")
-                loss, = exe.run(
-                        [avg_cost.name],
-                        feed_dict=feeder.feed(data))
-                if bcast:
-                    exe.bcast_params()
+        start_time = time.time()
+        for batch_id, data in enumerate(train_reader()):
+            loss, = exe.run(
+                    [avg_cost.name],
+                    feed=feeder.feed(data))
+            num_samples += len(data)
+            if batch_id % 1 == 0:
                 print("Pass %d, batch %d, loss %s" % (pass_id, batch_id, np.array(loss)))
-
-    def transpile2dist():
-        # pserver_ips = os.getenv("PADDLE_INIT_PSERVERS")  # all pserver endpoints
-        # eplist = []
-        # port = os.getenv("PADDLE_INIT_PORT")
-        # for ip in pserver_ips.split(","):
-        #     eplist.append(':'.join([ip, port]))
-        # pserver_endpoints = ",".join(eplist)
-        pserver_endpoints = os.getenv("PSERVERS")
-        print("pserver endpoints: ", pserver_endpoints)
-        trainers = int(os.getenv("TRAINERS"))  # total trainer count
-        print("trainers total: ", trainers)
-        trainer_id = int(os.getenv("PADDLE_INIT_TRAINER_ID", "0"))
-        # current_endpoint = os.getenv(
-        #         "POD_IP") + ":" + port  # current pserver endpoint
-        current_endpoint = os.getenv("SERVER_ENDPOINT")
-        role = os.getenv(
-            "TRAINING_ROLE",
-            "TRAINER")  # get the training role: trainer/pserver
-        t = fluid.DistributeTranspiler()
-        t.transpile(
-            optimize_ops,
-            params_grads,
-            trainer_id,
-            pservers=pserver_endpoints,
-            trainers=trainers)
-        return t, role, current_endpoint, trainer_id
-
-    use_gpu = False if args.device == 'CPU' else True
-    if args.local:
-        train_loop_parallel(use_gpu, fluid.default_main_program())
-    else:
-        t, role, current_endpoint, trainer_id  = transpile2dist()
-
-        if role == "PSERVER":
-            place = fluid.CUDAPlace(0) if use_gpu else fluid.CPUPlace()
-            exe = fluid.Executor(place)
-            pserver_prog = t.get_pserver_program(current_endpoint)
-            # For debug program
-            with open("/tmp/pserver_prog", "w") as f:
-                f.write(pserver_prog.__str__())
-            pserver_startup = t.get_startup_program(current_endpoint,
-                                                    pserver_prog)
-            exe.run(pserver_startup)
-            exe.run(pserver_prog)
-        elif role == "TRAINER":
-            trainer_prog = t.get_trainer_program()
-            # For debug program
-            with open("/tmp/trainer_prog", "w") as f:
-                f.write(trainer_prog.__str__())
-            train_loop_parallel(use_gpu, trainer_prog, trainer_id, True)
-        else:
-            print("environment var TRAINER_ROLE should be TRAINER os PSERVER")
-
+        pass_elapsed = time.time() - start_time
+        pass_test_acc = test(startup_exe)
+        print(
+            "Pass = %d, Training performance = %f imgs/s, Test accuracy = %f\n"
+            % (pass_id, num_samples / pass_elapsed, pass_test_acc))
 
 def print_arguments():
     print('-----------  Configuration Arguments -----------')

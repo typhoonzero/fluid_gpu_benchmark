@@ -11,7 +11,7 @@ import paddle.fluid as fluid
 # set hyper parameters
 N = 1000
 
-epoch_num = 20
+epoch_num = 20000
 batch_size = int(os.getenv("BATCH_SIZE", "20"))
 emb_size = 200
 hid_size = 200

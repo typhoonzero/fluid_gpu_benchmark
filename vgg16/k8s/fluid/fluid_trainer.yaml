@@ -1,27 +1,40 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: vgg16job-trainer
+  name: vgg16-gpu-trainer
 spec:
   parallelism: 4
   completions: 4
   template:
     metadata:
       labels:
-        paddle-job: vgg16job
+        paddle-job: vgg16-gpu
     spec:
       imagePullSecrets:
         - name: job-registry-secret
       hostNetwork: true
+      volumes:
+        - name: nvidia-driver
+          hostPath:
+            path: /usr/local/nvidia/lib64
+        - name: nvidia-smi
+          hostPath:
+            path: /usr/bin/nvidia-smi
       containers:
       - name: trainer
         #image: "registry.baidu.com/paddlepaddle/fluid_benchmark:vgg16"
-        image: "bootstrapper:5000/fluid_benchmark:vgg16"
+        image: "bootstrapper:5000/fluid_benchmark:gpu"
         imagePullPolicy: Always
         command: ["paddle_k8s", "start_fluid"]
+        #command: ["sleep", "3600"]
+        volumeMounts:
+          - mountPath: /usr/local/nvidia/lib64
+            name: nvidia-driver
+          - mountPath: /opt/bin/nvidia-smi
+            name: nvidia-smi
         env:
         - name: PADDLE_JOB_NAME
-          value: vgg16job
+          value: vgg16-gpu
         - name: TRAINING_ROLE
           value: "TRAINER"
         - name: TRAINERS
@@ -30,18 +43,25 @@ spec:
           value: "4"
         - name: TOPOLOGY
           value: ""
-        - name: GLOG_v
-          value: "3"
+        #- name: GLOG_v
+        #  value: "2"
+        - name: FLAGS_fraction_of_gpu_memory_to_use
+          value: "0.9"
+        - name: FLAGS_benchmark
+          value: "1"
         - name: GLOG_logtostderr
           value: "1"
+        - name: MKL_NUM_THREADS
+          value: "1"
         - name: ENTRY
-          value: "MKL_NUM_THREADS=1 python /workspace/vgg16_fluid.py --local 0 --batch_size 20 --data_set flowers --device CPU"
+          value: "unset http_proxy && unset https_proxy && python /workspace/vgg16_fluid.py --local 0 --batch_size 20 --data_set flowers --device GPU"
+          #value: "unset http_proxy && unset https_proxy && python /workspace/mnist.py"
         - name: TRAINER_PACKAGE
           value: "/workspace"
         - name: PADDLE_INIT_PORT
-          value: "30236"
+          value: "30256"
         - name: PADDLE_INIT_NICS
-          value: "xgbe0"
+          value: "eth2"
         - name: PADDLE_INIT_TRAINER_COUNT
           value: "1"
         - name: PADDLE_INIT_PORTS_NUM
@@ -50,12 +70,8 @@ spec:
           value: "1"
         - name: PADDLE_INIT_NUM_GRADIENT_SERVERS
           value: "4"
-        - name: PADDLE_INIT_NUM_PASSES
-          value: "1"
-        - name: PADDLE_INIT_USE_GPU
-          value: "0"
         - name: LD_LIBRARY_PATH
-          value: "/usr/local/lib:/usr/local/nvidia/lib64"
+          value: "/usr/local/nvidia/lib64:/usr/local/lib:/usr/local/cuda/lib64"
         - name: NAMESPACE
           valueFrom:
             fieldRef:
@@ -66,9 +82,11 @@ spec:
               fieldPath: "status.podIP"
         resources:
           requests:
-            memory: 60Gi
-            cpu: 2
+            memory: 30Gi
+            cpu: 4
+            alpha.kubernetes.io/nvidia-gpu: 4
           limits:
-            memory: 60Gi
-            cpu: 2
+            memory: 30Gi
+            cpu: 4
+            alpha.kubernetes.io/nvidia-gpu: 4
       restartPolicy: Never
