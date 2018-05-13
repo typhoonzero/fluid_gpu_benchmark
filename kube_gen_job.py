@@ -221,7 +221,9 @@ def gen_job():
     tn_container["volumeMounts"] = volumeMounts
 
     ps_container["env"] = envs
+    ps_container["env"].append({"name": "TRAINING_ROL", "value": "PSERVER"})
     tn_container["env"] = envs
+    tn_container["env"].append({"name": "TRAINING_ROL", "value": "TRAINER"})
 
     os.mkdir(args.jobname)
     with open("%s/pserver.yaml" % args.jobname, "w") as fn:
