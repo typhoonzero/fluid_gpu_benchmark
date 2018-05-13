@@ -23,7 +23,7 @@ import paddle.fluid.profiler as profiler
 import argparse
 import functools
 import os
-from .. import env_config
+import env_config
 
 def vgg16_bn_drop(input):
     def conv_block(input, num_filter, groups, dropouts):

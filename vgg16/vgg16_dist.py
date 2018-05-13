@@ -13,7 +13,8 @@
 # limitations under the License.
 
 import vgg16_model
-from .. import env_config
+import env_config
+import paddle.fluid as fluid
 
 if __name__ == "__main__":
     train, trainp = vgg16_model.get_trainer(parallel=False)
