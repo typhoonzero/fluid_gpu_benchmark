@@ -1,7 +1,7 @@
 FROM nvidia/cuda:8.0-cudnn5-devel-ubuntu16.04
 
-ENV https_proxy=http://172.19.32.166:8899/
-ENV http_proxy=http://172.19.32.166:8899/
+ENV https_proxy=http://172.19.32.166:9988/
+ENV http_proxy=http://172.19.32.166:9988/
 
 RUN apt-get update && apt-get install -y python python-pip iputils-ping libgtk2.0-dev wget
 RUN pip install -U pip

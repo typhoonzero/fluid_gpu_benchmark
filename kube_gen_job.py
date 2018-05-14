@@ -76,6 +76,12 @@ trainer = {
                     "name": "trainer",
                     "image": "",
                     "imagePullPolicy": "Always",
+                    # to let container set rlimit
+                    "securityContext": {
+                        "capabilities": {
+                            "add": ["SYS_RESOURCE"]
+                        }
+                    },
                     "ports": [
                         {
                             "name": "jobport-1",
@@ -110,7 +116,7 @@ envs = [
     {"name": "TOPOLOGY", "value": ""},
     {"name": "TRAINER_PACKAGE", "value": "/workspace"},
     {"name": "PADDLE_INIT_NICS", "value": "eth2"},
-    {"name": "LD_LIBRARY_PATH", "value": "/usr/local/lib:/usr/local/nvidia/lib64"},
+    {"name": "LD_LIBRARY_PATH", "value": "/usr/local/lib:/usr/local/nvidia/lib64:/usr/local/rdma/lib64:/usr/lib64/mlnx_ofed/valgrind"},
     {"name": "NAMESPACE", "valueFrom": {
         "fieldRef": {
             "fieldPath": "metadata.namespace"
@@ -123,28 +129,32 @@ def parse_args():
     
     parser.add_argument('--jobname', default="paddlejob",
                         help='unique job name')
-    parser.add_argument('--cpu', default=1,
+    parser.add_argument('--cpu', default=1, type=int,
                         help='CPU cores per trainer node')
-    parser.add_argument('--pscpu', default=1,
+    parser.add_argument('--pscpu', default=1, type=int,
                         help='CPU cores per pserver node')
-    parser.add_argument('--gpu', default=0,
+    parser.add_argument('--gpu', default=0, type=int,
                         help='num of GPUs per node')
     parser.add_argument('--image', default="bootstrapper:5000/fluid_benchmark:gpu",
                         help='num of GPUs per node')
-    parser.add_argument('--pservers', default=1,
+    parser.add_argument('--pservers', default=1, type=int,
                         help='num of pservers')
-    parser.add_argument('--trainers', default=1,
+    parser.add_argument('--trainers', default=1, type=int,
                         help='num of trainers')
-    parser.add_argument('--memory', default=1,
+    parser.add_argument('--memory', default=1, type=int,
                         help='trainer memory')
-    parser.add_argument('--psmemory', default=1,
+    parser.add_argument('--psmemory', default=1, type=int,
                         help='pserver memory')
-    parser.add_argument('--port', default=30236,
+    parser.add_argument('--port', default=30236, type=int,
                         help='num of trainers')
     parser.add_argument('--entry', default="python train.py",
                         help='command to run')
-    parser.add_argument('--fluid', default=1,
+    parser.add_argument('--fluid', default=1, type=int,
                         help='whether is fluid job')
+    parser.add_argument('--rdma', default=0, type=int,
+                        help='whether mount rdma libs')
+    parser.add_argument('--disttype', default="pserver",
+                        help='pserver or NCCL2')
 
     args = parser.parse_args()
     return args
@@ -157,7 +167,7 @@ def gen_job():
     ps_container = ps["spec"]["template"]["spec"]["containers"][0]
     tn_container = tn["spec"]["template"]["spec"]["containers"][0]
 
-    if args.fluid:
+    if args.fluid == 1:
         ps_container["command"] = \
             ["paddle_k8s", "start_fluid"]
         tn_container["command"] = \
@@ -184,9 +194,9 @@ def gen_job():
         tn_container["resources"]["requests"]["alpha.kubernetes.io/nvidia-gpu"] = str(args.gpu)
         tn_container["resources"]["limits"]["alpha.kubernetes.io/nvidia-gpu"] = str(args.gpu)
 
-    ps["spec"]["replicas"] = args.pservers
-    tn["spec"]["parallelism"] = args.trainers
-    tn["spec"]["completions"] = args.trainers
+    ps["spec"]["replicas"] = int(args.pservers)
+    tn["spec"]["parallelism"] = int(args.trainers)
+    tn["spec"]["completions"] = int(args.trainers)
     ps_container["ports"][0]["name"] = "jobport-" + str(args.port)
     ps_container["ports"][0]["containerPort"] = args.port
     spreadport = random.randint(40000, 60000)
@@ -217,6 +227,32 @@ def gen_job():
             "name": "nvidia-driver"
         }
     ]
+    print type(args.rdma)
+    if args.rdma == 1:
+        volumes.extend([{
+            "name": "ibetc",
+            "hostPath": {"path": "/etc/libibverbs.d"}
+        }, {
+            "name": "iblibs",
+            "hostPath": {"path": "/usr/local/rdma"}
+        }, {
+            "name": "valgrind",
+            "hostPath": {"path": "/usr/lib64/mlnx_ofed/valgrind"}
+        }])
+        volumeMounts.extend([{
+            "mountPath": "/etc/libibverbs.d",
+            "name": "ibetc"
+        }, {
+            "mountPath": "/usr/local/rdma",
+            "name": "iblibs"
+        }, {
+            "mountPath": "/usr/lib64/mlnx_ofed/valgrind",
+            "name": "valgrind"
+        }])
+        # append shm for NCCL2
+        volumes.append({"name": "dshm", "emptyDir": {"medium": "Memory"}})
+        volumeMounts.append({"mountPath": "/dev/shm", "name": "dshm"})
+
     tn["spec"]["template"]["spec"]["volumes"] = volumes
     tn_container["volumeMounts"] = volumeMounts
 
@@ -226,8 +262,12 @@ def gen_job():
     tn_container["env"].append({"name": "TRAINING_ROL", "value": "TRAINER"})
 
     os.mkdir(args.jobname)
-    with open("%s/pserver.yaml" % args.jobname, "w") as fn:
-        yaml.dump(ps, fn)
+    if args.disttype == "pserver":
+        with open("%s/pserver.yaml" % args.jobname, "w") as fn:
+            yaml.dump(ps, fn)
+    else:
+        # NCCL2 type have only trainers
+        tn_container["command"] = ["sh", "-c", args.entry]
     with open("%s/trainer.yaml" % args.jobname, "w") as fn:
         yaml.dump(tn, fn)
 
