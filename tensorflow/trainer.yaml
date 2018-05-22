@@ -1,0 +1,69 @@
+apiVersion: batch/v1
+kind: Job
+metadata: {name: wuyi-nccl2-rdma-benchmark-trainer}
+spec:
+  completions: 8
+  parallelism: 8
+  template:
+    metadata:
+      labels: {paddle-job: wuyi-nccl2-rdma-benchmark}
+    spec:
+      containers:
+      - command: [paddle_k8s, start_fluid]
+        env:
+        - {name: GLOG_v, value: '0'}
+        - {name: GLOG_logtostderr, value: '1'}
+        - {name: TOPOLOGY, value: ''}
+        - {name: TRAINER_PACKAGE, value: /workspace}
+        - {name: PADDLE_INIT_NICS, value: eth2}
+        - {name: LD_LIBRARY_PATH, value: '/usr/local/lib:/usr/local/nvidia/lib64:/usr/local/rdma/lib64:/usr/lib64/mlnx_ofed/valgrind'}
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef: {fieldPath: metadata.namespace}
+        - name: POD_IP
+          valueFrom:
+            fieldRef: {fieldPath: status.podIP}
+        - name: PADDLE_CURRENT_IP
+          valueFrom:
+            fieldRef: {fieldPath: status.podIP}
+        - {name: PADDLE_JOB_NAME, value: wuyi-nccl2-rdma-benchmark}
+        - {name: TRAINERS, value: '8'}
+        - {name: PSERVERS, value: '2'}
+        - {name: ENTRY, value: ulimit -l unlimited && cd /workspace/fluid && NCCL_SOCKET_IFNAME=eth2
+            NCCL_DEBUG=INFO NCCL_IB_DISABLE=0 python fluid_benchmark.py --model resnet
+            --parallel 1 --batch_size 512 --update_method nccl2 --iterations 10}
+        - {name: PADDLE_INIT_PORT, value: '30236'}
+        - {name: PADDLE_PSERVER_PORT, value: '30236'}
+        - {name: TRAINING_ROLE, value: PSERVER}
+        - {name: TRAINING_ROLE, value: WORKER}
+        image: bootstrapper:5000/fluid_benchmark:gpu
+        imagePullPolicy: Always
+        name: trainer
+        ports:
+        - {containerPort: 47379, name: spr-47379}
+        resources:
+          limits: {alpha.kubernetes.io/nvidia-gpu: '8', cpu: '10', memory: 80Gi}
+          requests: {alpha.kubernetes.io/nvidia-gpu: '8', cpu: '10', memory: 80Gi}
+        securityContext: {privileged: true}
+        volumeMounts:
+        - {mountPath: /usr/local/nvidia/lib64, name: nvidia-driver}
+        - {mountPath: /etc/libibverbs.d, name: ibetc}
+        - {mountPath: /usr/local/rdma, name: iblibs}
+        - {mountPath: /usr/lib64/mlnx_ofed/valgrind, name: valgrind}
+        - {mountPath: /dev/shm, name: dshm}
+      hostNetwork: true
+      imagePullSecrets:
+      - {name: job-registry-secret}
+      nodeSelector: {support-rdma: 'on'}
+      restartPolicy: Never
+      volumes:
+      - hostPath: {path: /usr/local/nvidia/lib64}
+        name: nvidia-driver
+      - hostPath: {path: /etc/libibverbs.d}
+        name: ibetc
+      - hostPath: {path: /usr/local/rdma}
+        name: iblibs
+      - hostPath: {path: /usr/lib64/mlnx_ofed/valgrind}
+        name: valgrind
+      - emptyDir: {medium: Memory}
+        name: dshm

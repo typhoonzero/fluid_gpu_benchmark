@@ -1,3 +1,17 @@
+# Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import yaml
 import copy
 import argparse
@@ -12,7 +26,7 @@ pserver = {
     },
     "spec": {
         "replicas": 1,
-        "template" : {
+        "template": {
             "metadata": {
                 "labels": {
                     "paddle-job-pserver": "jobname"
@@ -27,12 +41,10 @@ pserver = {
                     "name": "pserver",
                     "image": "",
                     "imagePullPolicy": "Always",
-                    "ports": [
-                        {
-                            "name": "jobport-1",
-                            "containerPort": 1
-                        }
-                    ],
+                    "ports": [{
+                        "name": "jobport-1",
+                        "containerPort": 1
+                    }],
                     "env": [],
                     "command": ["paddle_k8s", "start_pserver"],
                     "resources": {
@@ -60,7 +72,7 @@ trainer = {
     "spec": {
         "parallelism": 4,
         "completions": 4,
-        "template" : {
+        "template": {
             "metadata": {
                 "labels": {
                     "paddle-job": "jobname"
@@ -78,16 +90,15 @@ trainer = {
                     "imagePullPolicy": "Always",
                     # to let container set rlimit
                     "securityContext": {
-                        "capabilities": {
-                            "add": ["SYS_RESOURCE"]
-                        }
+                        "privileged": True
+                        # "capabilities": {
+                        #     "add": ["SYS_RESOURCE"]
+                        # }
                     },
-                    "ports": [
-                        {
-                            "name": "jobport-1",
-                            "containerPort": 1
-                        }
-                    ],
+                    "ports": [{
+                        "name": "jobport-1",
+                        "containerPort": 1
+                    }],
                     "env": [],
                     "command": ["paddle_k8s", "start_trainer", "v2"],
                     "resources": {
@@ -113,51 +124,94 @@ envs = [
     # {"name": "ENTRY", "value": ""},
     # {"name": "PADDLE_INIT_PORT", "value": ""},
     # envs that don't need to change
-    {"name": "TOPOLOGY", "value": ""},
-    {"name": "TRAINER_PACKAGE", "value": "/workspace"},
-    {"name": "PADDLE_INIT_NICS", "value": "eth2"},
-    {"name": "LD_LIBRARY_PATH", "value": "/usr/local/lib:/usr/local/nvidia/lib64:/usr/local/rdma/lib64:/usr/lib64/mlnx_ofed/valgrind"},
-    {"name": "NAMESPACE", "valueFrom": {
-        "fieldRef": {
-            "fieldPath": "metadata.namespace"
+    {
+        "name": "GLOG_v",
+        "value": "0"
+    },
+    {
+        "name": "GLOG_logtostderr",
+        "value": "1"
+    },
+    {
+        "name": "TOPOLOGY",
+        "value": ""
+    },
+    {
+        "name": "TRAINER_PACKAGE",
+        "value": "/workspace"
+    },
+    {
+        "name": "PADDLE_INIT_NICS",
+        "value": "eth2"
+    },
+    {
+        "name": "LD_LIBRARY_PATH",
+        "value":
+        "/usr/local/lib:/usr/local/nvidia/lib64:/usr/local/rdma/lib64:/usr/lib64/mlnx_ofed/valgrind"
+    },
+    {
+        "name": "NAMESPACE",
+        "valueFrom": {
+            "fieldRef": {
+                "fieldPath": "metadata.namespace"
+            }
         }
-    }}
+    },
+    {
+        "name": "POD_IP",
+        "valueFrom": {
+            "fieldRef": {
+                "fieldPath": "status.podIP"
+            }
+        }
+    },
+    {
+        "name": "PADDLE_CURRENT_IP",
+        "valueFrom": {
+            "fieldRef": {
+                "fieldPath": "status.podIP"
+            }
+        }
+    }
 ]
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Generate dist job yamls.')
-    
-    parser.add_argument('--jobname', default="paddlejob",
-                        help='unique job name')
-    parser.add_argument('--cpu', default=1, type=int,
-                        help='CPU cores per trainer node')
-    parser.add_argument('--pscpu', default=1, type=int,
-                        help='CPU cores per pserver node')
-    parser.add_argument('--gpu', default=0, type=int,
-                        help='num of GPUs per node')
-    parser.add_argument('--image', default="bootstrapper:5000/fluid_benchmark:gpu",
-                        help='num of GPUs per node')
-    parser.add_argument('--pservers', default=1, type=int,
-                        help='num of pservers')
-    parser.add_argument('--trainers', default=1, type=int,
-                        help='num of trainers')
-    parser.add_argument('--memory', default=1, type=int,
-                        help='trainer memory')
-    parser.add_argument('--psmemory', default=1, type=int,
-                        help='pserver memory')
-    parser.add_argument('--port', default=30236, type=int,
-                        help='num of trainers')
-    parser.add_argument('--entry', default="python train.py",
-                        help='command to run')
-    parser.add_argument('--fluid', default=1, type=int,
-                        help='whether is fluid job')
-    parser.add_argument('--rdma', default=0, type=int,
-                        help='whether mount rdma libs')
-    parser.add_argument('--disttype', default="pserver",
-                        help='pserver or NCCL2')
+
+    parser.add_argument(
+        '--jobname', default="paddlejob", help='unique job name')
+    parser.add_argument(
+        '--cpu', default=1, type=int, help='CPU cores per trainer node')
+    parser.add_argument(
+        '--pscpu', default=1, type=int, help='CPU cores per pserver node')
+    parser.add_argument(
+        '--gpu', default=0, type=int, help='num of GPUs per node')
+    parser.add_argument(
+        '--image',
+        default="bootstrapper:5000/fluid_benchmark:gpu",
+        help='num of GPUs per node')
+    parser.add_argument(
+        '--pservers', default=1, type=int, help='num of pservers')
+    parser.add_argument(
+        '--trainers', default=1, type=int, help='num of trainers')
+    parser.add_argument('--memory', default=1, type=int, help='trainer memory')
+    parser.add_argument(
+        '--psmemory', default=1, type=int, help='pserver memory')
+    parser.add_argument(
+        '--port', default=30236, type=int, help='num of trainers')
+    parser.add_argument(
+        '--entry', default="python train.py", help='command to run')
+    parser.add_argument(
+        '--fluid', default=1, type=int, help='whether is fluid job')
+    parser.add_argument(
+        '--rdma', default=0, type=int, help='whether mount rdma libs')
+    parser.add_argument(
+        '--disttype', default="pserver", help='pserver or NCCL2')
 
     args = parser.parse_args()
     return args
+
 
 def gen_job():
     ps = pserver
@@ -173,10 +227,10 @@ def gen_job():
         tn_container["command"] = \
             ["paddle_k8s", "start_fluid"]
     ps["metadata"]["name"] = args.jobname + "-pserver"
-    ps["spec"]["template"]["metadata"]["labels"]["paddle-job-pserver"] = args.jobname
+    ps["spec"]["template"]["metadata"]["labels"][
+        "paddle-job-pserver"] = args.jobname
     tn["metadata"]["name"] = args.jobname + "-trainer"
     tn["spec"]["template"]["metadata"]["labels"]["paddle-job"] = args.jobname
-    
 
     ps_container["image"] = args.image
     tn_container["image"] = args.image
@@ -191,8 +245,10 @@ def gen_job():
     tn_container["resources"]["limits"]["cpu"] = str(args.cpu)
     tn_container["resources"]["limits"]["memory"] = str(args.memory) + "Gi"
     if args.gpu > 0:
-        tn_container["resources"]["requests"]["alpha.kubernetes.io/nvidia-gpu"] = str(args.gpu)
-        tn_container["resources"]["limits"]["alpha.kubernetes.io/nvidia-gpu"] = str(args.gpu)
+        tn_container["resources"]["requests"][
+            "alpha.kubernetes.io/nvidia-gpu"] = str(args.gpu)
+        tn_container["resources"]["limits"][
+            "alpha.kubernetes.io/nvidia-gpu"] = str(args.gpu)
 
     ps["spec"]["replicas"] = int(args.pservers)
     tn["spec"]["parallelism"] = int(args.trainers)
@@ -202,7 +258,6 @@ def gen_job():
     spreadport = random.randint(40000, 60000)
     tn_container["ports"][0]["name"] = "spr-" + str(spreadport)
     tn_container["ports"][0]["containerPort"] = spreadport
-
 
     # {"name": "PADDLE_JOB_NAME", "value": ""},
     # {"name": "TRAINERS", "value": "4"},
@@ -214,30 +269,35 @@ def gen_job():
     envs.append({"name": "PSERVERS", "value": str(args.pservers)})
     envs.append({"name": "ENTRY", "value": args.entry})
     envs.append({"name": "PADDLE_INIT_PORT", "value": str(args.port)})
+    envs.append({"name": "PADDLE_PSERVER_PORT", "value": str(args.port)})
 
-    volumes = [
-        {
-            "name": "nvidia-driver",
-            "hostPath": {"path": "/usr/local/nvidia/lib64"}
+    volumes = [{
+        "name": "nvidia-driver",
+        "hostPath": {
+            "path": "/usr/local/nvidia/lib64"
         }
-    ]
-    volumeMounts = [
-        {
-            "mountPath": "/usr/local/nvidia/lib64",
-            "name": "nvidia-driver"
-        }
-    ]
-    print type(args.rdma)
+    }]
+    volumeMounts = [{
+        "mountPath": "/usr/local/nvidia/lib64",
+        "name": "nvidia-driver"
+    }]
+
     if args.rdma == 1:
         volumes.extend([{
             "name": "ibetc",
-            "hostPath": {"path": "/etc/libibverbs.d"}
+            "hostPath": {
+                "path": "/etc/libibverbs.d"
+            }
         }, {
             "name": "iblibs",
-            "hostPath": {"path": "/usr/local/rdma"}
+            "hostPath": {
+                "path": "/usr/local/rdma"
+            }
         }, {
             "name": "valgrind",
-            "hostPath": {"path": "/usr/lib64/mlnx_ofed/valgrind"}
+            "hostPath": {
+                "path": "/usr/lib64/mlnx_ofed/valgrind"
+            }
         }])
         volumeMounts.extend([{
             "mountPath": "/etc/libibverbs.d",
@@ -257,19 +317,28 @@ def gen_job():
     tn_container["volumeMounts"] = volumeMounts
 
     ps_container["env"] = envs
-    ps_container["env"].append({"name": "TRAINING_ROL", "value": "PSERVER"})
+    ps_container["env"].append({"name": "TRAINING_ROLE", "value": "PSERVER"})
     tn_container["env"] = envs
-    tn_container["env"].append({"name": "TRAINING_ROL", "value": "TRAINER"})
+    if args.disttype == "pserver":
+        tn_container["env"].append({
+            "name": "TRAINING_ROLE",
+            "value": "TRAINER"
+        })
+    elif args.disttype == "NCCL2":
+        # NCCL2 have no training role, set to plain WORKER
+        tn_container["env"].append({"name": "TRAINING_ROLE", "value": "WORKER"})
+        tn["spec"]["template"]["spec"]["nodeSelector"] = {
+            "support-rdma": "on"
+        }
 
     os.mkdir(args.jobname)
     if args.disttype == "pserver":
         with open("%s/pserver.yaml" % args.jobname, "w") as fn:
             yaml.dump(ps, fn)
-    else:
-        # NCCL2 type have only trainers
-        tn_container["command"] = ["sh", "-c", args.entry]
+
     with open("%s/trainer.yaml" % args.jobname, "w") as fn:
         yaml.dump(tn, fn)
+
 
 if __name__ == "__main__":
     gen_job()

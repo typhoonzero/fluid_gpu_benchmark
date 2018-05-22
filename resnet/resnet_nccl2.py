@@ -107,10 +107,11 @@ def train(use_cuda):
     num_trainers = 1
     trainer_id = 0
     # ========================= for nccl2 dist train =================================
-    if os.getenv("PADDLE_TRAINER_ID", None) != None:
+    if os.getenv("PADDLE_INIT_TRAINER_ID", None) != None:
         # append gen_nccl_id at the end of startup program
-        trainer_id = int(os.getenv("PADDLE_TRAINER_ID"))
-        port = os.getenv("PADDLE_PORT")
+        trainer_id = int(os.getenv("PADDLE_INIT_TRAINER_ID"))
+        print("using trainer_id: ", trainer_id)
+        port = os.getenv("PADDLE_INIT_PORT")
         worker_ips = os.getenv("PADDLE_WORKERS")
         worker_endpoints = []
         for ip in worker_ips.split(","):
