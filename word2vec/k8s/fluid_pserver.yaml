@@ -1,0 +1,88 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: word2vec-pserver
+spec:
+  parallelism: 4
+  completions: 4
+  template:
+    metadata:
+      labels:
+        paddle-job-pserver: word2vec
+    spec:
+      hostNetwork: true
+      restartPolicy: Never
+      volumes:
+        - name: nvidia-driver
+          hostPath:
+            path: /usr/local/nvidia/lib64
+      imagePullSecrets:
+      - name: job-registry-secret
+      containers:
+      - name: pserver
+        image: "registry.baidu.com/paddlepaddle/fluid_benchmark:cpu"
+        #image: "bootstrapper:5000/fluid_benchmark:cpu"
+        imagePullPolicy: Always
+        volumeMounts:
+          - mountPath: /usr/local/nvidia/lib64
+            name: nvidia-driver
+        ports:
+        - name: jobport-30256
+          containerPort: 30256
+        env:
+        - name: PADDLE_JOB_NAME
+          value: word2vec
+        - name: MKL_NUM_THREADS
+          value: "1"
+        - name: TRAINING_ROLE
+          value: "PSERVER"
+        - name: TRAINERS
+          value: "4"
+        - name: PSERVERS
+          value: "4"
+        - name: TOPOLOGY
+          value: ""
+        - name: GLOG_v
+          value: "2"
+        - name: GLOG_logtostderr
+          value: "1"
+        - name: ENTRY
+          value: "unset http_proxy && unset https_proxy && python /workspace/test_word2vec.py --local 0 --sync_mode 0 --is_distributed 1"
+        - name: TRAINER_PACKAGE
+          value: "/workspace"
+        - name: PADDLE_INIT_PORT
+          value: "30256"
+        - name: PADDLE_INIT_NICS
+          value: "eth2"
+        - name: PADDLE_INIT_TRAINER_COUNT
+          value: "1"
+        - name: PADDLE_INIT_PORTS_NUM
+          value: "1"
+        - name: PADDLE_INIT_PORTS_NUM_FOR_SPARSE
+          value: "1"
+        - name: PADDLE_INIT_NUM_GRADIENT_SERVERS
+          value: "100"
+        - name: PADDLE_INIT_NUM_PASSES
+          value: "1"
+        - name: PADDLE_INIT_USE_GPU
+          value: "0"
+        - name: LD_LIBRARY_PATH
+          value: "/usr/local/nvidia/lib64:/usr/local/lib:/usr/local/cuda/lib64"
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: "metadata.namespace"
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: "status.podIP"
+        command: ["paddle_k8s", "start_fluid"]
+        resources:
+          requests:
+            memory: 30Gi
+            cpu: 2
+            #alpha.kubernetes.io/nvidia-gpu: 1
+          limits:
+            memory: 30Gi
+            cpu: 2
+            #alpha.kubernetes.io/nvidia-gpu: 1
