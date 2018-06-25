@@ -35,4 +35,4 @@ ADD text_classification /workspace/text_classification
 ADD lm /workspace/lm
 ADD vgg16 /workspace/vgg16
 ADD resnet /workspace/resnet
-ADD fluid /workspace/fluid
+ADD word2vec /workspace/word2vec
