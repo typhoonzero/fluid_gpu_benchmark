@@ -57,14 +57,13 @@ cost = fluid.layers.cross_entropy(input=fc, label=dst_wordseq)
 average_cost = fluid.layers.mean(x=cost)
 #infer_program = fluid.default_main_program().clone()
 
-# sgd_optimizer = fluid.optimizer.SGD(
-#         learning_rate=fluid.layers.exponential_decay(
-#             learning_rate=base_lr,
-#             decay_steps=2100 * 4,
-#             decay_rate=0.5,
-#             staircase=True))
-momentum_optimizer = fluid.optimizer.Momentum(learning_rate=1.0, momentum=0.1)
-optimize_ops, params_grads = momentum_optimizer.minimize(average_cost)
+sgd_optimizer = fluid.optimizer.SGD(
+        learning_rate=fluid.layers.exponential_decay(
+            learning_rate=base_lr,
+            decay_steps=2100 * 4,
+            decay_rate=0.5,
+            staircase=True))
+sgd_optimizer.minimize(average_cost)
 
 
 def test(exe, pass_id, place):
@@ -191,8 +190,6 @@ def main():
 
         t = fluid.DistributeTranspiler()
         t.transpile(
-            optimize_ops,
-            params_grads,
             trainer_id,
             pservers=pserver_endpoints,
             trainers=trainers)

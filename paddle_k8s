@@ -90,6 +90,34 @@ start_fluid_process() {
   check_trainer_ret $?
 }
 
+start_tf_benchmark_process() {
+  # re-use the paddle job labels
+  pserver_label="paddle-job-pserver=${PADDLE_JOB_NAME}"
+  trainer_label="paddle-job=${PADDLE_JOB_NAME}"
+  task_index=""
+
+  export PADDLE_INIT_PSERVERS=$(python /root/k8s_tools.py fetch_ips ${pserver_label} ${PADDLE_INIT_PORT})
+  export PADDLE_WORKERS=$(python /root/k8s_tools.py fetch_ips ${trainer_label})
+  export PADDLE_TRAINER_IPS=$(python /root/k8s_tools.py fetch_ips ${trainer_label})
+  export TF_WORKER_EPS=$(python /root/k8s_tools.py fetch_ips ${trainer_label} ${TF_WORKER_PORT})
+
+  if [ "${TRAINING_ROLE}" == "TRAINER" ]; then
+    check_failed_cnt 1
+    task_index=$(python /root/k8s_tools.py fetch_id ${trainer_label})
+    export TF_ROLE=worker
+  else
+    check_failed_cnt 1
+    task_index=$(python /root/k8s_tools.py fetch_id ${pserver_label})
+    export TF_ROLE=ps
+  fi
+  
+  export PADDLE_INIT_TRAINER_ID=${task_index}
+  export PADDLE_TRAINER_ID=${task_index}
+
+  stdbuf -oL sh -c "${ENTRY}"
+  check_trainer_ret $?
+}
+
 start_new_trainer() {
   # FIXME(Yancey1989): use command-line interface to configure the max failed count
   check_failed_cnt ${TRAINERS}
